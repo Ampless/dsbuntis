@@ -1,0 +1,19 @@
+name: dsbuntis
+description: A library for using DSB's API and parsing Untis plans.
+version: 0.0.1
+author: Ampless
+homepage: https://github.com/Ampless/dsbuntis
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  html: any
+  archive: any
+  uuid: any
+
+dev_dependencies:
+  test: any
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
