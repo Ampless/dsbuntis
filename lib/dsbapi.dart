@@ -16,18 +16,18 @@ const String _DSB_OS_VERSION = '29 10.0';
 
 class DsbSubstitution {
   String affectedClass;
-  List<int> hours;
+  List<int> lessons;
   String teacher;
   String subject;
   String notes;
   bool isFree;
 
-  DsbSubstitution(this.affectedClass, this.hours, this.teacher, this.subject,
+  DsbSubstitution(this.affectedClass, this.lessons, this.teacher, this.subject,
       this.notes, this.isFree);
 
   DsbSubstitution.fromJson(Map<String, dynamic> json)
       : affectedClass = json['affectedClass'],
-        hours = List<int>.from(json['hours']),
+        lessons = List<int>.from(json['hours']),
         teacher = json['teacher'],
         subject = json['subject'],
         notes = json['notes'],
@@ -35,7 +35,7 @@ class DsbSubstitution {
 
   Map<String, dynamic> toJson() => {
         'affectedClass': affectedClass,
-        'hours': hours,
+        'hours': lessons,
         'teacher': teacher,
         'subject': subject,
         'notes': notes,
@@ -91,11 +91,11 @@ class DsbSubstitution {
 
   @override
   String toString() =>
-      "['$affectedClass', $hours, '$teacher', '$subject', '$notes', $isFree]";
+      "['$affectedClass', $lessons, '$teacher', '$subject', '$notes', $isFree]";
 
-  List<int> get actualHours {
+  List<int> get actualLessons {
     var h = <int>[];
-    for (var i = min(hours); i <= max(hours); i++) h.add(i);
+    for (var i = min(lessons); i <= max(lessons); i++) h.add(i);
     return h;
   }
 }
@@ -255,7 +255,7 @@ List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
 
 List<DsbPlan> dsbSortAllByHour(List<DsbPlan> plans) {
   for (var plan in plans)
-    plan.subs.sort((a, b) => max(a.hours).compareTo(max(b.hours)));
+    plan.subs.sort((a, b) => max(a.lessons).compareTo(max(b.lessons)));
   return plans;
 }
 

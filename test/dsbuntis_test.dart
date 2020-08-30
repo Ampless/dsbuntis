@@ -57,9 +57,9 @@ void assertDsbPlanListsEqual(List<DsbPlan> l1, List<DsbPlan> l2) {
     expect(l1[i].subs.length, l2[i].subs.length);
     for (var j = 0; j < l1[i].subs.length; j++) {
       expect(l1[i].subs[j].affectedClass, l2[i].subs[j].affectedClass);
-      expect(l1[i].subs[j].hours.length, l2[i].subs[j].hours.length);
-      for (var k = 0; k < l1[i].subs[j].hours.length; k++)
-        expect(l1[i].subs[j].hours[k], l2[i].subs[j].hours[k]);
+      expect(l1[i].subs[j].lessons.length, l2[i].subs[j].lessons.length);
+      for (var k = 0; k < l1[i].subs[j].lessons.length; k++)
+        expect(l1[i].subs[j].lessons[k], l2[i].subs[j].lessons[k]);
       expect(l1[i].subs[j].isFree, l2[i].subs[j].isFree);
       expect(l1[i].subs[j].notes, l2[i].subs[j].notes);
       expect(l1[i].subs[j].subject, l2[i].subs[j].subject);

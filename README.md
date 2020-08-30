@@ -1,6 +1,9 @@
 # dsbuntis
 
-A new Dart package project.
+This package allows you to crawl DSB's "Android API" and parse Untis's HTML. 
 
-## Getting Started
+# How to use this
 
+You need an external HTTP library. We will publish a simple one soon.
+If you want a good example of how to currently use the library, look at
+[Amplessimus](https://github.com/Ampless/Amplessimus).
