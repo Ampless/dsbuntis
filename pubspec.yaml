@@ -1,6 +1,6 @@
 name: dsbuntis
 description: A library for using DSB's API and parsing Untis plans.
-version: 0.0.1
+version: 0.1.0
 author: Ampless
 homepage: https://github.com/Ampless/dsbuntis
 
