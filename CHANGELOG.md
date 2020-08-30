@@ -1,3 +1,11 @@
+## 0.1.6
+
+* Wrote some documentation.
+
+## 0.1.2 – 0.1.5
+
+* Fixed some coding style things.
+
 ## 0.1.1
 
 * Fixed the naming of `hours` and `actualHours` (`lessons`, `actualLessons`).

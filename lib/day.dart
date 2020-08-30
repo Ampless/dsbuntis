@@ -50,18 +50,19 @@ int dayToInt(Day day) {
 Day matchDay(String s) {
   if (s == null || s.isEmpty) return Day.Null;
   s = s.toLowerCase();
-  if (s.contains('null') || s.contains('none'))
+  if (s.contains('null') || s.contains('none')) {
     return Day.Null;
-  else if (s.contains('mo') || s.contains('po'))
+  } else if (s.contains('mo') || s.contains('po')) {
     return Day.Monday;
-  else if (s.contains('di') || s.contains('tue') || s.contains('út'))
+  } else if (s.contains('di') || s.contains('tue') || s.contains('út')) {
     return Day.Tuesday;
-  else if (s.contains('mi') || s.contains('wed') || (s.contains('stř')))
+  } else if (s.contains('mi') || s.contains('wed') || (s.contains('stř'))) {
     return Day.Wednesday;
-  else if (s.contains('do') || s.contains('thu') || s.contains('čt'))
+  } else if (s.contains('do') || s.contains('thu') || s.contains('čt')) {
     return Day.Thursday;
-  else if (s.contains('fr') || s.contains('pá'))
+  } else if (s.contains('fr') || s.contains('pá')) {
     return Day.Friday;
-  else
+  } else {
     throw '[matchDay] Unknown day: $s';
+  }
 }

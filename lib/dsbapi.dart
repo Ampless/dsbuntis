@@ -60,8 +60,9 @@ class DsbSubstitution {
 
   static DsbSubstitution fromStrings(String affectedClass, String hour,
       String teacher, String subject, String notes) {
-    if (affectedClass.codeUnitAt(0) == _zero)
+    if (affectedClass.codeUnitAt(0) == _zero) {
       affectedClass = affectedClass.substring(1);
+    }
     return DsbSubstitution(
         affectedClass.toLowerCase(),
         parseIntsFromString(hour),
@@ -95,7 +96,9 @@ class DsbSubstitution {
 
   List<int> get actualLessons {
     var h = <int>[];
-    for (var i = min(lessons); i <= max(lessons); i++) h.add(i);
+    for (var i = min(lessons); i <= max(lessons); i++) {
+      h.add(i);
+    }
     return h;
   }
 }
@@ -120,13 +123,17 @@ class DsbPlan {
 
   List<Map<String, dynamic>> subsToJson() {
     var lessonsStrings = <Map<String, dynamic>>[];
-    for (var sub in subs) lessonsStrings.add(sub.toJson());
+    for (var sub in subs) {
+      lessonsStrings.add(sub.toJson());
+    }
     return lessonsStrings;
   }
 
   static List<DsbSubstitution> subsFromJson(dynamic subsStrings) {
     var subs = <DsbSubstitution>[];
-    for (var s in subsStrings) subs.add(DsbSubstitution.fromJson(s));
+    for (var s in subsStrings) {
+      subs.add(DsbSubstitution.fromJson(s));
+    }
     return subs;
   }
 
@@ -204,8 +211,9 @@ Future<List<DsbPlan>> dsbGetAndParse(
           //(just taking first isnt even standard-compliant, but it works rn)
           .children;
       var subs = <DsbSubstitution>[];
-      for (var i = 1; i < html.length; i++)
+      for (var i = 1; i < html.length; i++) {
         subs.add(DsbSubstitution.fromElementArray(html[i].children));
+      }
       plans.add(DsbPlan(matchDay(planTitle), subs, planTitle));
     } catch (e) {
       plans.add(null);
@@ -254,19 +262,24 @@ List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
 }
 
 List<DsbPlan> dsbSortAllByHour(List<DsbPlan> plans) {
-  for (var plan in plans)
+  for (var plan in plans) {
     plan.subs.sort((a, b) => max(a.lessons).compareTo(max(b.lessons)));
+  }
   return plans;
 }
 
 String plansToJson(List<DsbPlan> plans) {
-  var plansStrings = [];
-  for (var plan in plans) plansStrings.add(plan.toJson());
-  return jsonEncode(plansStrings);
+  var planJsons = [];
+  for (var plan in plans) {
+    planJsons.add(plan.toJson());
+  }
+  return jsonEncode(planJsons);
 }
 
 List<DsbPlan> plansFromJson(String jsonPlans) {
   var plans = <DsbPlan>[];
-  for (var plan in jsonDecode(jsonPlans)) plans.add(DsbPlan.fromJson(plan));
+  for (var plan in jsonDecode(jsonPlans)) {
+    plans.add(DsbPlan.fromJson(plan));
+  }
   return plans;
 }

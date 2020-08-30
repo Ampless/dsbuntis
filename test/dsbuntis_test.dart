@@ -120,9 +120,8 @@ List<testCase> dsbTestCases = [
   dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, null, null),
 ];
 
-testCase jsonTestCase(List<DsbPlan> plans) => () async {
-      assertDsbPlanListsEqual(plansFromJson(plansToJson(plans)), plans);
-    };
+testCase jsonTestCase(List<DsbPlan> plans) => () async =>
+    assertDsbPlanListsEqual(plansFromJson(plansToJson(plans)), plans);
 
 List<testCase> jsonTestCases = [
   jsonTestCase(dsbTest1Expct),
