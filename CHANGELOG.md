@@ -1,3 +1,7 @@
+## 0.1.7
+
+* More tests.
+
 ## 0.1.6
 
 * Wrote some documentation.

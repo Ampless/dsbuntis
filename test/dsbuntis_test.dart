@@ -68,14 +68,6 @@ void assertDsbPlanListsEqual(List<DsbPlan> l1, List<DsbPlan> l2) {
   }
 }
 
-bool strcontain(String s1, String s2) {
-  if (s1 == null) return s2 == null;
-  if (s2 == null) return false;
-  s1 = s1.toLowerCase();
-  s2 = s2.toLowerCase();
-  return s1.contains(s2) || s2.contains(s1);
-}
-
 testCase dsbTestCase(
   String username,
   String password,

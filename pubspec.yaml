@@ -1,6 +1,6 @@
 name: dsbuntis
 description: This package allows you to crawl DSB's "Android API" and parse Untis's HTML.
-version: 0.1.6
+version: 0.1.7
 homepage: https://github.com/Ampless/dsbuntis
 
 environment:
