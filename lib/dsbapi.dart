@@ -9,7 +9,6 @@ import 'package:archive/archive.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart';
 
-const String _DSB_BUNDLE_ID = 'de.heinekingmedia.dsbmobile';
 const String _DSB_DEVICE = 'SM-G950F';
 const String _DSB_VERSION = '2.5.9';
 const String _DSB_OS_VERSION = '29 10.0';
@@ -161,7 +160,7 @@ Future<String> dsbGetData(
       '"OsVersion":"$_DSB_OS_VERSION",'
       '"AppId":"${Uuid().v4()}",'
       '"Device":"$_DSB_DEVICE",'
-      '"BundleId":"$_DSB_BUNDLE_ID",'
+      '"BundleId":"de.heinekingmedia.dsbmobile",'
       '"Date":"$datetime",'
       '"LastUpdate":"$datetime"'
       '}';
@@ -179,7 +178,9 @@ Future<String> dsbGetData(
   if (rawJson == null) throw '[dsbGetData] httpPost returned null.';
   return utf8.decode(
     GZipDecoder().decodeBytes(
-      base64.decode(jsonDecode(rawJson)['d']),
+      base64.decode(
+        jsonDecode(rawJson)['d'],
+      ),
     ),
   );
 }
