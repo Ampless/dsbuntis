@@ -152,7 +152,7 @@ Future<String> dsbGetData(
   if (username == null) throw '[dsbGetData] username = null';
   if (password == null) throw '[dsbGetData] password = null';
   if (httpPost == null) throw '[dsbGetData] httpPost = null';
-  var datetime = DateTime.now().toIso8601String().substring(0, -3) + 'Z';
+  var datetime = removeLastChars(DateTime.now().toIso8601String(), 3) + 'Z';
   var json = '{'
       '"UserId":"$username",'
       '"UserPw":"$password",'

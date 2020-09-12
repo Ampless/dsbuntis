@@ -28,3 +28,5 @@ bool strcontain(String s1, String s2) {
   s2 = s2.toLowerCase();
   return s1.contains(s2) || s2.contains(s1);
 }
+
+String removeLastChars(String s, int i) => s.substring(0, s.length - i);
