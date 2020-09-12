@@ -149,7 +149,10 @@ Future<String> dsbGetData(
   bool cachePostRequests = true,
   String dsbLanguage = 'de',
 }) async {
-  var datetime = DateTime.now().toIso8601String().substring(0, 3) + 'Z';
+  if (username == null) throw '[dsbGetData] username = null';
+  if (password == null) throw '[dsbGetData] password = null';
+  if (httpPost == null) throw '[dsbGetData] httpPost = null';
+  var datetime = DateTime.now().toIso8601String().substring(0, -3) + 'Z';
   var json = '{'
       '"UserId":"$username",'
       '"UserPw":"$password",'
@@ -162,23 +165,21 @@ Future<String> dsbGetData(
       '"Date":"$datetime",'
       '"LastUpdate":"$datetime"'
       '}';
+  var rawJson = await httpPost(
+    Uri.parse(apiEndpoint),
+    '{'
+        '"req": {'
+        '"Data": "${base64.encode(GZipEncoder().encode(utf8.encode(json)))}", '
+        '"DataType": 1'
+        '}'
+        '}',
+    '$apiEndpoint\t$username\t$password',
+    {'content-type': 'application/json'},
+  );
+  if (rawJson == null) throw '[dsbGetData] httpPost returned null.';
   return utf8.decode(
     GZipDecoder().decodeBytes(
-      base64.decode(
-        jsonDecode(
-          await httpPost(
-            Uri.parse(apiEndpoint),
-            '{'
-                '"req": {'
-                '"Data": "${base64.encode(GZipEncoder().encode(utf8.encode(json)))}", '
-                '"DataType": 1'
-                '}'
-                '}',
-            '$apiEndpoint\t$username\t$password',
-            {'content-type': 'application/json'},
-          ),
-        )['d'],
-      ),
+      base64.decode(jsonDecode(rawJson)['d']),
     ),
   );
 }
@@ -188,15 +189,18 @@ Future<List<DsbPlan>> dsbGetAndParse(
   Future<String> Function(Uri) httpGet, {
   bool cacheGetRequests = true,
 }) async {
+  if (jsontext == null) throw '[dsbGetAndParse] jsontext = null';
+  if (httpGet == null) throw '[dsbGetAndParse] httpGet = null';
+  if (cacheGetRequests == null)
+    throw '[dsbGetAndParse] cacheGetRequests = null';
   var json = jsonDecode(jsontext);
   if (json['Resultcode'] != 0) throw json['ResultStatusInfo'];
   json = json['ResultMenuItems'][0]['Childs'][0];
   var plans = <DsbPlan>[];
   for (var plan in json['Root']['Childs']) {
     String url = plan['Childs'][0]['Detail'];
-    var rawHtml = await httpGet(
-      Uri.parse(url),
-    );
+    var rawHtml = await httpGet(Uri.parse(url));
+    if (rawHtml == null) throw '[dsbGetAndParse] httpGet returned null.';
     try {
       var html = HtmlParser(rawHtml)
           .parse()
@@ -246,6 +250,7 @@ Future<List<DsbPlan>> dsbGetAllSubs(
 }
 
 List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
+  if (plans == null) return [];
   stage ??= '';
   char ??= '';
   for (var plan in plans) {
@@ -262,6 +267,7 @@ List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
 }
 
 List<DsbPlan> dsbSortAllByHour(List<DsbPlan> plans) {
+  if (plans == null) return [];
   for (var plan in plans) {
     plan.subs.sort((a, b) => max(a.lessons).compareTo(max(b.lessons)));
   }
@@ -269,6 +275,7 @@ List<DsbPlan> dsbSortAllByHour(List<DsbPlan> plans) {
 }
 
 String plansToJson(List<DsbPlan> plans) {
+  if (plans == null) return '[]';
   var planJsons = [];
   for (var plan in plans) {
     planJsons.add(plan.toJson());
@@ -277,6 +284,7 @@ String plansToJson(List<DsbPlan> plans) {
 }
 
 List<DsbPlan> plansFromJson(String jsonPlans) {
+  if (jsonPlans == null) return [];
   var plans = <DsbPlan>[];
   for (var plan in jsonDecode(jsonPlans)) {
     plans.add(DsbPlan.fromJson(plan));
