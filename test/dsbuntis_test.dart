@@ -81,7 +81,7 @@ testCase dsbTestCase(
 }) =>
     () async {
       tfunc ??= (username, password, httpGet, httpPost, stage, char) async {
-        return dsbSortAllByHour(dsbSearchClass(
+        return dsbSortByLesson(dsbSearchClass(
             await dsbGetAllSubs(username, password, httpGet, httpPost,
                 dsbLanguage: 'de',
                 cacheGetRequests: false,

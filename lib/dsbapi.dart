@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dsbuntis/day.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dsbuntis/utils.dart';
 import 'package:archive/archive.dart';
@@ -185,6 +186,8 @@ Future<String> dsbGetData(
   );
 }
 
+var _unescape = HtmlUnescape();
+
 Future<List<DsbPlan>> dsbGetAndParse(
   String jsontext,
   Future<String> Function(Uri) httpGet, {
@@ -202,6 +205,29 @@ Future<List<DsbPlan>> dsbGetAndParse(
     String url = plan['Childs'][0]['Detail'];
     var rawHtml = await httpGet(Uri.parse(url));
     if (rawHtml == null) throw '[dsbGetAndParse] httpGet returned null.';
+    rawHtml = _unescape
+        .convert(rawHtml)
+        .replaceAll('\n', '')
+        .replaceAll('\r', '')
+        //just fyi: these regexes only work because there are no more newlines
+        .replaceAll(RegExp(r'<h1.*?</h1>'), '')
+        .replaceAll(RegExp(r'</?p.*?>'), '')
+        .replaceAll(RegExp(r'<th.*?</th>'), '')
+        .replaceAll(RegExp(r'<head.*?</head>'), '')
+        .replaceAll(RegExp(r'<script.*?</script>'), '')
+        .replaceAll(RegExp(r'<style.*?</style>'), '')
+        .replaceAll(RegExp(r'</?html.*?>'), '')
+        .replaceAll(RegExp(r'</?body.*?>'), '')
+        .replaceAll(RegExp(r'</?font.*?>'), '')
+        .replaceAll(RegExp(r'</?span.*?>'), '')
+        .replaceAll(RegExp(r'</?center.*?>'), '')
+        .replaceAll(RegExp(r'</?a.*?>'), '')
+        .replaceAll(RegExp(r'<tr.*?>'), '<tr>')
+        .replaceAll(RegExp(r'<td.*?>'), '<td>')
+        .replaceAll(RegExp(r'<th.*?>'), '<th>')
+        .replaceAll(RegExp(r' +'), ' ')
+        .replaceAll(RegExp(r'<br />'), '')
+        .replaceAll(RegExp(r'<!-- .*? -->'), '');
     try {
       var html = HtmlParser(rawHtml)
           .parse()
@@ -267,12 +293,26 @@ List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
   return plans;
 }
 
-List<DsbPlan> dsbSortAllByHour(List<DsbPlan> plans) {
+List<DsbPlan> dsbSortByLesson(List<DsbPlan> plans) {
   if (plans == null) return [];
   for (var plan in plans) {
     plan.subs.sort((a, b) => max(a.lessons).compareTo(max(b.lessons)));
   }
   return plans;
+}
+
+Future<String> dsbCheckCredentials(
+  String username,
+  String password,
+  Future<String> Function(Uri, Object, String, Map<String, String>) httpPost,
+) async {
+  Map<String, dynamic> map = jsonDecode(await dsbGetData(
+    username,
+    password,
+    httpPost,
+  ));
+  if (map['Resultcode'] != 0) return map['ResultStatusInfo'];
+  return null;
 }
 
 String plansToJson(List<DsbPlan> plans) {

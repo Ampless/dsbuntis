@@ -1,3 +1,8 @@
+## 0.2.0
+
+* Added dsbCheckCredentials
+* Renamed dsbSortAllByHour → dsbSortByLesson
+
 ## 0.1.9
 
 * The datetime sent to DSB was wrong and fixed now.
