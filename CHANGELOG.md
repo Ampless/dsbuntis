@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Added support for another substitution plan format, which also means changing DsbSubstitution. (it seems like Untis 2021 changed something there)
+
 ## 0.2.0
 
 * Added dsbCheckCredentials

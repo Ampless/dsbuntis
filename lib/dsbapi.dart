@@ -17,18 +17,20 @@ const String _DSB_OS_VERSION = '29 10.0';
 class DsbSubstitution {
   String affectedClass;
   List<int> lessons;
-  String teacher;
+  String orgTeacher;
+  String subTeacher;
   String subject;
   String notes;
   bool isFree;
 
-  DsbSubstitution(this.affectedClass, this.lessons, this.teacher, this.subject,
-      this.notes, this.isFree);
+  DsbSubstitution(this.affectedClass, this.lessons, this.subTeacher,
+      this.subject, this.notes, this.isFree, this.orgTeacher);
 
   DsbSubstitution.fromJson(Map<String, dynamic> json)
       : affectedClass = json['affectedClass'],
         lessons = List<int>.from(json['hours']),
-        teacher = json['teacher'],
+        subTeacher = json['teacher'],
+        orgTeacher = json.containsKey('oteacher') ? json['oteacher'] : null,
         subject = json['subject'],
         notes = json['notes'],
         isFree = json['isFree'];
@@ -36,7 +38,8 @@ class DsbSubstitution {
   Map<String, dynamic> toJson() => {
         'affectedClass': affectedClass,
         'hours': lessons,
-        'teacher': teacher,
+        'teacher': subTeacher,
+        'oteacher': orgTeacher,
         'subject': subject,
         'notes': notes,
         'isFree': isFree,
@@ -59,31 +62,47 @@ class DsbSubstitution {
   }
 
   static DsbSubstitution fromStrings(String affectedClass, String hour,
-      String teacher, String subject, String notes) {
+      String subTeacher, String subject, String notes, String orgTeacher) {
     if (affectedClass.codeUnitAt(0) == _zero) {
       affectedClass = affectedClass.substring(1);
     }
     return DsbSubstitution(
-        affectedClass.toLowerCase(),
-        parseIntsFromString(hour),
-        teacher,
-        subject,
-        notes,
-        teacher.contains('---'));
+      affectedClass.toLowerCase(),
+      parseIntsFromString(hour),
+      subTeacher,
+      subject,
+      notes,
+      subTeacher.contains('---'),
+      orgTeacher,
+    );
   }
 
-  static DsbSubstitution fromElements(
+  static DsbSubstitution fromOldElements(
       dom.Element affectedClass,
-      dom.Element hour,
+      dom.Element lesson,
       dom.Element teacher,
       dom.Element subject,
       dom.Element notes) {
-    return fromStrings(_str(affectedClass), _str(hour), _str(teacher),
-        _str(subject), _str(notes));
+    return fromStrings(_str(affectedClass), _str(lesson), _str(teacher),
+        _str(subject), _str(notes), null);
+  }
+
+  static DsbSubstitution fromNewElements(
+    dom.Element affectedClass,
+    dom.Element lesson,
+    dom.Element subTeacher,
+    dom.Element subject,
+    dom.Element orgTeacher,
+    dom.Element notes,
+  ) {
+    return fromStrings(_str(affectedClass), _str(lesson), _str(subTeacher),
+        _str(subject), _str(notes), _str(orgTeacher));
   }
 
   static DsbSubstitution fromElementArray(List<dom.Element> e) {
-    return fromElements(e[0], e[1], e[2], e[3], e[4]);
+    return e.length < 6
+        ? fromOldElements(e[0], e[1], e[2], e[3], e[4])
+        : fromNewElements(e[0], e[1], e[2], e[3], e[4], e[5]);
   }
 
   static final _tag = RegExp(r'</?.+?>');
@@ -92,7 +111,7 @@ class DsbSubstitution {
 
   @override
   String toString() =>
-      "['$affectedClass', $lessons, '$teacher', '$subject', '$notes', $isFree]";
+      "['$affectedClass', $lessons, '$orgTeacher' → '$subTeacher', '$subject', '$notes', $isFree]";
 
   List<int> get actualLessons {
     var h = <int>[];
