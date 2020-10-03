@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:dsbuntis/day.dart';
+import 'package:dsbuntis/src/day.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:uuid/uuid.dart';
-import 'package:dsbuntis/utils.dart';
+import 'package:dsbuntis/src/utils.dart';
 import 'package:archive/archive.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart';

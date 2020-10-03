@@ -1,4 +1,4 @@
-import 'package:dsbuntis/day.dart';
+import 'package:dsbuntis/dsbuntis.dart';
 
 import 'testlib.dart';
 

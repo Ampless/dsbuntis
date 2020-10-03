@@ -1,6 +1,6 @@
 library dsbuntis;
 
-export 'package:dsbuntis/day.dart';
-export 'package:dsbuntis/dsbapi.dart';
+export 'package:dsbuntis/src/day.dart';
+export 'package:dsbuntis/src/dsbapi.dart';
 export 'package:dsbuntis/dsbuntis.dart';
-export 'package:dsbuntis/utils.dart';
+export 'package:dsbuntis/src/utils.dart';
