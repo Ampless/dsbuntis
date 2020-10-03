@@ -107,7 +107,8 @@ class DsbSubstitution {
 
   static final _tag = RegExp(r'</?.+?>');
 
-  static String _str(dom.Element e) => e.innerHtml.replaceAll(_tag, '').trim();
+  static String _str(dom.Element e) =>
+      _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
 
   @override
   String toString() =>
@@ -224,8 +225,7 @@ Future<List<DsbPlan>> dsbGetAndParse(
     String url = plan['Childs'][0]['Detail'];
     var rawHtml = await httpGet(Uri.parse(url));
     if (rawHtml == null) throw '[dsbGetAndParse] httpGet returned null.';
-    rawHtml = _unescape
-        .convert(rawHtml)
+    rawHtml = rawHtml
         .replaceAll('\n', '')
         .replaceAll('\r', '')
         //just fyi: these regexes only work because there are no more newlines
