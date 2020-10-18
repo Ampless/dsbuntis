@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Switched to html_search for searching in HTML.
+
 ## 0.3.1
 
 * Fixed HTML Escape-Codes not being automatically unescaped.
