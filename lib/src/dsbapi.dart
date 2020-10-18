@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dsbuntis/src/day.dart';
+import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dsbuntis/src/utils.dart';
@@ -206,7 +207,7 @@ Future<String> dsbGetData(
   );
 }
 
-var _unescape = HtmlUnescape();
+final _unescape = HtmlUnescape();
 
 Future<List<DsbPlan>> dsbGetAndParse(
   String jsontext,
@@ -248,14 +249,9 @@ Future<List<DsbPlan>> dsbGetAndParse(
         .replaceAll(RegExp(r'<br />'), '')
         .replaceAll(RegExp(r'<!-- .*? -->'), '');
     try {
-      var html = HtmlParser(rawHtml)
-          .parse()
-          .children
-          .first
-          .children[1]
-          .children; //body
-      var planTitle = _searchHtml(html, 'mon_title').innerHtml;
-      html = _searchHtml(html, 'mon_list')
+      var html = htmlParse(rawHtml).first.children[1].children; //body
+      var planTitle = htmlSearchByClass(html, 'mon_title').innerHtml;
+      html = htmlSearchByClass(html, 'mon_list')
           .children
           .first //for some reason <table>s like to contain <tbody>s
           //(just taking first isnt even standard-compliant, but it works rn)
@@ -270,15 +266,6 @@ Future<List<DsbPlan>> dsbGetAndParse(
     }
   }
   return plans;
-}
-
-dom.Element _searchHtml(List<dom.Element> rootNode, String className) {
-  for (var e in rootNode) {
-    if (e.className.contains(className)) return e;
-    var found = _searchHtml(e.children, className);
-    if (found != null) return found;
-  }
-  return null;
 }
 
 Future<List<DsbPlan>> dsbGetAllSubs(
