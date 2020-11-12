@@ -1,3 +1,7 @@
+## 0.4.0
+
+* DsbPlan now also has `url`, which is the URL that the plan was fetched from.
+
 ## 0.3.2
 
 * Switched to html_search for searching in HTML.

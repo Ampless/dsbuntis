@@ -127,9 +127,10 @@ class DsbSubstitution {
 class DsbPlan {
   Day day;
   String date;
+  String url;
   List<DsbSubstitution> subs;
 
-  DsbPlan(this.day, this.subs, this.date);
+  DsbPlan(this.day, this.subs, this.date, this.url);
 
   DsbPlan.fromJson(Map<String, dynamic> json)
       : day = dayFromInt(json['day']),
@@ -260,7 +261,7 @@ Future<List<DsbPlan>> dsbGetAndParse(
       for (var i = 1; i < html.length; i++) {
         subs.add(DsbSubstitution.fromElementArray(html[i].children));
       }
-      plans.add(DsbPlan(matchDay(planTitle), subs, planTitle));
+      plans.add(DsbPlan(matchDay(planTitle), subs, planTitle, url));
     } catch (e) {
       plans.add(null);
     }

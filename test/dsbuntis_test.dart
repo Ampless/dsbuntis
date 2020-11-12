@@ -19,11 +19,13 @@ final List<DsbPlan> dsbTest1Expct = [
       DsbSubstitution('11q', [7, 8], '---', '1sk1', '', true, 'Aschi'),
     ],
     '23.6.2020 Dienstag',
+    '',
   ),
   DsbPlan(
     Day.Wednesday,
     [],
     '24.6.2020 Mittwoch',
+    '',
   ),
 ];
 
@@ -41,11 +43,13 @@ final List<DsbPlan> dsbTest2Expct = [
     Day.Tuesday,
     [],
     '23.6.2020 Dienstag',
+    '',
   ),
   DsbPlan(
     Day.Wednesday,
     [],
     '24.6.2020 Mittwoch',
+    '',
   ),
 ];
 
