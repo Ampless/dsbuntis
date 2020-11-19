@@ -9,7 +9,6 @@ import 'package:uuid/uuid.dart';
 import 'package:dsbuntis/src/utils.dart';
 import 'package:archive/archive.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:html/parser.dart';
 
 const String _DSB_DEVICE = 'SM-G950F';
 const String _DSB_VERSION = '2.5.9';
@@ -49,10 +48,10 @@ class DsbSubstitution {
   static final _zero = '0'.codeUnitAt(0), _nine = '9'.codeUnitAt(0);
 
   static List<int> parseIntsFromString(String s) {
-    var out = <int>[];
+    final out = <int>[];
     var lastindex = 0;
     for (var i = 0; i < s.length; i++) {
-      var c = s[i].codeUnitAt(0);
+      final c = s[i].codeUnitAt(0);
       if (c < _zero || c > _nine) {
         if (lastindex != i) out.add(int.parse(s.substring(lastindex, i)));
         lastindex = i + 1;
@@ -116,7 +115,7 @@ class DsbSubstitution {
       "['$affectedClass', $lessons, '$orgTeacher' → '$subTeacher', '$subject', '$notes', $isFree]";
 
   List<int> get actualLessons {
-    var h = <int>[];
+    final h = <int>[];
     for (var i = min(lessons); i <= max(lessons); i++) {
       h.add(i);
     }
@@ -144,16 +143,16 @@ class DsbPlan {
       };
 
   List<Map<String, dynamic>> subsToJson() {
-    var lessonsStrings = <Map<String, dynamic>>[];
-    for (var sub in subs) {
+    final lessonsStrings = <Map<String, dynamic>>[];
+    for (final sub in subs) {
       lessonsStrings.add(sub.toJson());
     }
     return lessonsStrings;
   }
 
   static List<DsbSubstitution> subsFromJson(dynamic subsStrings) {
-    var subs = <DsbSubstitution>[];
-    for (var s in subsStrings) {
+    final subs = <DsbSubstitution>[];
+    for (final s in subsStrings) {
       subs.add(DsbSubstitution.fromJson(s));
     }
     return subs;
@@ -168,14 +167,13 @@ Future<String> dsbGetData(
   String password,
   Future<String> Function(Uri, Object, String, Map<String, String>) httpPost, {
   String apiEndpoint = 'https://app.dsbcontrol.de/JsonHandler.ashx/GetData',
-  bool cachePostRequests = true,
   String dsbLanguage = 'de',
 }) async {
   if (username == null) throw '[dsbGetData] username = null';
   if (password == null) throw '[dsbGetData] password = null';
   if (httpPost == null) throw '[dsbGetData] httpPost = null';
-  var datetime = removeLastChars(DateTime.now().toIso8601String(), 3) + 'Z';
-  var json = '{'
+  final datetime = removeLastChars(DateTime.now().toIso8601String(), 3) + 'Z';
+  final json = '{'
       '"UserId":"$username",'
       '"UserPw":"$password",'
       '"AppVersion":"$_DSB_VERSION",'
@@ -187,7 +185,7 @@ Future<String> dsbGetData(
       '"Date":"$datetime",'
       '"LastUpdate":"$datetime"'
       '}';
-  var rawJson = await httpPost(
+  final rawJson = await httpPost(
     Uri.parse(apiEndpoint),
     '{'
         '"req": {'
@@ -212,18 +210,15 @@ final _unescape = HtmlUnescape();
 
 Future<List<DsbPlan>> dsbGetAndParse(
   String jsontext,
-  Future<String> Function(Uri) httpGet, {
-  bool cacheGetRequests = true,
-}) async {
+  Future<String> Function(Uri) httpGet,
+) async {
   if (jsontext == null) throw '[dsbGetAndParse] jsontext = null';
   if (httpGet == null) throw '[dsbGetAndParse] httpGet = null';
-  if (cacheGetRequests == null)
-    throw '[dsbGetAndParse] cacheGetRequests = null';
   var json = jsonDecode(jsontext);
   if (json['Resultcode'] != 0) throw json['ResultStatusInfo'];
   json = json['ResultMenuItems'][0]['Childs'][0];
-  var plans = <DsbPlan>[];
-  for (var plan in json['Root']['Childs']) {
+  final plans = <DsbPlan>[];
+  for (final plan in json['Root']['Childs']) {
     String url = plan['Childs'][0]['Detail'];
     var rawHtml = await httpGet(Uri.parse(url));
     if (rawHtml == null) throw '[dsbGetAndParse] httpGet returned null.';
@@ -251,13 +246,13 @@ Future<List<DsbPlan>> dsbGetAndParse(
         .replaceAll(RegExp(r'<!-- .*? -->'), '');
     try {
       var html = htmlParse(rawHtml).first.children[1].children; //body
-      var planTitle = htmlSearchByClass(html, 'mon_title').innerHtml;
+      final planTitle = htmlSearchByClass(html, 'mon_title').innerHtml;
       html = htmlSearchByClass(html, 'mon_list')
           .children
           .first //for some reason <table>s like to contain <tbody>s
           //(just taking first isnt even standard-compliant, but it works rn)
           .children;
-      var subs = <DsbSubstitution>[];
+      final subs = <DsbSubstitution>[];
       for (var i = 1; i < html.length; i++) {
         subs.add(DsbSubstitution.fromElementArray(html[i].children));
       }
@@ -274,22 +269,20 @@ Future<List<DsbPlan>> dsbGetAllSubs(
   String password,
   Future<String> Function(Uri) httpGet,
   Future<String> Function(Uri, Object, String, Map<String, String>) httpPost, {
-  bool cacheGetRequests = true,
-  bool cachePostRequests = true,
   String dsbLanguage = 'de',
 }) async {
-  var json = await dsbGetData(username, password, httpPost,
-      cachePostRequests: cachePostRequests, dsbLanguage: dsbLanguage);
-  return dsbGetAndParse(json, httpGet, cacheGetRequests: cacheGetRequests);
+  final json =
+      await dsbGetData(username, password, httpPost, dsbLanguage: dsbLanguage);
+  return dsbGetAndParse(json, httpGet);
 }
 
 List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
   if (plans == null) return [];
   stage ??= '';
   char ??= '';
-  for (var plan in plans) {
-    var subs = <DsbSubstitution>[];
-    for (var sub in plan.subs) {
+  for (final plan in plans) {
+    final subs = <DsbSubstitution>[];
+    for (final sub in plan.subs) {
       if (sub.affectedClass.contains(stage) &&
           sub.affectedClass.contains(char)) {
         subs.add(sub);
@@ -302,7 +295,7 @@ List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
 
 List<DsbPlan> dsbSortByLesson(List<DsbPlan> plans) {
   if (plans == null) return [];
-  for (var plan in plans) {
+  for (final plan in plans) {
     plan.subs.sort((a, b) => max(a.lessons).compareTo(max(b.lessons)));
   }
   return plans;
@@ -324,8 +317,8 @@ Future<String> dsbCheckCredentials(
 
 String plansToJson(List<DsbPlan> plans) {
   if (plans == null) return '[]';
-  var planJsons = [];
-  for (var plan in plans) {
+  final planJsons = [];
+  for (final plan in plans) {
     planJsons.add(plan.toJson());
   }
   return jsonEncode(planJsons);
@@ -333,8 +326,8 @@ String plansToJson(List<DsbPlan> plans) {
 
 List<DsbPlan> plansFromJson(String jsonPlans) {
   if (jsonPlans == null) return [];
-  var plans = <DsbPlan>[];
-  for (var plan in jsonDecode(jsonPlans)) {
+  final plans = <DsbPlan>[];
+  for (final plan in jsonDecode(jsonPlans)) {
     plans.add(DsbPlan.fromJson(plan));
   }
   return plans;

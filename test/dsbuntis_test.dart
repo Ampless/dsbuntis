@@ -87,19 +87,22 @@ testCase dsbTestCase(
     () async {
       tfunc ??= (username, password, httpGet, httpPost, stage, char) async {
         return dsbSortByLesson(dsbSearchClass(
-            await dsbGetAllSubs(username, password, httpGet, httpPost,
-                dsbLanguage: 'de',
-                cacheGetRequests: false,
-                cachePostRequests: false),
+            await dsbGetAllSubs(
+              username,
+              password,
+              httpGet,
+              httpPost,
+              dsbLanguage: 'de',
+            ),
             stage,
             char));
       };
-      var getFromCache = (String url) async {
-        for (var key in htmlCache.keys)
+      final getFromCache = (String url) async {
+        for (final key in htmlCache.keys)
           if (strcontain(key, url)) return htmlCache[key];
         return null;
       };
-      var plans = await tfunc(
+      final plans = await tfunc(
           username,
           password,
           (url, {getCache, setCache}) => getFromCache(url.toString()),

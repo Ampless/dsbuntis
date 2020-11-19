@@ -1,6 +1,10 @@
+## 0.5.0
+
+* Removed unused parameters
+
 ## 0.4.0
 
-* DsbPlan now also has `url`, which is the URL that the plan was fetched from.
+* `DsbPlan` now also has `url`, which is the URL that the plan was fetched from.
 
 ## 0.3.2
 
