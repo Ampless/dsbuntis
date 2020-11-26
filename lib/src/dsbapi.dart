@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:dsbuntis/src/day.dart';
 import 'package:html_search/html_search.dart';
@@ -10,139 +9,64 @@ import 'package:dsbuntis/src/utils.dart';
 import 'package:archive/archive.dart';
 import 'package:html/dom.dart' as dom;
 
-const String _DSB_DEVICE = 'SM-G950F';
-const String _DSB_VERSION = '2.5.9';
-const String _DSB_OS_VERSION = '29 10.0';
-
-class DsbSubstitution {
+class Substitution {
   String affectedClass;
-  List<int> lessons;
+  int lesson;
   String orgTeacher;
   String subTeacher;
   String subject;
   String notes;
   bool isFree;
 
-  DsbSubstitution(this.affectedClass, this.lessons, this.subTeacher,
-      this.subject, this.notes, this.isFree, this.orgTeacher);
+  Substitution(this.affectedClass, this.lesson, this.subTeacher, this.subject,
+      this.notes, this.isFree, this.orgTeacher);
 
-  DsbSubstitution.fromJson(Map<String, dynamic> json)
-      : affectedClass = json['affectedClass'],
-        lessons = List<int>.from(json['hours']),
-        subTeacher = json['teacher'],
-        orgTeacher = json.containsKey('oteacher') ? json['oteacher'] : null,
+  Substitution.fromJson(Map<String, dynamic> json)
+      : affectedClass = json['class'],
+        lesson = json['lesson'],
+        subTeacher = json['sub_teacher'],
+        orgTeacher = json['org_teacher'],
         subject = json['subject'],
         notes = json['notes'],
-        isFree = json['isFree'];
+        isFree = json['free'];
 
   Map<String, dynamic> toJson() => {
-        'affectedClass': affectedClass,
-        'hours': lessons,
-        'teacher': subTeacher,
-        'oteacher': orgTeacher,
+        'class': affectedClass,
+        'lesson': lesson,
+        'sub_teacher': subTeacher,
+        'org_teacher': orgTeacher,
         'subject': subject,
         'notes': notes,
-        'isFree': isFree,
+        'free': isFree,
       };
-
-  static final _zero = '0'.codeUnitAt(0), _nine = '9'.codeUnitAt(0);
-
-  static List<int> parseIntsFromString(String s) {
-    final out = <int>[];
-    var lastindex = 0;
-    for (var i = 0; i < s.length; i++) {
-      final c = s[i].codeUnitAt(0);
-      if (c < _zero || c > _nine) {
-        if (lastindex != i) out.add(int.parse(s.substring(lastindex, i)));
-        lastindex = i + 1;
-      }
-    }
-    out.add(int.parse(s.substring(lastindex, s.length)));
-    return out;
-  }
-
-  static DsbSubstitution fromStrings(String affectedClass, String hour,
-      String subTeacher, String subject, String notes, String orgTeacher) {
-    if (affectedClass.codeUnitAt(0) == _zero) {
-      affectedClass = affectedClass.substring(1);
-    }
-    return DsbSubstitution(
-      affectedClass.toLowerCase(),
-      parseIntsFromString(hour),
-      subTeacher,
-      subject,
-      notes,
-      subTeacher.contains('---'),
-      orgTeacher,
-    );
-  }
-
-  static DsbSubstitution fromOldElements(
-      dom.Element affectedClass,
-      dom.Element lesson,
-      dom.Element teacher,
-      dom.Element subject,
-      dom.Element notes) {
-    return fromStrings(_str(affectedClass), _str(lesson), _str(teacher),
-        _str(subject), _str(notes), null);
-  }
-
-  static DsbSubstitution fromNewElements(
-    dom.Element affectedClass,
-    dom.Element lesson,
-    dom.Element subTeacher,
-    dom.Element subject,
-    dom.Element orgTeacher,
-    dom.Element notes,
-  ) {
-    return fromStrings(_str(affectedClass), _str(lesson), _str(subTeacher),
-        _str(subject), _str(notes), _str(orgTeacher));
-  }
-
-  static DsbSubstitution fromElementArray(List<dom.Element> e) {
-    return e.length < 6
-        ? fromOldElements(e[0], e[1], e[2], e[3], e[4])
-        : fromNewElements(e[0], e[1], e[2], e[3], e[4], e[5]);
-  }
-
-  static final _tag = RegExp(r'</?.+?>');
-
-  static String _str(dom.Element e) =>
-      _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
 
   @override
   String toString() =>
-      "['$affectedClass', $lessons, '$orgTeacher' → '$subTeacher', '$subject', '$notes', $isFree]";
-
-  List<int> get actualLessons {
-    final h = <int>[];
-    for (var i = min(lessons); i <= max(lessons); i++) {
-      h.add(i);
-    }
-    return h;
-  }
+      "['$affectedClass', $lesson, '$orgTeacher' → '$subTeacher', '$subject', '$notes', $isFree]";
 }
 
-class DsbPlan {
+class Plan {
   Day day;
   String date;
   String url;
-  List<DsbSubstitution> subs;
+  List<Substitution> subs;
 
-  DsbPlan(this.day, this.subs, this.date, this.url);
+  Plan(this.day, this.subs, this.date, this.url);
 
-  DsbPlan.fromJson(Map<String, dynamic> json)
+  Plan.fromJson(Map<String, dynamic> json)
       : day = dayFromInt(json['day']),
         date = json['date'],
-        subs = subsFromJson(json['subs']);
+        subs = _subsFromJson(json['subs']),
+        url = json['url'];
 
   dynamic toJson() => {
         'day': dayToInt(day),
         'date': date,
-        'subs': subsToJson(),
+        'subs': _subsToJson(),
+        'url': url,
       };
 
-  List<Map<String, dynamic>> subsToJson() {
+  List<Map<String, dynamic>> _subsToJson() {
     final lessonsStrings = <Map<String, dynamic>>[];
     for (final sub in subs) {
       lessonsStrings.add(sub.toJson());
@@ -150,24 +74,45 @@ class DsbPlan {
     return lessonsStrings;
   }
 
-  static List<DsbSubstitution> subsFromJson(dynamic subsStrings) {
-    final subs = <DsbSubstitution>[];
+  static List<Substitution> _subsFromJson(dynamic subsStrings) {
+    final subs = <Substitution>[];
     for (final s in subsStrings) {
-      subs.add(DsbSubstitution.fromJson(s));
+      subs.add(Substitution.fromJson(s));
     }
     return subs;
   }
 
   @override
   String toString() => '$day: $subs';
+
+  static String plansToJson(List<Plan> plans) {
+    if (plans == null) return '[]';
+    final planJsons = [];
+    for (final plan in plans) {
+      planJsons.add(plan.toJson());
+    }
+    return jsonEncode(planJsons);
+  }
+
+  static List<Plan> plansFromJson(String jsonPlans) {
+    if (jsonPlans == null) return [];
+    final plans = <Plan>[];
+    for (final plan in jsonDecode(jsonPlans)) {
+      plans.add(Plan.fromJson(plan));
+    }
+    return plans;
+  }
 }
 
-Future<String> dsbGetData(
+Future<String> getData(
   String username,
   String password,
   Future<String> Function(Uri, Object, String, Map<String, String>) httpPost, {
   String apiEndpoint = 'https://app.dsbcontrol.de/JsonHandler.ashx/GetData',
-  String dsbLanguage = 'de',
+  String version = '2.5.9',
+  String device = 'SM-G950F',
+  String os = '29 10.0',
+  String language = 'de',
 }) async {
   if (username == null) throw '[dsbGetData] username = null';
   if (password == null) throw '[dsbGetData] password = null';
@@ -176,23 +121,20 @@ Future<String> dsbGetData(
   final json = '{'
       '"UserId":"$username",'
       '"UserPw":"$password",'
-      '"AppVersion":"$_DSB_VERSION",'
-      '"Language":"$dsbLanguage",'
-      '"OsVersion":"$_DSB_OS_VERSION",'
+      '"AppVersion":"$version",'
+      '"Language":"$language",'
+      '"OsVersion":"$os",'
       '"AppId":"${Uuid().v4()}",'
-      '"Device":"$_DSB_DEVICE",'
+      '"Device":"$device",'
       '"BundleId":"de.heinekingmedia.dsbmobile",'
       '"Date":"$datetime",'
       '"LastUpdate":"$datetime"'
       '}';
   final rawJson = await httpPost(
     Uri.parse(apiEndpoint),
-    '{'
-        '"req": {'
-        '"Data": "${base64.encode(GZipEncoder().encode(utf8.encode(json)))}", '
-        '"DataType": 1'
-        '}'
-        '}',
+    '{"req":{'
+        '"Data":"${base64.encode(GZipEncoder().encode(utf8.encode(json)))}",'
+        '"DataType":1}}',
     '$apiEndpoint\t$username\t$password',
     {'content-type': 'application/json'},
   );
@@ -208,7 +150,7 @@ Future<String> dsbGetData(
 
 final _unescape = HtmlUnescape();
 
-Future<List<DsbPlan>> dsbGetAndParse(
+Future<List<Plan>> getAndParse(
   String jsontext,
   Future<String> Function(Uri) httpGet,
 ) async {
@@ -217,7 +159,7 @@ Future<List<DsbPlan>> dsbGetAndParse(
   var json = jsonDecode(jsontext);
   if (json['Resultcode'] != 0) throw json['ResultStatusInfo'];
   json = json['ResultMenuItems'][0]['Childs'][0];
-  final plans = <DsbPlan>[];
+  final plans = <Plan>[];
   for (final plan in json['Root']['Childs']) {
     String url = plan['Childs'][0]['Detail'];
     var rawHtml = await httpGet(Uri.parse(url));
@@ -252,11 +194,20 @@ Future<List<DsbPlan>> dsbGetAndParse(
           .first //for some reason <table>s like to contain <tbody>s
           //(just taking first isnt even standard-compliant, but it works rn)
           .children;
-      final subs = <DsbSubstitution>[];
+      final subs = <Substitution>[];
       for (var i = 1; i < html.length; i++) {
-        subs.add(DsbSubstitution.fromElementArray(html[i].children));
+        final e = html[i].children;
+        final allLessons = _str(e[1]);
+        for (final lesson in _parseIntsFromString(allLessons)) {
+          final sub = e.length < 6
+              ? _plsBuildMeASub(
+                  _str(e[0]), lesson, _str(e[2]), _str(e[3]), _str(e[4]), null)
+              : _plsBuildMeASub(_str(e[0]), lesson, _str(e[2]), _str(e[3]),
+                  _str(e[5]), _str(e[4]));
+          subs.add(sub);
+        }
       }
-      plans.add(DsbPlan(matchDay(planTitle), subs, planTitle, url));
+      plans.add(Plan(matchDay(planTitle), subs, planTitle, url));
     } catch (e) {
       plans.add(null);
     }
@@ -264,24 +215,60 @@ Future<List<DsbPlan>> dsbGetAndParse(
   return plans;
 }
 
-Future<List<DsbPlan>> dsbGetAllSubs(
+Substitution _plsBuildMeASub(String affectedClass, int lesson,
+    String subTeacher, String subject, String notes, String orgTeacher) {
+  if (affectedClass.codeUnitAt(0) == _zero) {
+    affectedClass = affectedClass.substring(1);
+  }
+  return Substitution(
+    affectedClass.toLowerCase(),
+    lesson,
+    subTeacher,
+    subject,
+    notes,
+    subTeacher.contains('---'),
+    orgTeacher,
+  );
+}
+
+final _tag = RegExp(r'</?.+?>');
+
+String _str(dom.Element e) =>
+    _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
+
+final _zero = '0'.codeUnitAt(0), _nine = '9'.codeUnitAt(0);
+
+List<int> _parseIntsFromString(String s) {
+  final out = <int>[];
+  var lastindex = 0;
+  for (var i = 0; i < s.length; i++) {
+    final c = s[i].codeUnitAt(0);
+    if (c < _zero || c > _nine) {
+      if (lastindex != i) out.add(int.parse(s.substring(lastindex, i)));
+      lastindex = i + 1;
+    }
+  }
+  out.add(int.parse(s.substring(lastindex, s.length)));
+  return out;
+}
+
+Future<List<Plan>> getAllSubs(
   String username,
   String password,
   Future<String> Function(Uri) httpGet,
   Future<String> Function(Uri, Object, String, Map<String, String>) httpPost, {
-  String dsbLanguage = 'de',
+  String language = 'de',
 }) async {
-  final json =
-      await dsbGetData(username, password, httpPost, dsbLanguage: dsbLanguage);
-  return dsbGetAndParse(json, httpGet);
+  final json = await getData(username, password, httpPost, language: language);
+  return getAndParse(json, httpGet);
 }
 
-List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
+List<Plan> searchClass(List<Plan> plans, String stage, String char) {
   if (plans == null) return [];
   stage ??= '';
   char ??= '';
   for (final plan in plans) {
-    final subs = <DsbSubstitution>[];
+    final subs = <Substitution>[];
     for (final sub in plan.subs) {
       if (sub.affectedClass.contains(stage) &&
           sub.affectedClass.contains(char)) {
@@ -293,42 +280,24 @@ List<DsbPlan> dsbSearchClass(List<DsbPlan> plans, String stage, String char) {
   return plans;
 }
 
-List<DsbPlan> dsbSortByLesson(List<DsbPlan> plans) {
+List<Plan> sortByLesson(List<Plan> plans) {
   if (plans == null) return [];
   for (final plan in plans) {
-    plan.subs.sort((a, b) => max(a.lessons).compareTo(max(b.lessons)));
+    plan.subs.sort((a, b) => a.lesson.compareTo(b.lesson));
   }
   return plans;
 }
 
-Future<String> dsbCheckCredentials(
+Future<String> checkCredentials(
   String username,
   String password,
   Future<String> Function(Uri, Object, String, Map<String, String>) httpPost,
 ) async {
-  Map<String, dynamic> map = jsonDecode(await dsbGetData(
+  Map<String, dynamic> map = jsonDecode(await getData(
     username,
     password,
     httpPost,
   ));
   if (map['Resultcode'] != 0) return map['ResultStatusInfo'];
   return null;
-}
-
-String plansToJson(List<DsbPlan> plans) {
-  if (plans == null) return '[]';
-  final planJsons = [];
-  for (final plan in plans) {
-    planJsons.add(plan.toJson());
-  }
-  return jsonEncode(planJsons);
-}
-
-List<DsbPlan> plansFromJson(String jsonPlans) {
-  if (jsonPlans == null) return [];
-  final plans = <DsbPlan>[];
-  for (final plan in jsonDecode(jsonPlans)) {
-    plans.add(DsbPlan.fromJson(plan));
-  }
-  return plans;
 }

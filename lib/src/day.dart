@@ -52,15 +52,15 @@ Day matchDay(String s) {
   s = s.toLowerCase();
   if (s.contains('null') || s.contains('none')) {
     return Day.Null;
-  } else if (s.contains('mo') || s.contains('po')) {
+  } else if (s.contains('mo')) {
     return Day.Monday;
-  } else if (s.contains('di') || s.contains('tue') || s.contains('út')) {
+  } else if (s.contains('di') || s.contains('tue')) {
     return Day.Tuesday;
-  } else if (s.contains('mi') || s.contains('wed') || (s.contains('stř'))) {
+  } else if (s.contains('mi') || s.contains('wed')) {
     return Day.Wednesday;
-  } else if (s.contains('do') || s.contains('thu') || s.contains('čt')) {
+  } else if (s.contains('do') || s.contains('thu')) {
     return Day.Thursday;
-  } else if (s.contains('fr') || s.contains('pá')) {
+  } else if (s.contains('fr')) {
     return Day.Friday;
   } else {
     throw '[matchDay] Unknown day: $s';

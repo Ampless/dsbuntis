@@ -12,16 +12,17 @@ final Map<String, String> dsbTest1Cache = {
       '<table class=\"mon_head\"> <tr> <td></td> <td></td> <td> GYM. MIT SCHÜLERHEIM ROSENHOF D-91257,P1meml Gymnasium Rosenhof 2019/2020 Stand: 23.06.2020 08:55 </td> </tr></table><div class=\"mon_title\">24.6.2020 Mittwoch</div><table class=\"info\" ><tr></tr><tr><td>Betroffene Klassen </td><td>05a, 05b, 05c, 05d, Heim</td></tr></table><table class=\"mon_list\" ><tr></tr><tr><td>05abcd</td><td>6</td><td>---</td><td>Ethik</td><td> </td></tr></table>Untis Stundenplan Software',
 };
 
-final List<DsbPlan> dsbTest1Expct = [
-  DsbPlan(
+final List<Plan> dsbTest1Expct = [
+  Plan(
     Day.Tuesday,
     [
-      DsbSubstitution('11q', [7, 8], '---', '1sk1', '', true, 'Aschi'),
+      Substitution('11q', 7, '---', '1sk1', '', true, 'Aschi'),
+      Substitution('11q', 8, '---', '1sk1', '', true, 'Aschi'),
     ],
     '23.6.2020 Dienstag',
     '',
   ),
-  DsbPlan(
+  Plan(
     Day.Wednesday,
     [],
     '24.6.2020 Mittwoch',
@@ -38,14 +39,14 @@ final Map<String, String> dsbTest2Cache = {
       '<table class=\"mon_head\"> <tr> <td></td> <td></td> <td> GYM. NULL Stand: 23.06.2020 08:55 </td> </tr></table><div class=\"mon_title\">24.6.2020 Mittwoch</div><table class=\"mon_list\" ><tr></tr></table>Untis Stundenplan Software',
 };
 
-final List<DsbPlan> dsbTest2Expct = [
-  DsbPlan(
+final List<Plan> dsbTest2Expct = [
+  Plan(
     Day.Tuesday,
     [],
     '23.6.2020 Dienstag',
     '',
   ),
-  DsbPlan(
+  Plan(
     Day.Wednesday,
     [],
     '24.6.2020 Mittwoch',
@@ -53,7 +54,7 @@ final List<DsbPlan> dsbTest2Expct = [
   ),
 ];
 
-void assertDsbPlanListsEqual(List<DsbPlan> l1, List<DsbPlan> l2) {
+void assertPlanListsEqual(List<Plan> l1, List<Plan> l2) {
   expect(l1.length, l2.length);
   for (var i = 0; i < l1.length; i++) {
     expect(l1[i].date, l2[i].date);
@@ -61,9 +62,7 @@ void assertDsbPlanListsEqual(List<DsbPlan> l1, List<DsbPlan> l2) {
     expect(l1[i].subs.length, l2[i].subs.length);
     for (var j = 0; j < l1[i].subs.length; j++) {
       expect(l1[i].subs[j].affectedClass, l2[i].subs[j].affectedClass);
-      expect(l1[i].subs[j].lessons.length, l2[i].subs[j].lessons.length);
-      for (var k = 0; k < l1[i].subs[j].lessons.length; k++)
-        expect(l1[i].subs[j].lessons[k], l2[i].subs[j].lessons[k]);
+      expect(l1[i].subs[j].lesson, l2[i].subs[j].lesson);
       expect(l1[i].subs[j].isFree, l2[i].subs[j].isFree);
       expect(l1[i].subs[j].notes, l2[i].subs[j].notes);
       expect(l1[i].subs[j].subject, l2[i].subs[j].subject);
@@ -77,22 +76,22 @@ testCase dsbTestCase(
   String username,
   String password,
   Map<String, String> htmlCache,
-  List<DsbPlan> expectedPlans,
+  List<Plan> expectedPlans,
   String stage,
   String char, {
-  Future<List<DsbPlan>> Function(
+  Future<List<Plan>> Function(
           String, String, Function, Function, String, String)
       tfunc,
 }) =>
     () async {
       tfunc ??= (username, password, httpGet, httpPost, stage, char) async {
-        return dsbSortByLesson(dsbSearchClass(
-            await dsbGetAllSubs(
+        return sortByLesson(searchClass(
+            await getAllSubs(
               username,
               password,
               httpGet,
               httpPost,
-              dsbLanguage: 'de',
+              language: 'de',
             ),
             stage,
             char));
@@ -110,7 +109,7 @@ testCase dsbTestCase(
               getFromCache(url.toString()),
           stage,
           char);
-      assertDsbPlanListsEqual(plans, expectedPlans);
+      assertPlanListsEqual(plans, expectedPlans);
     };
 
 List<testCase> dsbTestCases = [
@@ -120,8 +119,8 @@ List<testCase> dsbTestCases = [
   dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, null, null),
 ];
 
-testCase jsonTestCase(List<DsbPlan> plans) => () async =>
-    assertDsbPlanListsEqual(plansFromJson(plansToJson(plans)), plans);
+testCase jsonTestCase(List<Plan> plans) => () async =>
+    assertPlanListsEqual(Plan.plansFromJson(Plan.plansToJson(plans)), plans);
 
 List<testCase> jsonTestCases = [
   jsonTestCase(dsbTest1Expct),

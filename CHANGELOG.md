@@ -1,3 +1,7 @@
+## 1.0.0
+
+Many breaking API changes, like:
+
 ## 0.5.0
 
 * Removed unused parameters
