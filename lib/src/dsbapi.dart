@@ -43,15 +43,8 @@ class Substitution extends Comparable {
   @override
   int compareTo(dynamic other) {
     if (!(other is Substitution)) return null;
-    final tp =
-        int.tryParse(this.affectedClass[this.affectedClass.length - 1]) != null
-            ? ''
-            : '0';
-    final op =
-        int.tryParse(other.affectedClass[other.affectedClass.length - 1]) !=
-                null
-            ? ''
-            : '0';
+    final tp = int.tryParse(this.affectedClass[1]) == null ? '0' : '';
+    final op = int.tryParse(other.affectedClass[1]) == null ? '0' : '';
     final c = (tp + this.affectedClass).compareTo(op + other.affectedClass);
     return c != 0 ? c : this.lesson.compareTo(other.lesson);
   }

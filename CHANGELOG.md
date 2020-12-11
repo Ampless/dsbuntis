@@ -1,3 +1,7 @@
+## 1.1.2
+
+* There was another, much smaller bug in the comparison.
+
 ## 1.1.1
 
 * The comparison in the previous version was broken.
