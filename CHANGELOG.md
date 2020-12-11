@@ -1,3 +1,7 @@
+## 1.1.1
+
+* The comparison in the previous version was broken.
+
 ## 1.1.0
 
 * `Substitution.compareTo`

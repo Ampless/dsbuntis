@@ -14,7 +14,9 @@
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
+test/.test_coverage.dart
 .pub-cache/
 .pub/
 build/
+coverage/
 pubspec.lock
