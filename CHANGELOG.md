@@ -1,10 +1,18 @@
+## 1.1.0
+
+* `Substitution.compareTo`
+
 ## 1.0.0
 
 Many breaking API changes, like:
 
+* Renamed basically everything, because the names were so broken.
+* Moved `plansToJson` and `plansFromJson` to `Plan`.
+* Every `Substitution` now only contains one `lesson`.
+
 ## 0.5.0
 
-* Removed unused parameters
+* Removed unused parameters.
 
 ## 0.4.0
 

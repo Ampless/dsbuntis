@@ -9,7 +9,7 @@ import 'package:dsbuntis/src/utils.dart';
 import 'package:archive/archive.dart';
 import 'package:html/dom.dart' as dom;
 
-class Substitution {
+class Substitution extends Comparable {
   String affectedClass;
   int lesson;
   String orgTeacher;
@@ -39,6 +39,15 @@ class Substitution {
         'notes': notes,
         'free': isFree,
       };
+
+  @override
+  int compareTo(dynamic other) {
+    if (!(other is Substitution)) return null;
+    final c = this.affectedClass.padLeft(3, '0').compareTo(
+          other.affectedClass.padLeft(3, '0'),
+        );
+    return c != 0 ? c : this.lesson.compareTo(other.lesson);
+  }
 
   @override
   String toString() =>
@@ -263,14 +272,15 @@ Future<List<Plan>> getAllSubs(
   return getAndParse(json, httpGet);
 }
 
-List<Plan> searchClass(List<Plan> plans, String stage, String char) {
+//TODO: rename in next major
+List<Plan> searchClass(List<Plan> plans, String grade, String char) {
   if (plans == null) return [];
-  stage ??= '';
+  grade ??= '';
   char ??= '';
   for (final plan in plans) {
     final subs = <Substitution>[];
     for (final sub in plan.subs) {
-      if (sub.affectedClass.contains(stage) &&
+      if (sub.affectedClass.contains(grade) &&
           sub.affectedClass.contains(char)) {
         subs.add(sub);
       }
@@ -280,6 +290,7 @@ List<Plan> searchClass(List<Plan> plans, String stage, String char) {
   return plans;
 }
 
+//TODO: remove in next major
 List<Plan> sortByLesson(List<Plan> plans) {
   if (plans == null) return [];
   for (final plan in plans) {
