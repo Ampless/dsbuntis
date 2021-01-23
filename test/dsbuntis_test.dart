@@ -1,3 +1,4 @@
+import 'package:schttp/schttp.dart';
 import 'package:test/test.dart';
 import 'package:dsbuntis/dsbuntis.dart';
 
@@ -78,35 +79,34 @@ testCase dsbTestCase(
   Map<String, String> htmlCache,
   List<Plan> expectedPlans,
   String stage,
-  String char, {
-  Future<List<Plan>> Function(
-          String, String, Function, Function, String, String)
+  String char, [
+  Future<List<Plan>> Function(String, String, ScHttpClient, String, String)?
       tfunc,
-}) =>
+]) =>
     () async {
-      tfunc ??= (username, password, httpGet, httpPost, stage, char) async {
-        return sortByLesson(searchClass(
-            await getAllSubs(
-              username,
-              password,
-              httpGet,
-              httpPost,
-              language: 'de',
-            ),
-            stage,
-            char));
+      tfunc ??= (username, password, http, stage, char) async {
+        final l = Plan.searchInPlans(
+          await getAllSubs(
+            username,
+            password,
+            http,
+            language: 'de',
+          ),
+          (sub) =>
+              sub.affectedClass.contains(stage) &&
+              sub.affectedClass.contains(char),
+        );
+        l.sort();
+        return l;
       };
-      final getFromCache = (String url) async {
-        for (final key in htmlCache.keys)
-          if (strcontain(key, url)) return htmlCache[key];
-        return null;
-      };
-      final plans = await tfunc(
+      final plans = await tfunc!(
           username,
           password,
-          (url, {getCache, setCache}) => getFromCache(url.toString()),
-          (url, _, __, ___, {getCache, setCache}) =>
-              getFromCache(url.toString()),
+          ScHttpClient((url) {
+            for (final key in htmlCache.keys)
+              if (strcontain(key, url)) return htmlCache[key];
+            return null;
+          }, null),
           stage,
           char);
       assertPlanListsEqual(plans, expectedPlans);
@@ -114,13 +114,14 @@ testCase dsbTestCase(
 
 List<testCase> dsbTestCases = [
   dsbTestCase('null', 'null', dsbTest1Cache, dsbTest1Expct, '11', 'q'),
-  dsbTestCase('null', 'null', dsbTest1Cache, dsbTest1Expct, '11', null),
-  dsbTestCase('null', 'null', dsbTest2Cache, dsbTest2Expct, null, 'q'),
-  dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, null, null),
+  dsbTestCase('null', 'null', dsbTest1Cache, dsbTest1Expct, '11', ''),
+  dsbTestCase('null', 'null', dsbTest2Cache, dsbTest2Expct, '', 'q'),
+  dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, '', ''),
 ];
 
-testCase jsonTestCase(List<Plan> plans) => () async =>
-    assertPlanListsEqual(Plan.plansFromJson(Plan.plansToJson(plans)), plans);
+testCase jsonTestCase(List<Plan> plans) => () async {
+      assertPlanListsEqual(Plan.plansFromJson(Plan.plansToJson(plans)), plans);
+    };
 
 List<testCase> jsonTestCases = [
   jsonTestCase(dsbTest1Expct),

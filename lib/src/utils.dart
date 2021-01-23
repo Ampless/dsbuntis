@@ -1,5 +1,4 @@
 int max(List<int> i) {
-  if (i == null || i.isEmpty) return null;
   var j = i[0];
   for (final k in i) {
     if (j < k) j = k;
@@ -8,7 +7,6 @@ int max(List<int> i) {
 }
 
 int min(List<int> i) {
-  if (i == null || i.isEmpty) return null;
   var j = i[0];
   for (final k in i) {
     if (j > k) j = k;
@@ -22,8 +20,6 @@ String errorString(dynamic e) {
 }
 
 bool strcontain(String s1, String s2) {
-  if (s1 == null) return s2 == null;
-  if (s2 == null) return false;
   s1 = s1.toLowerCase();
   s2 = s2.toLowerCase();
   return s1.contains(s2) || s2.contains(s1);

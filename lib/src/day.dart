@@ -8,7 +8,6 @@ enum Day {
 }
 
 Day dayFromInt(int i) {
-  if (i == null) return Day.Null;
   switch (i) {
     case 0:
       return Day.Monday;
@@ -28,7 +27,6 @@ Day dayFromInt(int i) {
 }
 
 int dayToInt(Day day) {
-  if (day == null) return -1;
   switch (day) {
     case Day.Monday:
       return 0;
@@ -48,7 +46,7 @@ int dayToInt(Day day) {
 }
 
 Day matchDay(String s) {
-  if (s == null || s.isEmpty) return Day.Null;
+  if (s.isEmpty) return Day.Null;
   s = s.toLowerCase();
   if (s.contains('null') || s.contains('none')) {
     return Day.Null;

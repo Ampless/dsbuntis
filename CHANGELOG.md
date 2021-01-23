@@ -1,3 +1,8 @@
+## 2.0.0-nullsafety.0
+
+* Unsound null safety
+* Minor API where they made sense
+
 ## 1.1.2
 
 * There was another, much smaller bug in the comparison.

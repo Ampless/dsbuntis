@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dsbuntis/src/day.dart';
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:schttp/schttp.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dsbuntis/src/utils.dart';
 import 'package:archive/archive.dart';
@@ -12,7 +13,7 @@ import 'package:html/dom.dart' as dom;
 class Substitution extends Comparable {
   String affectedClass;
   int lesson;
-  String orgTeacher;
+  String? orgTeacher;
   String subTeacher;
   String subject;
   String notes;
@@ -42,7 +43,7 @@ class Substitution extends Comparable {
 
   @override
   int compareTo(dynamic other) {
-    if (!(other is Substitution)) return null;
+    if (!(other is Substitution)) throw 'not comparable';
     final tp = int.tryParse(this.affectedClass[1]) == null ? '0' : '';
     final op = int.tryParse(other.affectedClass[1]) == null ? '0' : '';
     final c = (tp + this.affectedClass).compareTo(op + other.affectedClass);
@@ -95,7 +96,6 @@ class Plan {
   String toString() => '$day: $subs';
 
   static String plansToJson(List<Plan> plans) {
-    if (plans == null) return '[]';
     final planJsons = [];
     for (final plan in plans) {
       planJsons.add(plan.toJson());
@@ -104,10 +104,25 @@ class Plan {
   }
 
   static List<Plan> plansFromJson(String jsonPlans) {
-    if (jsonPlans == null) return [];
     final plans = <Plan>[];
     for (final plan in jsonDecode(jsonPlans)) {
       plans.add(Plan.fromJson(plan));
+    }
+    return plans;
+  }
+
+  static List<Plan> searchInPlans(
+    List<Plan> plans,
+    bool Function(Substitution) predicate,
+  ) {
+    for (final plan in plans) {
+      final subs = <Substitution>[];
+      for (final sub in plan.subs) {
+        if (predicate(sub)) {
+          subs.add(sub);
+        }
+      }
+      plan.subs = subs;
     }
     return plans;
   }
@@ -116,16 +131,13 @@ class Plan {
 Future<String> getData(
   String username,
   String password,
-  Future<String> Function(Uri, Object, String, Map<String, String>) httpPost, {
+  ScHttpClient http, {
   String apiEndpoint = 'https://app.dsbcontrol.de/JsonHandler.ashx/GetData',
   String version = '2.5.9',
   String device = 'SM-G950F',
   String os = '29 10.0',
   String language = 'de',
 }) async {
-  if (username == null) throw '[dsbGetData] username = null';
-  if (password == null) throw '[dsbGetData] password = null';
-  if (httpPost == null) throw '[dsbGetData] httpPost = null';
   final datetime = removeLastChars(DateTime.now().toIso8601String(), 3) + 'Z';
   final json = '{'
       '"UserId":"$username",'
@@ -139,15 +151,14 @@ Future<String> getData(
       '"Date":"$datetime",'
       '"LastUpdate":"$datetime"'
       '}';
-  final rawJson = await httpPost(
+  final rawJson = await http.post(
     Uri.parse(apiEndpoint),
     '{"req":{'
-        '"Data":"${base64.encode(GZipEncoder().encode(utf8.encode(json)))}",'
+        '"Data":"${base64.encode(GZipEncoder().encode(utf8.encode(json))!)}",'
         '"DataType":1}}',
     '$apiEndpoint\t$username\t$password',
     {'content-type': 'application/json'},
   );
-  if (rawJson == null) throw '[dsbGetData] httpPost returned null.';
   return utf8.decode(
     GZipDecoder().decodeBytes(
       base64.decode(
@@ -161,19 +172,15 @@ final _unescape = HtmlUnescape();
 
 Future<List<Plan>> getAndParse(
   String jsontext,
-  Future<String> Function(Uri) httpGet,
+  ScHttpClient http,
 ) async {
-  if (jsontext == null) throw '[dsbGetAndParse] jsontext = null';
-  if (httpGet == null) throw '[dsbGetAndParse] httpGet = null';
   var json = jsonDecode(jsontext);
   if (json['Resultcode'] != 0) throw json['ResultStatusInfo'];
   json = json['ResultMenuItems'][0]['Childs'][0];
   final plans = <Plan>[];
   for (final plan in json['Root']['Childs']) {
     String url = plan['Childs'][0]['Detail'];
-    var rawHtml = await httpGet(Uri.parse(url));
-    if (rawHtml == null) throw '[dsbGetAndParse] httpGet returned null.';
-    rawHtml = rawHtml
+    final rawHtml = (await http.get(Uri.parse(url)))
         .replaceAll('\n', '')
         .replaceAll('\r', '')
         //just fyi: these regexes only work because there are no more newlines
@@ -197,8 +204,8 @@ Future<List<Plan>> getAndParse(
         .replaceAll(RegExp(r'<!-- .*? -->'), '');
     try {
       var html = htmlParse(rawHtml).first.children[1].children; //body
-      final planTitle = htmlSearchByClass(html, 'mon_title').innerHtml;
-      html = htmlSearchByClass(html, 'mon_list')
+      final planTitle = htmlSearchByClass(html, 'mon_title')!.innerHtml;
+      html = htmlSearchByClass(html, 'mon_list')!
           .children
           .first //for some reason <table>s like to contain <tbody>s
           //(just taking first isnt even standard-compliant, but it works rn)
@@ -210,22 +217,21 @@ Future<List<Plan>> getAndParse(
         for (final lesson in _parseIntsFromString(allLessons)) {
           final sub = e.length < 6
               ? _plsBuildMeASub(
-                  _str(e[0]), lesson, _str(e[2]), _str(e[3]), _str(e[4]), null)
+                  _str(e[0]), lesson, _str(e[2]), _str(e[3]), _str(e[4]))
               : _plsBuildMeASub(_str(e[0]), lesson, _str(e[2]), _str(e[3]),
                   _str(e[5]), _str(e[4]));
           subs.add(sub);
         }
       }
       plans.add(Plan(matchDay(planTitle), subs, planTitle, url));
-    } catch (e) {
-      plans.add(null);
-    }
+    } catch (e) {}
   }
   return plans;
 }
 
 Substitution _plsBuildMeASub(String affectedClass, int lesson,
-    String subTeacher, String subject, String notes, String orgTeacher) {
+    String subTeacher, String subject, String notes,
+    [String? orgTeacher]) {
   if (affectedClass.codeUnitAt(0) == _zero) {
     affectedClass = affectedClass.substring(1);
   }
@@ -264,51 +270,19 @@ List<int> _parseIntsFromString(String s) {
 Future<List<Plan>> getAllSubs(
   String username,
   String password,
-  Future<String> Function(Uri) httpGet,
-  Future<String> Function(Uri, Object, String, Map<String, String>) httpPost, {
+  ScHttpClient http, {
   String language = 'de',
 }) async {
-  final json = await getData(username, password, httpPost, language: language);
-  return getAndParse(json, httpGet);
+  final json = await getData(username, password, http, language: language);
+  return getAndParse(json, http);
 }
 
-//TODO: rename in next major
-List<Plan> searchClass(List<Plan> plans, String grade, String char) {
-  if (plans == null) return [];
-  grade ??= '';
-  char ??= '';
-  for (final plan in plans) {
-    final subs = <Substitution>[];
-    for (final sub in plan.subs) {
-      if (sub.affectedClass.contains(grade) &&
-          sub.affectedClass.contains(char)) {
-        subs.add(sub);
-      }
-    }
-    plan.subs = subs;
-  }
-  return plans;
-}
-
-//TODO: remove in next major
-List<Plan> sortByLesson(List<Plan> plans) {
-  if (plans == null) return [];
-  for (final plan in plans) {
-    plan.subs.sort((a, b) => a.lesson.compareTo(b.lesson));
-  }
-  return plans;
-}
-
-Future<String> checkCredentials(
+Future<String?> checkCredentials(
   String username,
   String password,
-  Future<String> Function(Uri, Object, String, Map<String, String>) httpPost,
+  ScHttpClient http,
 ) async {
-  Map<String, dynamic> map = jsonDecode(await getData(
-    username,
-    password,
-    httpPost,
-  ));
+  final map = jsonDecode(await getData(username, password, http));
   if (map['Resultcode'] != 0) return map['ResultStatusInfo'];
   return null;
 }
