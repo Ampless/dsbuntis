@@ -1,3 +1,8 @@
+## 2.0.1
+
+* Sound null-safety
+* Fixed a few test cases
+
 ## 2.0.0-nullsafety.0
 
 * Unsound null safety

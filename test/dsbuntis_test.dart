@@ -96,7 +96,7 @@ testCase dsbTestCase(
               sub.affectedClass.contains(stage) &&
               sub.affectedClass.contains(char),
         );
-        l.sort();
+        l.forEach((plan) => plan.subs.sort());
         return l;
       };
       final plans = await tfunc!(

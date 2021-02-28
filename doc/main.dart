@@ -5,7 +5,6 @@ import 'package:dsbuntis/dsbuntis.dart';
 import 'package:schttp/schttp.dart';
 
 Future<void> main(List<String> args) async {
-  final http = ScHttpClient();
-  final plans = await getAllSubs(args[0], args[1], http.get, http.post);
+  final plans = await getAllSubs(args[0], args[1], ScHttpClient());
   print(Plan.plansToJson(plans));
 }

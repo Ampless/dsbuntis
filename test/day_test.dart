@@ -6,7 +6,6 @@ testCase dayTestCase(input, expct, bool error, [Function tfunc = matchDay]) =>
     expectTestCase(() async => tfunc(input), expct, error);
 
 List<testCase> dayTestCases = [
-  dayTestCase(null, Day.Null, false),
   dayTestCase('', Day.Null, false),
   dayTestCase('_kEkW_freiTaG_llUUULW', Day.Friday, false),
   dayTestCase('FvCkDaY', null, true),
@@ -26,14 +25,12 @@ List<testCase> dayTestCases = [
   dayTestCase(Day.Thursday, 3, false, dayToInt),
   dayTestCase(Day.Friday, 4, false, dayToInt),
   dayTestCase(Day.Null, -1, false, dayToInt),
-  dayTestCase(null, -1, false, dayToInt),
   dayTestCase(0, Day.Monday, false, dayFromInt),
   dayTestCase(1, Day.Tuesday, false, dayFromInt),
   dayTestCase(2, Day.Wednesday, false, dayFromInt),
   dayTestCase(3, Day.Thursday, false, dayFromInt),
   dayTestCase(4, Day.Friday, false, dayFromInt),
   dayTestCase(-1, Day.Null, false, dayFromInt),
-  dayTestCase(null, Day.Null, false, dayFromInt),
 ];
 
 void main() {
