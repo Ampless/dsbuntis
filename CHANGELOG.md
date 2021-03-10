@@ -1,3 +1,7 @@
+## 3.0.0
+
+* Migrated to DSB's Mobile API, because the Android API is dead.
+
 ## 2.0.1
 
 * Sound null-safety

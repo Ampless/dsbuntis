@@ -56,6 +56,7 @@ class Substitution extends Comparable {
 }
 
 class Plan {
+  //TODO: preview
   Day day;
   String date;
   String url;
@@ -128,57 +129,51 @@ class Plan {
   }
 }
 
-Future<String> getData(
+Future<String?> getAuthToken(
   String username,
   String password,
   ScHttpClient http, {
-  String apiEndpoint = 'https://app.dsbcontrol.de/JsonHandler.ashx/GetData',
-  String version = '2.5.9',
-  String device = 'SM-G950F',
-  String os = '29 10.0',
-  String language = 'de',
+  String apiEndpoint = 'https://mobileapi.dsbcontrol.de',
+  //TODO: check if 36 works
+  String appVersion = '35',
+  //TODO: check if normal ones are ok
+  String osVersion = '22',
+}) {
+  //TODO: make nicer
+  return http
+      .get(Uri.parse(apiEndpoint +
+          '/authid' +
+          '?bundleid=de.heinekingmedia.dsbmobile' +
+          '&appversion=$appVersion' +
+          '&osversion=$osVersion' +
+          '&pushid' +
+          '&user=$username' +
+          '&password=$password'))
+      .then((value) {
+    if (value.isEmpty) return null;
+    return value.replaceAll('"', '');
+  });
+}
+
+Future<List> getJson(
+  String token,
+  ScHttpClient http, {
+  String apiEndpoint = 'https://mobileapi.dsbcontrol.de',
 }) async {
-  final datetime = removeLastChars(DateTime.now().toIso8601String(), 3) + 'Z';
-  final json = '{'
-      '"UserId":"$username",'
-      '"UserPw":"$password",'
-      '"AppVersion":"$version",'
-      '"Language":"$language",'
-      '"OsVersion":"$os",'
-      '"AppId":"${Uuid().v4()}",'
-      '"Device":"$device",'
-      '"BundleId":"de.heinekingmedia.dsbmobile",'
-      '"Date":"$datetime",'
-      '"LastUpdate":"$datetime"'
-      '}';
-  final rawJson = await http.post(
-    Uri.parse(apiEndpoint),
-    '{"req":{'
-        '"Data":"${base64.encode(GZipEncoder().encode(utf8.encode(json))!)}",'
-        '"DataType":1}}',
-    '$apiEndpoint\t$username\t$password',
-    {'content-type': 'application/json'},
-  );
-  return utf8.decode(
-    GZipDecoder().decodeBytes(
-      base64.decode(
-        jsonDecode(rawJson)['d'],
-      ),
-    ),
-  );
+  final json = jsonDecode(
+      await http.get(Uri.parse('$apiEndpoint/dsbtimetables?authid=$token')));
+  if (json is Map && json.containsKey('Message')) throw json['Message'];
+  return json;
 }
 
 final _unescape = HtmlUnescape();
 
 Future<List<Plan>> getAndParse(
-  String jsontext,
+  List json,
   ScHttpClient http,
 ) async {
-  var json = jsonDecode(jsontext);
-  if (json['Resultcode'] != 0) throw json['ResultStatusInfo'];
-  json = json['ResultMenuItems'][0]['Childs'][0];
   final plans = <Plan>[];
-  for (final plan in json['Root']['Childs']) {
+  for (final plan in json) {
     String url = plan['Childs'][0]['Detail'];
     final rawHtml = (await http.get(Uri.parse(url)))
         .replaceAll('\n', '')
@@ -270,19 +265,11 @@ List<int> _parseIntsFromString(String s) {
 Future<List<Plan>> getAllSubs(
   String username,
   String password,
-  ScHttpClient http, {
-  String language = 'de',
-}) async {
-  final json = await getData(username, password, http, language: language);
-  return getAndParse(json, http);
-}
-
-Future<String?> checkCredentials(
-  String username,
-  String password,
   ScHttpClient http,
 ) async {
-  final map = jsonDecode(await getData(username, password, http));
-  if (map['Resultcode'] != 0) return map['ResultStatusInfo'];
-  return null;
+  final token = await getAuthToken(username, password, http);
+  //TODO: think about what to throw there
+  if (token == null) throw 1;
+  final json = await getJson(token, http);
+  return getAndParse(json, http);
 }
