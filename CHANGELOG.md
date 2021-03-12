@@ -1,3 +1,9 @@
+## 3.1.0
+
+* Support for controlled caching through schttp 1.1
+* You can now leave out the `ScHttpClient` from `getAllSubs`
+* Removed unused dependencies
+
 ## 3.0.0
 
 * Migrated to DSB's Mobile API, because the Android API is dead.

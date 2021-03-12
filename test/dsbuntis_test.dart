@@ -90,7 +90,6 @@ testCase dsbTestCase(
             username,
             password,
             http,
-            language: 'de',
           ),
           (sub) =>
               sub.affectedClass.contains(stage) &&
@@ -99,16 +98,11 @@ testCase dsbTestCase(
         l.forEach((plan) => plan.subs.sort());
         return l;
       };
-      final plans = await tfunc!(
-          username,
-          password,
-          ScHttpClient((url) {
-            for (final key in htmlCache.keys)
-              if (strcontain(key, url)) return htmlCache[key];
-            return null;
-          }, null),
-          stage,
-          char);
+      final plans = await tfunc!(username, password, ScHttpClient((url) {
+        for (final key in htmlCache.keys)
+          if (strcontain(key, url)) return htmlCache[key];
+        return null;
+      }), stage, char);
       assertPlanListsEqual(plans, expectedPlans);
     };
 

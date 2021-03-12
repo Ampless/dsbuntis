@@ -5,9 +5,6 @@ import 'package:dsbuntis/src/day.dart';
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:schttp/schttp.dart';
-import 'package:uuid/uuid.dart';
-import 'package:dsbuntis/src/utils.dart';
-import 'package:archive/archive.dart';
 import 'package:html/dom.dart' as dom;
 
 class Substitution extends Comparable {
@@ -134,21 +131,18 @@ Future<String?> getAuthToken(
   String password,
   ScHttpClient http, {
   String apiEndpoint = 'https://mobileapi.dsbcontrol.de',
-  //TODO: check if 36 works
-  String appVersion = '35',
-  //TODO: check if normal ones are ok
-  String osVersion = '22',
+  String appVersion = '36',
+  String osVersion = '30',
 }) {
-  //TODO: make nicer
+  final url = '$apiEndpoint/authid' +
+      '?bundleid=de.heinekingmedia.dsbmobile' +
+      '&appversion=$appVersion' +
+      '&osversion=$osVersion' +
+      '&pushid' +
+      '&user=$username' +
+      '&password=$password';
   return http
-      .get(Uri.parse(apiEndpoint +
-          '/authid' +
-          '?bundleid=de.heinekingmedia.dsbmobile' +
-          '&appversion=$appVersion' +
-          '&osversion=$osVersion' +
-          '&pushid' +
-          '&user=$username' +
-          '&password=$password'))
+      .get(Uri.parse(url), readCache: false, writeCache: false)
       .then((value) {
     if (value.isEmpty) return null;
     return value.replaceAll('"', '');
@@ -160,8 +154,11 @@ Future<List> getJson(
   ScHttpClient http, {
   String apiEndpoint = 'https://mobileapi.dsbcontrol.de',
 }) async {
-  final json = jsonDecode(
-      await http.get(Uri.parse('$apiEndpoint/dsbtimetables?authid=$token')));
+  final json = jsonDecode(await http.get(
+    Uri.parse('$apiEndpoint/dsbtimetables?authid=$token'),
+    //TODO: check if the urls still change all of the time (then increase again)
+    ttl: Duration(days: 1),
+  ));
   if (json is Map && json.containsKey('Message')) throw json['Message'];
   return json;
 }
@@ -264,9 +261,10 @@ List<int> _parseIntsFromString(String s) {
 
 Future<List<Plan>> getAllSubs(
   String username,
-  String password,
-  ScHttpClient http,
-) async {
+  String password, [
+  ScHttpClient? http,
+]) async {
+  http ??= ScHttpClient();
   final token = await getAuthToken(username, password, http);
   //TODO: think about what to throw there
   if (token == null) throw 1;
