@@ -1,3 +1,9 @@
+## 3.2.0
+
+* Addition of `plansToRawJson` and `plansFromRawJson`
+* Testing for the new Mobile API based backend
+* schttp 2
+
 ## 3.1.0
 
 * Support for controlled caching through schttp 1.1

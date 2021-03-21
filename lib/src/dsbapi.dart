@@ -93,21 +93,18 @@ class Plan {
   @override
   String toString() => '$day: $subs';
 
-  static String plansToJson(List<Plan> plans) {
-    final planJsons = [];
-    for (final plan in plans) {
-      planJsons.add(plan.toJson());
-    }
-    return jsonEncode(planJsons);
-  }
+  //TODO: rename in next major
+  static List plansToRawJson(List<Plan> plans) =>
+      plans.map((e) => e.toJson()).toList();
 
-  static List<Plan> plansFromJson(String jsonPlans) {
-    final plans = <Plan>[];
-    for (final plan in jsonDecode(jsonPlans)) {
-      plans.add(Plan.fromJson(plan));
-    }
-    return plans;
-  }
+  static List<Plan> plansFromRawJson(dynamic plans) =>
+      plans.map<Plan>((e) => Plan.fromJson(e)).toList();
+
+  static String plansToJson(List<Plan> plans) =>
+      jsonEncode(plansToRawJson(plans));
+
+  static List<Plan> plansFromJson(String plans) =>
+      plansFromRawJson(jsonDecode(plans));
 
   static List<Plan> searchInPlans(
     List<Plan> plans,
@@ -141,9 +138,7 @@ Future<String?> getAuthToken(
       '&pushid' +
       '&user=$username' +
       '&password=$password';
-  return http
-      .get(Uri.parse(url), readCache: false, writeCache: false)
-      .then((value) {
+  return http.get(url, readCache: false, writeCache: false).then((value) {
     if (value.isEmpty) return null;
     return value.replaceAll('"', '');
   });
@@ -155,7 +150,7 @@ Future<List> getJson(
   String apiEndpoint = 'https://mobileapi.dsbcontrol.de',
 }) async {
   final json = jsonDecode(await http.get(
-    Uri.parse('$apiEndpoint/dsbtimetables?authid=$token'),
+    '$apiEndpoint/dsbtimetables?authid=$token',
     //TODO: check if the urls still change all of the time (then increase again)
     ttl: Duration(days: 1),
   ));
@@ -172,7 +167,7 @@ Future<List<Plan>> getAndParse(
   final plans = <Plan>[];
   for (final plan in json) {
     String url = plan['Childs'][0]['Detail'];
-    final rawHtml = (await http.get(Uri.parse(url)))
+    final rawHtml = (await http.get(url))
         .replaceAll('\n', '')
         .replaceAll('\r', '')
         //just fyi: these regexes only work because there are no more newlines

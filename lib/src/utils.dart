@@ -1,3 +1,5 @@
+//TODO: remove this file in next major
+
 @deprecated
 int max(List<int> i) {
   var j = i[0];
