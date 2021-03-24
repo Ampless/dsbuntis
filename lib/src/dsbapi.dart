@@ -57,6 +57,7 @@ class Plan {
   List<Substitution> subs;
   String date;
   String url;
+  //TODO: a way to download this
   String previewUrl;
 
   Plan(this.day, this.subs, this.date, this.url, this.previewUrl);
@@ -66,8 +67,7 @@ class Plan {
         date = json['date'],
         subs = _subsFromJson(json['subs']),
         url = json['url'],
-        //TODO: in 4.0 get this from json always and stuff
-        previewUrl = '';
+        previewUrl = json['preview_url'];
 
   dynamic toJson() => {
         'day': dayToInt(day),
@@ -96,18 +96,17 @@ class Plan {
   @override
   String toString() => '$day: $subs';
 
-  //TODO: rename in next major
-  static List plansToRawJson(List<Plan> plans) =>
+  static List plansToJson(List<Plan> plans) =>
       plans.map((e) => e.toJson()).toList();
 
-  static List<Plan> plansFromRawJson(dynamic plans) =>
+  static List<Plan> plansFromJson(dynamic plans) =>
       plans.map<Plan>((e) => Plan.fromJson(e)).toList();
 
-  static String plansToJson(List<Plan> plans) =>
-      jsonEncode(plansToRawJson(plans));
+  static String plansToJsonString(List<Plan> plans) =>
+      jsonEncode(plansToJson(plans));
 
-  static List<Plan> plansFromJson(String plans) =>
-      plansFromRawJson(jsonDecode(plans));
+  static List<Plan> plansFromJsonString(String plans) =>
+      plansFromJson(jsonDecode(plans));
 
   static List<Plan> searchInPlans(
     List<Plan> plans,
