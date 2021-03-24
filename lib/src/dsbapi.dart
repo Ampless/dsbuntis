@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dsbuntis/src/day.dart';
 import 'package:html_search/html_search.dart';
@@ -85,12 +86,20 @@ class Plan {
     return lessonsStrings;
   }
 
-  static List<Substitution> _subsFromJson(dynamic subsStrings) {
+  static List<Substitution> _subsFromJson(dynamic json) {
     final subs = <Substitution>[];
-    for (final s in subsStrings) {
+    for (final s in json) {
       subs.add(Substitution.fromJson(s));
     }
     return subs;
+  }
+
+  Future<List<int>> get previewBytes async {
+    //TODO: change a lot about schttp to make this a one-liner
+    final req = await HttpClient().getUrl(Uri.parse(previewUrl));
+    final bytes = <int>[];
+    for (final e in await (await req.close()).toList()) bytes.addAll(e);
+    return bytes;
   }
 
   @override
@@ -258,15 +267,14 @@ List<int> _parseIntsFromString(String s) {
   return out;
 }
 
-Future<List<Plan>> getAllSubs(
+Future<List<Plan>?> getAllSubs(
   String username,
   String password, [
   ScHttpClient? http,
 ]) async {
   http ??= ScHttpClient();
   final token = await getAuthToken(username, password, http);
-  //TODO: think about what to throw there
-  if (token == null) throw 1;
+  if (token == null) return null;
   final json = await getJson(token, http);
   return getAndParse(json, http);
 }

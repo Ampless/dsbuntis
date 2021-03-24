@@ -93,7 +93,7 @@ testCase dsbTestCase(
 ) =>
     () async {
       final plans = Plan.searchInPlans(
-        await getAllSubs(
+        (await getAllSubs(
           username,
           password,
           ScHttpClient((url) {
@@ -101,7 +101,7 @@ testCase dsbTestCase(
               if (url.contains(key)) return htmlCache[key];
             return null;
           }),
-        ),
+        ))!,
         (sub) =>
             sub.affectedClass.contains(stage) &&
             sub.affectedClass.contains(char),
