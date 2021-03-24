@@ -1,3 +1,7 @@
+## 3.3.0
+
+* Added the `previewUrl` to the `Plan` when getting from the API
+
 ## 3.2.0
 
 * Addition of `plansToRawJson` and `plansFromRawJson`

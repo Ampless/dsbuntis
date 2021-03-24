@@ -53,25 +53,28 @@ class Substitution extends Comparable {
 }
 
 class Plan {
-  //TODO: preview
   Day day;
+  List<Substitution> subs;
   String date;
   String url;
-  List<Substitution> subs;
+  String previewUrl;
 
-  Plan(this.day, this.subs, this.date, this.url);
+  Plan(this.day, this.subs, this.date, this.url, this.previewUrl);
 
   Plan.fromJson(Map<String, dynamic> json)
       : day = dayFromInt(json['day']),
         date = json['date'],
         subs = _subsFromJson(json['subs']),
-        url = json['url'];
+        url = json['url'],
+        //TODO: in 4.0 get this from json always and stuff
+        previewUrl = '';
 
   dynamic toJson() => {
         'day': dayToInt(day),
         'date': date,
         'subs': _subsToJson(),
         'url': url,
+        'preview_url': previewUrl,
       };
 
   List<Map<String, dynamic>> _subsToJson() {
@@ -151,8 +154,7 @@ Future<List> getJson(
 }) async {
   final json = jsonDecode(await http.get(
     '$apiEndpoint/dsbtimetables?authid=$token',
-    //TODO: check if the urls still change all of the time (then increase again)
-    ttl: Duration(days: 1),
+    ttl: Duration(days: 4),
   ));
   if (json is Map && json.containsKey('Message')) throw json['Message'];
   return json;
@@ -165,8 +167,11 @@ Future<List<Plan>> getAndParse(
   ScHttpClient http,
 ) async {
   final plans = <Plan>[];
-  for (final plan in json) {
-    String url = plan['Childs'][0]['Detail'];
+  for (var plan in json) {
+    plan = plan['Childs'][0];
+    String url = plan['Detail'];
+    String preview =
+        'https://light.dsbcontrol.de/DSBlightWebsite/Data/' + plan['Preview'];
     final rawHtml = (await http.get(url))
         .replaceAll('\n', '')
         .replaceAll('\r', '')
@@ -210,7 +215,7 @@ Future<List<Plan>> getAndParse(
           subs.add(sub);
         }
       }
-      plans.add(Plan(matchDay(planTitle), subs, planTitle, url));
+      plans.add(Plan(matchDay(planTitle), subs, planTitle, url, preview));
     } catch (e) {}
   }
   return plans;

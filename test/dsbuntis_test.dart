@@ -7,8 +7,8 @@ import 'testlib.dart';
 final Map<String, String> dsbTest1Cache = {
   '/authid': 'randomauthid',
   '/dsbtimetables': '['
-      '{"Childs":[{"Detail":"44a7def4-aaa3-4177-959d-e2921176cde9.htm"}]},'
-      '{"Childs":[{"Detail":"58424b67-1ebf-4152-8c37-17814ef93775.htm"}]}'
+      '{"Childs":[{"Detail":"44a7def4-aaa3-4177-959d-e2921176cde9.htm","Preview":"asdf.png"}]},'
+      '{"Childs":[{"Detail":"58424b67-1ebf-4152-8c37-17814ef93775.htm","Preview":"qwerty.jpg"}]}'
       ']',
   '44a7def4-aaa3-4177-959d-e2921176cde9.htm':
       '<table class=\"mon_head\"> <tr> <td></td> <td></td> <td> GYM. MIT SCHÜLERHEIM ROSENHOF D-91257,P1meml Gymnasium Rosenhof 2019/2020 Stand: 23.06.2020 08:55 </td> </tr></table><div class=\"mon_title\">23.6.2020 Dienstag</div><table class=\"info\" ><tr></tr><tr><td>Betroffene Klassen </td><td>11Q</td></tr></table><table class=\"mon_list\" ><tr></tr><tr><td>11Q</td><td> 7 &nbsp; 8 </td><td>---</td><td>1sk1</td><td>&nbsp;Aschi</td><td> </td></tr></table>Untis Stundenplan Software',
@@ -25,20 +25,22 @@ final List<Plan> dsbTest1Expct = [
     ],
     '23.6.2020 Dienstag',
     '',
+    'https://light.dsbcontrol.de/DSBlightWebsite/Data/asdf.png',
   ),
   Plan(
     Day.Wednesday,
     [],
     '24.6.2020 Mittwoch',
     '',
+    'https://light.dsbcontrol.de/DSBlightWebsite/Data/qwerty.jpg',
   ),
 ];
 
 final Map<String, String> dsbTest2Cache = {
   '/authid': 'randomauthid',
   '/dsbtimetables': '['
-      '{"Childs":[{"Detail":"44a7def4-aaa3-4177-959d-e2921176cde9.htm"}]},'
-      '{"Childs":[{"Detail":"58424b67-1ebf-4152-8c37-17814ef93775.htm"}]}'
+      '{"Childs":[{"Detail":"44a7def4-aaa3-4177-959d-e2921176cde9.htm","Preview":"lol.gif"}]},'
+      '{"Childs":[{"Detail":"58424b67-1ebf-4152-8c37-17814ef93775.htm","Preview":"lel.bmp"}]}'
       ']',
   '44a7def4-aaa3-4177-959d-e2921176cde9.htm':
       '<table class=\"mon_head\"> <tr> <td></td> <td></td> <td> null 2019/2020 Stand: 23.06.2020 08:55 </td> </tr></table><div class=\"mon_title\">23.6.2020 Dienstag</div><table class=\"info\" ><tr></tr><tr><td>Betroffene Klassen </td><td>11Q</td></tr></table><table class=\"mon_list\" ><tr></tr></table>Untis Stundenplan Software',
@@ -52,12 +54,14 @@ final List<Plan> dsbTest2Expct = [
     [],
     '23.6.2020 Dienstag',
     '',
+    'https://light.dsbcontrol.de/DSBlightWebsite/Data/lol.gif',
   ),
   Plan(
     Day.Wednesday,
     [],
     '24.6.2020 Mittwoch',
     '',
+    'https://light.dsbcontrol.de/DSBlightWebsite/Data/lel.bmp',
   ),
 ];
 
@@ -94,7 +98,7 @@ testCase dsbTestCase(
           password,
           ScHttpClient((url) {
             for (final key in htmlCache.keys)
-              if (strcontain(key, url)) return htmlCache[key];
+              if (url.contains(key)) return htmlCache[key];
             return null;
           }),
         ),
@@ -107,8 +111,8 @@ testCase dsbTestCase(
     };
 
 List<testCase> dsbTestCases = [
-  dsbTestCase('null', 'null', dsbTest1Cache, dsbTest1Expct, '11', 'q'),
-  dsbTestCase('null', 'null', dsbTest1Cache, dsbTest1Expct, '11', ''),
+  dsbTestCase('', 'null', dsbTest1Cache, dsbTest1Expct, '11', 'q'),
+  dsbTestCase('null', '', dsbTest1Cache, dsbTest1Expct, '11', ''),
   dsbTestCase('null', 'null', dsbTest2Cache, dsbTest2Expct, '', 'q'),
   dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, '', ''),
 ];
