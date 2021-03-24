@@ -162,7 +162,7 @@ Future<List> getJson(
 }) async {
   final json = jsonDecode(await http.get(
     '$apiEndpoint/dsbtimetables?authid=$token',
-    ttl: Duration(days: 4),
+    ttl: Duration(minutes: 15),
   ));
   if (json is Map && json.containsKey('Message')) throw json['Message'];
   return json;
@@ -180,7 +180,7 @@ Future<List<Plan>> getAndParse(
     String url = plan['Detail'];
     String preview =
         'https://light.dsbcontrol.de/DSBlightWebsite/Data/' + plan['Preview'];
-    final rawHtml = (await http.get(url))
+    final rawHtml = (await http.get(url, ttl: Duration(days: 4)))
         .replaceAll('\n', '')
         .replaceAll('\r', '')
         //just fyi: these regexes only work because there are no more newlines
