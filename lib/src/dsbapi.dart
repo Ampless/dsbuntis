@@ -20,7 +20,7 @@ class Substitution extends Comparable {
   Substitution(this.affectedClass, this.lesson, this.subTeacher, this.subject,
       this.notes, this.isFree, this.orgTeacher);
 
-  Substitution.fromJson(Map<String, dynamic> json)
+  Substitution.fromJson(dynamic json)
       : affectedClass = json['class'],
         lesson = json['lesson'],
         subTeacher = json['sub_teacher'],
@@ -29,7 +29,7 @@ class Substitution extends Comparable {
         notes = json['notes'],
         isFree = json['free'];
 
-  Map<String, dynamic> toJson() => {
+  dynamic toJson() => {
         'class': affectedClass,
         'lesson': lesson,
         'sub_teacher': subTeacher,
@@ -80,21 +80,10 @@ class Plan {
         'preview': preview,
       };
 
-  List<Map<String, dynamic>> _subsToJson() {
-    final lessonsStrings = <Map<String, dynamic>>[];
-    for (final sub in subs) {
-      lessonsStrings.add(sub.toJson());
-    }
-    return lessonsStrings;
-  }
+  dynamic _subsToJson() => subs.map((sub) => sub.toJson()).toList();
 
-  static List<Substitution> _subsFromJson(dynamic json) {
-    final subs = <Substitution>[];
-    for (final s in json) {
-      subs.add(Substitution.fromJson(s));
-    }
-    return subs;
-  }
+  static List<Substitution> _subsFromJson(dynamic json) =>
+      json.map<Substitution>((s) => Substitution.fromJson(s)).toList();
 
   @override
   String toString() => '$day($url, $previewUrl): $subs';
@@ -114,19 +103,16 @@ class Plan {
   static List<Plan> searchInPlans(
     List<Plan> plans,
     bool Function(Substitution) predicate,
-  ) {
-    for (final plan in plans) {
-      final subs = <Substitution>[];
-      for (final sub in plan.subs) {
-        if (predicate(sub)) {
-          subs.add(sub);
-        }
-      }
-      plan.subs = subs;
-    }
-    return plans;
-  }
+  ) =>
+      plans
+          .map((p) => Plan(p.day, p.subs.where(predicate).toList(), p.date,
+              p.url, p.previewUrl, p.preview))
+          .toList();
 }
+
+String _authUrl(String e, String a, String o, String u, String p) =>
+    '$e/authid?bundleid=de.heinekingmedia.dsbmobile' +
+    'appversion=$a&osversion=$o&pushid&user=$u&password=$p';
 
 Future<String?> getAuthToken(
   String username,
@@ -135,19 +121,11 @@ Future<String?> getAuthToken(
   String endpoint = 'https://mobileapi.dsbcontrol.de',
   String appVersion = '36',
   String osVersion = '30',
-}) {
-  final url = '$endpoint/authid' +
-      '?bundleid=de.heinekingmedia.dsbmobile' +
-      '&appversion=$appVersion' +
-      '&osversion=$osVersion' +
-      '&pushid' +
-      '&user=$username' +
-      '&password=$password';
-  return http.get(url, readCache: false, writeCache: false).then((value) {
-    if (value.isEmpty) return null;
-    return value.replaceAll('"', '');
-  });
-}
+}) =>
+    http
+        .get(_authUrl(endpoint, appVersion, osVersion, username, password),
+            readCache: false, writeCache: false)
+        .then((value) => value.isEmpty ? null : value.replaceAll('"', ''));
 
 Future<List> getJson(
   String token,
@@ -203,7 +181,7 @@ Future<List<Plan>> getAndParse(
       html = htmlSearchByClass(html, 'mon_list')!
           .children
           .first //for some reason <table>s like to contain <tbody>s
-          //(just taking first isnt even standard-compliant, but it works rn)
+          //FIXME: just taking first isnt even standard-compliant
           .children;
       final subs = <Substitution>[];
       for (var i = 1; i < html.length; i++) {
@@ -225,22 +203,18 @@ Future<List<Plan>> getAndParse(
   return plans;
 }
 
-Substitution _plsBuildMeASub(String affectedClass, int lesson,
-    String subTeacher, String subject, String notes,
-    [String? orgTeacher]) {
-  if (affectedClass.codeUnitAt(0) == _zero) {
-    affectedClass = affectedClass.substring(1);
-  }
-  return Substitution(
-    affectedClass.toLowerCase(),
-    lesson,
-    subTeacher,
-    subject,
-    notes,
-    subTeacher.contains('---'),
-    orgTeacher,
-  );
-}
+Substitution _plsBuildMeASub(String affClass, int lesson, String subTeacher,
+        String subject, String notes, [String? orgTeacher]) =>
+    Substitution(
+        affClass.codeUnitAt(0) == _zero
+            ? affClass.substring(1).toLowerCase()
+            : affClass.toLowerCase(),
+        lesson,
+        subTeacher,
+        subject,
+        notes,
+        subTeacher.contains('---'),
+        orgTeacher);
 
 final _tag = RegExp(r'</?.+?>');
 
