@@ -138,11 +138,11 @@ Future<String?> getAuthToken(
   String username,
   String password,
   ScHttpClient http, {
-  String apiEndpoint = 'https://mobileapi.dsbcontrol.de',
+  String endpoint = 'https://mobileapi.dsbcontrol.de',
   String appVersion = '36',
   String osVersion = '30',
 }) {
-  final url = '$apiEndpoint/authid' +
+  final url = '$endpoint/authid' +
       '?bundleid=de.heinekingmedia.dsbmobile' +
       '&appversion=$appVersion' +
       '&osversion=$osVersion' +
@@ -158,10 +158,10 @@ Future<String?> getAuthToken(
 Future<List> getJson(
   String token,
   ScHttpClient http, {
-  String apiEndpoint = 'https://mobileapi.dsbcontrol.de',
+  String endpoint = 'https://mobileapi.dsbcontrol.de',
 }) async {
   final json = jsonDecode(await http.get(
-    '$apiEndpoint/dsbtimetables?authid=$token',
+    '$endpoint/dsbtimetables?authid=$token',
     ttl: Duration(minutes: 15),
   ));
   if (json is Map && json.containsKey('Message')) throw json['Message'];
@@ -179,6 +179,7 @@ Future<List<Plan>> getAndParse(
     plan = plan['Childs'][0];
     String url = plan['Detail'];
     String preview =
+        //TODO: make this configurable
         'https://light.dsbcontrol.de/DSBlightWebsite/Data/' + plan['Preview'];
     final rawHtml = (await http.get(url, ttl: Duration(days: 4)))
         .replaceAll('\n', '')
@@ -271,10 +272,11 @@ Future<List<Plan>?> getAllSubs(
   String username,
   String password, [
   ScHttpClient? http,
+  String endpoint = 'https://mobileapi.dsbcontrol.de',
 ]) async {
   http ??= ScHttpClient();
-  final token = await getAuthToken(username, password, http);
-  if (token == null) return null;
-  final json = await getJson(token, http);
+  final tkn = await getAuthToken(username, password, http, endpoint: endpoint);
+  if (tkn == null) return null;
+  final json = await getJson(tkn, http, endpoint: endpoint);
   return getAndParse(json, http);
 }
