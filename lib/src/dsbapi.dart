@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dsbuntis/src/day.dart';
 import 'package:html_search/html_search.dart';
@@ -58,17 +58,18 @@ class Plan {
   List<Substitution> subs;
   String date;
   String url;
-  //TODO: a way to download this
   String previewUrl;
+  Uint8List preview;
 
-  Plan(this.day, this.subs, this.date, this.url, this.previewUrl);
+  Plan(this.day, this.subs, this.date, this.url, this.previewUrl, this.preview);
 
   Plan.fromJson(Map<String, dynamic> json)
       : day = dayFromInt(json['day']),
         date = json['date'],
         subs = _subsFromJson(json['subs']),
         url = json['url'],
-        previewUrl = json['preview_url'];
+        previewUrl = json['preview_url'],
+        preview = json['preview'];
 
   dynamic toJson() => {
         'day': dayToInt(day),
@@ -76,6 +77,7 @@ class Plan {
         'subs': _subsToJson(),
         'url': url,
         'preview_url': previewUrl,
+        'preview': preview,
       };
 
   List<Map<String, dynamic>> _subsToJson() {
@@ -92,14 +94,6 @@ class Plan {
       subs.add(Substitution.fromJson(s));
     }
     return subs;
-  }
-
-  Future<List<int>> get previewBytes async {
-    //TODO: change a lot about schttp to make this a one-liner
-    final req = await HttpClient().getUrl(Uri.parse(previewUrl));
-    final bytes = <int>[];
-    for (final e in await (await req.close()).toList()) bytes.addAll(e);
-    return bytes;
   }
 
   @override
@@ -172,15 +166,15 @@ final _unescape = HtmlUnescape();
 
 Future<List<Plan>> getAndParse(
   List json,
-  ScHttpClient http,
-) async {
+  ScHttpClient http, {
+  bool downloadPreviews = false,
+  String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
+}) async {
   final plans = <Plan>[];
   for (var plan in json) {
     plan = plan['Childs'][0];
     String url = plan['Detail'];
-    String preview =
-        //TODO: make this configurable
-        'https://light.dsbcontrol.de/DSBlightWebsite/Data/' + plan['Preview'];
+    String previewUrl = '$previewEndpoint/${plan['Preview']}';
     final rawHtml = (await http.get(url, ttl: Duration(days: 4)))
         .replaceAll('\n', '')
         .replaceAll('\r', '')
@@ -224,7 +218,8 @@ Future<List<Plan>> getAndParse(
           subs.add(sub);
         }
       }
-      plans.add(Plan(matchDay(planTitle), subs, planTitle, url, preview));
+      plans.add(Plan(matchDay(planTitle), subs, planTitle, url, previewUrl,
+          downloadPreviews ? await http.getBin(previewUrl) : Uint8List(0)));
     } catch (e) {}
   }
   return plans;
@@ -270,13 +265,19 @@ List<int> _parseIntsFromString(String s) {
 
 Future<List<Plan>?> getAllSubs(
   String username,
-  String password, [
-  ScHttpClient? http,
+  String password,
+  ScHttpClient http, {
   String endpoint = 'https://mobileapi.dsbcontrol.de',
-]) async {
-  http ??= ScHttpClient();
+  String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
+  bool downloadPreviews = false,
+}) async {
   final tkn = await getAuthToken(username, password, http, endpoint: endpoint);
   if (tkn == null) return null;
   final json = await getJson(tkn, http, endpoint: endpoint);
-  return getAndParse(json, http);
+  return getAndParse(
+    json,
+    http,
+    previewEndpoint: previewEndpoint,
+    downloadPreviews: downloadPreviews,
+  );
 }
