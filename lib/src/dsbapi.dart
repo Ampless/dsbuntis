@@ -97,7 +97,7 @@ class Plan {
   }
 
   @override
-  String toString() => '$day: $subs';
+  String toString() => '$day($url, $previewUrl): $subs';
 
   static List plansToJson(List<Plan> plans) =>
       plans.map((e) => e.toJson()).toList();
