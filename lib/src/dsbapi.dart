@@ -239,12 +239,13 @@ List<int> _parseIntsFromString(String s) {
 
 Future<List<Plan>?> getAllSubs(
   String username,
-  String password,
-  ScHttpClient http, {
+  String password, {
+  ScHttpClient? http,
   String endpoint = 'https://mobileapi.dsbcontrol.de',
   String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
   bool downloadPreviews = false,
 }) async {
+  http ??= ScHttpClient();
   final tkn = await getAuthToken(username, password, http, endpoint: endpoint);
   if (tkn == null) return null;
   final json = await getJson(tkn, http, endpoint: endpoint);

@@ -102,7 +102,7 @@ testCase dsbTestCase(
         (await getAllSubs(
           username,
           password,
-          ScHttpClient(
+          http: ScHttpClient(
             getCache: (u) =>
                 htmlCache[htmlCache.keys.firstWhere((k) => u.contains(k))],
             forceCache: true,
