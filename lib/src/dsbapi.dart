@@ -112,7 +112,7 @@ class Plan {
 
 String _authUrl(String e, String a, String o, String u, String p) =>
     '$e/authid?bundleid=de.heinekingmedia.dsbmobile' +
-    'appversion=$a&osversion=$o&pushid&user=$u&password=$p';
+    '&appversion=$a&osversion=$o&pushid&user=$u&password=$p';
 
 Future<String?> getAuthToken(
   String username,
