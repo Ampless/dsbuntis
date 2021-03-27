@@ -14,6 +14,7 @@ automatically download the preview from `previewUrl` into `preview`
 and `plansToJson` to `plansToJsonString` (in `Plan`)
 * Renamed `plansFromRawJson` to `plansFromJson`
 and `plansToRawJson` to `plansToJson` (in `Plan`)
+* All of the changes in schttp `3.0.0` and `3.1.0` (like proxies)
 
 ## 3.3.0
 
