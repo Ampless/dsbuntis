@@ -1,3 +1,20 @@
+## 4.0.0
+
+* Changed the behavior of `getAllSubs` to return `null`
+instead of throwing `1` on error
+* The caching was sometimes wrong from `3.1.0` to `3.3.0`, now it is fixed
+* Also made the `endpoint` configurable in `getAllSubs`
+* Made the `ScHttpClient` passed to `getAllSubs` named: `http` (we had to)
+* Added the `downloadPreviews` to `getAndParse` and `getAllSubs` to
+automatically download the preview from `previewUrl` into `preview`
+(`Substitution`)
+* Changed the `searchInPlans` implementation to be non-destructive
+* The JSON methods now also load/save the preview for `Plan`
+* Renamed `plansFromJson` to `plansFromJsonString`
+and `plansToJson` to `plansToJsonString` (in `Plan`)
+* Renamed `plansFromRawJson` to `plansFromJson`
+and `plansToRawJson` to `plansToJson` (in `Plan`)
+
 ## 3.3.0
 
 * Added the `previewUrl` to the `Plan` when getting from the API
