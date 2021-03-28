@@ -1,3 +1,7 @@
+## 4.0.1
+
+* Fixed a bug in `Plan.fromJson`
+
 ## 4.0.0
 
 * Changed the behavior of `getAllSubs` to return `null`

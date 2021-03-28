@@ -69,7 +69,7 @@ class Plan {
         subs = _subsFromJson(json['subs']),
         url = json['url'],
         previewUrl = json['preview_url'],
-        preview = json['preview'];
+        preview = Uint8List.fromList(List<int>.from(json['preview']));
 
   dynamic toJson() => {
         'day': dayToInt(day),
