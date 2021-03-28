@@ -124,7 +124,10 @@ List<testCase> dsbTestCases = [
 ];
 
 testCase jsonTestCase(List<Plan> plans) => () async {
-      assertPlanListsEqual(Plan.plansFromJson(Plan.plansToJson(plans)), plans);
+      assertPlanListsEqual(
+        Plan.plansFromJsonString(Plan.plansToJsonString(plans)),
+        plans,
+      );
     };
 
 List<testCase> jsonTestCases = [
