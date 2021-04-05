@@ -86,7 +86,8 @@ class Plan {
       json.map<Substitution>((s) => Substitution.fromJson(s)).toList();
 
   @override
-  String toString() => '$day($url, $previewUrl): $subs';
+  String toString([bool inclUrls = true]) => '$day${_cum(inclUrls)}: $subs';
+  String _cum(bool iu) => iu ? '($url, $previewUrl)' : '';
 
   static List plansToJson(List<Plan> plans) =>
       plans.map((e) => e.toJson()).toList();

@@ -1,3 +1,7 @@
+## 4.1.0
+
+* Added an optional parameter to not include the URLs in `Plan.toString`
+
 ## 4.0.1
 
 * Fixed a bug in `Plan.fromJson`
