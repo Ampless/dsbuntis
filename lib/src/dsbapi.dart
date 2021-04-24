@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dsbuntis/src/day.dart';
+import 'package:dsbuntis/src/exceptions.dart';
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:schttp/schttp.dart';
@@ -41,7 +42,7 @@ class Substitution extends Comparable {
 
   @override
   int compareTo(dynamic other) {
-    if (!(other is Substitution)) throw 'not comparable';
+    if (!(other is Substitution)) throw ArgumentError('not comparable');
     final tp = int.tryParse(this.affectedClass[1]) == null ? '0' : '';
     final op = int.tryParse(other.affectedClass[1]) == null ? '0' : '';
     final c = (tp + this.affectedClass).compareTo(op + other.affectedClass);
@@ -115,7 +116,7 @@ String _authUrl(String e, String a, String o, String u, String p) =>
     '$e/authid?bundleid=de.heinekingmedia.dsbmobile' +
     '&appversion=$a&osversion=$o&pushid&user=$u&password=$p';
 
-Future<String?> getAuthToken(
+Future<String> getAuthToken(
   String username,
   String password,
   ScHttpClient http, {
@@ -126,7 +127,16 @@ Future<String?> getAuthToken(
     http
         .get(_authUrl(endpoint, appVersion, osVersion, username, password),
             readCache: false, writeCache: false)
-        .then((value) => value.isEmpty ? null : value.replaceAll('"', ''));
+        .then((tkn) {
+      if (tkn.isEmpty) throw AuthenticationException();
+      try {
+        throw jsonDecode(tkn)['Message'];
+      } on Exception {
+        return tkn.replaceAll('"', '');
+      } on String catch (s) {
+        throw AuthenticationException(s);
+      }
+    });
 
 Future<List> getJson(
   String token,
@@ -137,7 +147,8 @@ Future<List> getJson(
     '$endpoint/dsbtimetables?authid=$token',
     ttl: Duration(minutes: 15),
   ));
-  if (json is Map && json.containsKey('Message')) throw json['Message'];
+  if (json is Map && json.containsKey('Message'))
+    throw DsbException(json['Message']);
   return json;
 }
 
@@ -238,7 +249,7 @@ List<int> _parseIntsFromString(String s) {
   return out;
 }
 
-Future<List<Plan>?> getAllSubs(
+Future<List<Plan>> getAllSubs(
   String username,
   String password, {
   ScHttpClient? http,
@@ -248,7 +259,6 @@ Future<List<Plan>?> getAllSubs(
 }) async {
   http ??= ScHttpClient();
   final tkn = await getAuthToken(username, password, http, endpoint: endpoint);
-  if (tkn == null) return null;
   final json = await getJson(tkn, http, endpoint: endpoint);
   return getAndParse(
     json,

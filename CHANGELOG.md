@@ -1,3 +1,8 @@
+## 4.2.0
+
+* Made all errors throw `Exception`s/`Error`s,
+instead of returning `null` or throwing Strings
+
 ## 4.1.0
 
 * Added an optional parameter to not include the URLs in `Plan.toString`
@@ -52,11 +57,11 @@ and `plansToRawJson` to `plansToJson` (in `Plan`)
 ## 2.0.0-nullsafety.0
 
 * Unsound null safety
-* Minor API where they made sense
+* Minor API changes where they made sense
 
 ## 1.1.2
 
-* There was another, much smaller bug in the comparison.
+* There was another, smaller bug in the comparison.
 
 ## 1.1.1
 
@@ -64,7 +69,7 @@ and `plansToRawJson` to `plansToJson` (in `Plan`)
 
 ## 1.1.0
 
-* `Substitution.compareTo`
+* Made `Substitution`s `Comparable`
 
 ## 1.0.0
 

@@ -31,6 +31,7 @@ List<testCase> dayTestCases = [
   dayTestCase(3, Day.Thursday, false, dayFromInt),
   dayTestCase(4, Day.Friday, false, dayFromInt),
   dayTestCase(-1, Day.Null, false, dayFromInt),
+  dayTestCase(5, Day.Null, false, dayFromInt),
 ];
 
 void main() {

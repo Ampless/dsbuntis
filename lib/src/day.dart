@@ -7,43 +7,8 @@ enum Day {
   Null,
 }
 
-Day dayFromInt(int i) {
-  switch (i) {
-    case 0:
-      return Day.Monday;
-    case 1:
-      return Day.Tuesday;
-    case 2:
-      return Day.Wednesday;
-    case 3:
-      return Day.Thursday;
-    case 4:
-      return Day.Friday;
-    case -1:
-      return Day.Null;
-    default:
-      throw UnimplementedError();
-  }
-}
-
-int dayToInt(Day day) {
-  switch (day) {
-    case Day.Monday:
-      return 0;
-    case Day.Tuesday:
-      return 1;
-    case Day.Wednesday:
-      return 2;
-    case Day.Thursday:
-      return 3;
-    case Day.Friday:
-      return 4;
-    case Day.Null:
-      return -1;
-    default:
-      throw UnimplementedError();
-  }
-}
+Day dayFromInt(int i) => Day.values[i == -1 ? 5 : i];
+int dayToInt(Day day) => day == Day.Null ? -1 : Day.values.indexOf(day);
 
 Day matchDay(String s) {
   if (s.isEmpty) return Day.Null;
@@ -61,6 +26,6 @@ Day matchDay(String s) {
   } else if (s.contains('fr')) {
     return Day.Friday;
   } else {
-    throw '[matchDay] Unknown day: $s';
+    throw Error();
   }
 }

@@ -107,7 +107,7 @@ testCase dsbTestCase(
                 htmlCache[htmlCache.keys.firstWhere((k) => u.contains(k))],
             forceCache: true,
           ),
-        ))!,
+        )),
         (sub) =>
             sub.affectedClass.contains(stage) &&
             sub.affectedClass.contains(char),
