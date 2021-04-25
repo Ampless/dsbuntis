@@ -131,7 +131,7 @@ Future<String> getAuthToken(
       if (tkn.isEmpty) throw AuthenticationException();
       try {
         throw jsonDecode(tkn)['Message'];
-      } on Exception {
+      } on Error {
         return tkn.replaceAll('"', '');
       } on String catch (s) {
         throw AuthenticationException(s);
