@@ -188,9 +188,11 @@ Future<List<Plan>> getAndParse(
         .replaceAll(RegExp(r'<br />'), '')
         .replaceAll(RegExp(r'<!-- .*? -->'), '');
     try {
-      var html = htmlParse(rawHtml).first.children[1].children; //body
-      final planTitle = htmlSearchByClass(html, 'mon_title')!.innerHtml;
-      html = htmlSearchByClass(html, 'mon_list')!
+      var html = parse(rawHtml).first.children[1].children; //body
+      final planTitle =
+          searchFirst(html, (e) => e.className.contains('mon_title'))!
+              .innerHtml;
+      html = searchFirst(html, (e) => e.className.contains('mon_list'))!
           .children
           .first //for some reason <table>s like to contain <tbody>s
           //FIXME: just taking first isnt even standard-compliant
