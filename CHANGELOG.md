@@ -1,7 +1,16 @@
+## 4.4.0
+
+* Added support for selecting a plan parser (or making a custom one) through
+the optional `parser` parameter of `getAllSubs` and `getAndParse`
+* Made `Substitution.toString` also print the `room`
+* `Substitution.toJson` now also includes the `room`
+* More testing due to the addition of the `parser` parameter
+
 ## 4.3.0
 
 * Added `Substitution.fromUntis` and a few others for parsing substitutions
 * Fixed a bug in 4.2 (`getAuthToken`)
+* Added `room` to `Substitution`, because some plans include it
 
 ## 4.2.0
 

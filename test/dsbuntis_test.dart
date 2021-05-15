@@ -135,7 +135,20 @@ List<testCase> jsonTestCases = [
   jsonTestCase(dsbTest2Expct),
 ];
 
+testCase publicTestCase(
+  String username,
+  String password,
+  planParser parser,
+) =>
+    () async => print(await getAllSubs(username, password,
+        downloadPreviews: true, parser: parser));
+
+List<testCase> publicTestCases = [
+  publicTestCase('187801', 'public', Substitution.fromUntis2019),
+];
+
 void main() {
   tests(dsbTestCases, 'dsb');
   tests(jsonTestCases, 'json');
+  tests(publicTestCases, 'public');
 }

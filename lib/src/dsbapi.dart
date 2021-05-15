@@ -19,6 +19,7 @@ class Substitution extends Comparable {
   String? room;
   bool isFree;
 
+  //TODO: in next major either make room non-optional or make everything named
   Substitution(this.affectedClass, this.lesson, this.subTeacher, this.subject,
       this.notes, this.isFree, this.orgTeacher,
       [this.room]);
@@ -31,7 +32,7 @@ class Substitution extends Comparable {
     required String notes,
     String? orgTeacher,
     String? room,
-  })  : this.affectedClass = affectedClass.codeUnitAt(0) == _zero
+  })  : this.affectedClass = affectedClass[0] == '0'
             ? affectedClass.substring(1).toLowerCase()
             : affectedClass.toLowerCase(),
         this.lesson = lesson,
@@ -82,7 +83,9 @@ class Substitution extends Comparable {
         orgTeacher = json['org_teacher'],
         subject = json['subject'],
         notes = json['notes'],
-        isFree = json['free'];
+        isFree = json['free'],
+        //TODO: make this normal in the next major
+        room = json.containsKey('room') ? json['room'] : null;
 
   dynamic toJson() => {
         'class': affectedClass,
@@ -92,6 +95,7 @@ class Substitution extends Comparable {
         'subject': subject,
         'notes': notes,
         'free': isFree,
+        'room': room,
       };
 
   @override
@@ -105,7 +109,7 @@ class Substitution extends Comparable {
 
   @override
   String toString() =>
-      "['$affectedClass', $lesson, '$orgTeacher' → '$subTeacher', '$subject', '$notes', $isFree]";
+      "['$affectedClass', $lesson, '$orgTeacher' → '$subTeacher' at '$room', '$subject', '$notes', $isFree]";
 }
 
 class Plan {
@@ -194,6 +198,7 @@ Future<String> getAuthToken(
       }
     });
 
+//TODO: in next major rename to support other data types
 Future<List> getJson(
   String token,
   ScHttpClient http, {
@@ -215,6 +220,7 @@ Future<List<Plan>> getAndParse(
   ScHttpClient http, {
   bool downloadPreviews = false,
   String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
+  planParser parser = Substitution.fromUntis,
 }) async {
   final plans = <Plan>[];
   for (var plan in json) {
@@ -258,8 +264,7 @@ Future<List<Plan>> getAndParse(
         final e = html[i].children.map(_str).toList();
         final allLessons = e[1];
         for (final lesson in _parseIntsFromString(allLessons)) {
-          //TODO: make this configurable
-          final sub = Substitution.fromUntis(lesson, e);
+          final sub = parser(lesson, e);
           subs.add(sub);
         }
       }
@@ -275,14 +280,12 @@ final _tag = RegExp(r'</?.+?>');
 String _str(dom.Element e) =>
     _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
 
-final _zero = '0'.codeUnitAt(0), _nine = '9'.codeUnitAt(0);
-
 List<int> _parseIntsFromString(String s) {
   final out = <int>[];
   var lastindex = 0;
   for (var i = 0; i < s.length; i++) {
     final c = s[i].codeUnitAt(0);
-    if (c < _zero || c > _nine) {
+    if (c < 0x30 || c > 0x39) {
       if (lastindex != i) out.add(int.parse(s.substring(lastindex, i)));
       lastindex = i + 1;
     }
@@ -291,6 +294,8 @@ List<int> _parseIntsFromString(String s) {
   return out;
 }
 
+typedef planParser = Substitution Function(int, List<String>);
+
 Future<List<Plan>> getAllSubs(
   String username,
   String password, {
@@ -298,6 +303,7 @@ Future<List<Plan>> getAllSubs(
   String endpoint = 'https://mobileapi.dsbcontrol.de',
   String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
   bool downloadPreviews = false,
+  planParser parser = Substitution.fromUntis,
 }) async {
   http ??= ScHttpClient();
   final tkn = await getAuthToken(username, password, http, endpoint: endpoint);
@@ -307,5 +313,6 @@ Future<List<Plan>> getAllSubs(
     http,
     previewEndpoint: previewEndpoint,
     downloadPreviews: downloadPreviews,
+    parser: parser,
   );
 }

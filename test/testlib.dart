@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-typedef testCase = Future<Null> Function();
+typedef testCase = Future Function();
 
 testCase expectTestCase<T>(
   Future<T> Function() tfunc,
