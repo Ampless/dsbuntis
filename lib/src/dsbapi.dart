@@ -16,10 +16,64 @@ class Substitution extends Comparable {
   String subTeacher;
   String subject;
   String notes;
+  String? room;
   bool isFree;
 
   Substitution(this.affectedClass, this.lesson, this.subTeacher, this.subject,
-      this.notes, this.isFree, this.orgTeacher);
+      this.notes, this.isFree, this.orgTeacher,
+      [this.room]);
+
+  Substitution.raw(
+    int lesson, {
+    required String affectedClass,
+    required String subTeacher,
+    required String subject,
+    required String notes,
+    String? orgTeacher,
+    String? room,
+  })  : this.affectedClass = affectedClass.codeUnitAt(0) == _zero
+            ? affectedClass.substring(1).toLowerCase()
+            : affectedClass.toLowerCase(),
+        this.lesson = lesson,
+        this.subTeacher = subTeacher,
+        this.subject = subject,
+        this.notes = notes,
+        this.isFree = subTeacher.contains('---'),
+        this.orgTeacher = orgTeacher,
+        this.room = room;
+
+  static Substitution fromUntis(int lesson, List<String> e) =>
+      e.length < 6 ? fromUntis2020(lesson, e) : fromUntis2021(lesson, e);
+
+  static Substitution fromUntis2021(int lesson, List<String> e) =>
+      Substitution.raw(
+        lesson,
+        affectedClass: e[0],
+        subTeacher: e[2],
+        subject: e[3],
+        notes: e[5],
+        orgTeacher: e[4],
+      );
+
+  static Substitution fromUntis2020(int lesson, List<String> e) =>
+      Substitution.raw(
+        lesson,
+        affectedClass: e[0],
+        subTeacher: e[2],
+        subject: e[3],
+        notes: e[4],
+      );
+
+  static Substitution fromUntis2019(int lesson, List<String> e) =>
+      Substitution.raw(
+        lesson,
+        affectedClass: e[0],
+        subject: e[2],
+        subTeacher: e[3],
+        orgTeacher: e[4],
+        room: e[5],
+        notes: e[6],
+      );
 
   Substitution.fromJson(dynamic json)
       : affectedClass = json['class'],
@@ -131,6 +185,8 @@ Future<String> getAuthToken(
       if (tkn.isEmpty) throw AuthenticationException();
       try {
         throw jsonDecode(tkn)['Message'];
+      } on Exception {
+        return tkn.replaceAll('"', '');
       } on Error {
         return tkn.replaceAll('"', '');
       } on String catch (s) {
@@ -199,14 +255,11 @@ Future<List<Plan>> getAndParse(
           .children;
       final subs = <Substitution>[];
       for (var i = 1; i < html.length; i++) {
-        final e = html[i].children;
-        final allLessons = _str(e[1]);
+        final e = html[i].children.map(_str).toList();
+        final allLessons = e[1];
         for (final lesson in _parseIntsFromString(allLessons)) {
-          final sub = e.length < 6
-              ? _plsBuildMeASub(
-                  _str(e[0]), lesson, _str(e[2]), _str(e[3]), _str(e[4]))
-              : _plsBuildMeASub(_str(e[0]), lesson, _str(e[2]), _str(e[3]),
-                  _str(e[5]), _str(e[4]));
+          //TODO: make this configurable
+          final sub = Substitution.fromUntis(lesson, e);
           subs.add(sub);
         }
       }
@@ -216,19 +269,6 @@ Future<List<Plan>> getAndParse(
   }
   return plans;
 }
-
-Substitution _plsBuildMeASub(String affClass, int lesson, String subTeacher,
-        String subject, String notes, [String? orgTeacher]) =>
-    Substitution(
-        affClass.codeUnitAt(0) == _zero
-            ? affClass.substring(1).toLowerCase()
-            : affClass.toLowerCase(),
-        lesson,
-        subTeacher,
-        subject,
-        notes,
-        subTeacher.contains('---'),
-        orgTeacher);
 
 final _tag = RegExp(r'</?.+?>');
 

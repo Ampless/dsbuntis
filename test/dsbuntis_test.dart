@@ -22,8 +22,8 @@ final List<Plan> dsbTest1Expct = [
   Plan(
     Day.Tuesday,
     [
-      Substitution('11q', 7, '---', '1sk1', '', true, 'Aschi'),
-      Substitution('11q', 8, '---', '1sk1', '', true, 'Aschi'),
+      Substitution('11q', 7, '---', '1sk1', '', true, 'Aschi', null),
+      Substitution('11q', 8, '---', '1sk1', '', true, 'Aschi', null),
     ],
     '23.6.2020 Dienstag',
     '',

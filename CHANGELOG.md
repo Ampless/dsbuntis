@@ -1,3 +1,8 @@
+## 4.3.0
+
+* Added `Substitution.fromUntis` and a few others for parsing substitutions
+* Fixed a bug in 4.2 (`getAuthToken`)
+
 ## 4.2.0
 
 * Made all errors throw `Exception`s/`Error`s,
