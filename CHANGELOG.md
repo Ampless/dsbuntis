@@ -1,3 +1,11 @@
+## 5.0.0
+
+* Made the `notes`, `orgTeacher` and `room` parameters in the `Substitution`
+constructor named
+* When loading `Substitution`s from JSON, `room` is no longer optional
+* Renamed `getJson` to `getTimetableJson` to allow for supporting other data
+types in the future
+
 ## 4.4.0
 
 * Added support for selecting a plan parser (or making a custom one) through

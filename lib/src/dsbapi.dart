@@ -19,10 +19,16 @@ class Substitution extends Comparable {
   String? room;
   bool isFree;
 
-  //TODO: in next major either make room non-optional or make everything named
-  Substitution(this.affectedClass, this.lesson, this.subTeacher, this.subject,
-      this.notes, this.isFree, this.orgTeacher,
-      [this.room]);
+  Substitution(
+    this.affectedClass,
+    this.lesson,
+    this.subTeacher,
+    this.subject,
+    this.isFree, {
+    this.notes = '',
+    this.orgTeacher,
+    this.room,
+  });
 
   Substitution.raw(
     int lesson, {
@@ -84,10 +90,9 @@ class Substitution extends Comparable {
         subject = json['subject'],
         notes = json['notes'],
         isFree = json['free'],
-        //TODO: make this normal in the next major
-        room = json.containsKey('room') ? json['room'] : null;
+        room = json['room'];
 
-  dynamic toJson() => {
+  Map<String, dynamic> toJson() => {
         'class': affectedClass,
         'lesson': lesson,
         'sub_teacher': subTeacher,
@@ -198,8 +203,7 @@ Future<String> getAuthToken(
       }
     });
 
-//TODO: in next major rename to support other data types
-Future<List> getJson(
+Future<List> getTimetableJson(
   String token,
   ScHttpClient http, {
   String endpoint = 'https://mobileapi.dsbcontrol.de',
@@ -307,7 +311,7 @@ Future<List<Plan>> getAllSubs(
 }) async {
   http ??= ScHttpClient();
   final tkn = await getAuthToken(username, password, http, endpoint: endpoint);
-  final json = await getJson(tkn, http, endpoint: endpoint);
+  final json = await getTimetableJson(tkn, http, endpoint: endpoint);
   return getAndParse(
     json,
     http,
