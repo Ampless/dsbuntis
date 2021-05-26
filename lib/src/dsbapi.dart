@@ -1,3 +1,4 @@
+// TODO: split this mess of a file up
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -192,6 +193,8 @@ Future<String> getAuthToken(
             readCache: false, writeCache: false)
         .then((tkn) {
       if (tkn.isEmpty) throw AuthenticationException();
+      // TODO: this is a horrible piece of code, when im sober again, i should
+      //       fix it
       try {
         throw jsonDecode(tkn)['Message'];
       } on Exception {
@@ -261,7 +264,7 @@ Future<List<Plan>> getAndParse(
       html = searchFirst(html, (e) => e.className.contains('mon_list'))!
           .children
           .first //for some reason <table>s like to contain <tbody>s
-          //FIXME: just taking first isnt even standard-compliant
+          //TODO: just taking first isnt even standard-compliant
           .children;
       final subs = <Substitution>[];
       for (var i = 1; i < html.length; i++) {
