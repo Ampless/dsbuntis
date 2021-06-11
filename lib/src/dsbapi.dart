@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:dsbuntis/src/day.dart';
-import 'package:dsbuntis/src/exceptions.dart';
 import 'package:dsbuntis/src/plan.dart';
 import 'package:dsbuntis/src/session.dart';
 import 'package:dsbuntis/src/sub.dart';
@@ -32,16 +31,12 @@ Future<List> getTimetableJson(
   String token,
   ScHttpClient http, {
   String endpoint = 'https://mobileapi.dsbcontrol.de',
-}) async {
-  final json =
-      await Session(token, http).getJson('dsbtimetables', endpoint: endpoint);
-  if (json is Map && json.containsKey('Message'))
-    throw DsbException(json['Message']);
-  return json;
-}
+}) =>
+    Session(endpoint, token, http, '').getTimetableJson();
 
 final _unescape = HtmlUnescape();
 
+//TODO: split up and move into session
 Future<List<Plan>> getAndParse(
   List json,
   ScHttpClient http, {

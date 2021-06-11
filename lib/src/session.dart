@@ -8,10 +8,12 @@ String _authUrl(String e, String a, String o, String u, String p) =>
     '&appversion=$a&osversion=$o&pushid&user=$u&password=$p';
 
 class Session {
+  String endpoint;
   String token;
   ScHttpClient http;
+  String previewEndpoint;
 
-  Session(this.token, this.http);
+  Session(this.endpoint, this.token, this.http, this.previewEndpoint);
 
   static Future<Session> login(
     String username,
@@ -20,6 +22,7 @@ class Session {
     String endpoint = 'https://mobileapi.dsbcontrol.de',
     String appVersion = '36',
     String osVersion = '30',
+    String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
   }) async {
     http ??= ScHttpClient();
     final tkn = await http
@@ -39,15 +42,18 @@ class Session {
         throw AuthenticationException(s);
       }
     });
-    return Session(tkn, http);
+    return Session(endpoint, tkn, http, previewEndpoint);
   }
 
-  Future<dynamic> getJson(
-    String name, {
-    String endpoint = 'https://mobileapi.dsbcontrol.de',
-  }) async =>
-      jsonDecode(await http.get(
+  Future<dynamic> getJson(String name) async => jsonDecode(await http.get(
         '$endpoint/$name?authid=$token',
         ttl: Duration(minutes: 15),
       ));
+
+  Future<List> getTimetableJson() async {
+    final json = await getJson('dsbtimetables');
+    if (json is Map && json.containsKey('Message'))
+      throw DsbException(json['Message']);
+    return json;
+  }
 }
