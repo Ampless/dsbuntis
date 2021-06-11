@@ -1,19 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dsbuntis/src/day.dart';
 import 'package:dsbuntis/src/exceptions.dart';
 import 'package:dsbuntis/src/plan.dart';
+import 'package:dsbuntis/src/session.dart';
 import 'package:dsbuntis/src/sub.dart';
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:schttp/schttp.dart';
 import 'package:html/dom.dart' as dom;
-
-String _authUrl(String e, String a, String o, String u, String p) =>
-    '$e/authid?bundleid=de.heinekingmedia.dsbmobile' +
-    '&appversion=$a&osversion=$o&pushid&user=$u&password=$p';
 
 Future<String> getAuthToken(
   String username,
@@ -23,33 +19,22 @@ Future<String> getAuthToken(
   String appVersion = '36',
   String osVersion = '30',
 }) =>
-    http
-        .get(_authUrl(endpoint, appVersion, osVersion, username, password),
-            readCache: false, writeCache: false)
-        .then((tkn) {
-      if (tkn.isEmpty) throw AuthenticationException();
-      // TODO: this is a horrible piece of code, when im sober again, i should
-      //       fix it
-      try {
-        throw jsonDecode(tkn)['Message'];
-      } on Exception {
-        return tkn.replaceAll('"', '');
-      } on Error {
-        return tkn.replaceAll('"', '');
-      } on String catch (s) {
-        throw AuthenticationException(s);
-      }
-    });
+    Session.login(
+      username,
+      password,
+      http: http,
+      endpoint: endpoint,
+      appVersion: appVersion,
+      osVersion: osVersion,
+    ).then((session) => session.token);
 
 Future<List> getTimetableJson(
   String token,
   ScHttpClient http, {
   String endpoint = 'https://mobileapi.dsbcontrol.de',
 }) async {
-  final json = jsonDecode(await http.get(
-    '$endpoint/dsbtimetables?authid=$token',
-    ttl: Duration(minutes: 15),
-  ));
+  final json =
+      await Session(token, http).getJson('dsbtimetables', endpoint: endpoint);
   if (json is Map && json.containsKey('Message'))
     throw DsbException(json['Message']);
   return json;
@@ -126,8 +111,7 @@ List<int> _parseIntsFromString(String s) {
   final out = <int>[];
   var lastindex = 0;
   for (var i = 0; i < s.length; i++) {
-    final c = s[i].codeUnitAt(0);
-    if (c < 0x30 || c > 0x39) {
+    if (!'0123456789'.contains(s[i])) {
       if (lastindex != i) out.add(int.parse(s.substring(lastindex, i)));
       lastindex = i + 1;
     }

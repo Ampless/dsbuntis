@@ -1,6 +1,7 @@
 ## 5.1.0
 
 * Split the code up (breaking if you used it wrong)
+* Finally added the `Session` API
 
 ## 5.0.0
 
@@ -21,7 +22,7 @@ the optional `parser` parameter of `getAllSubs` and `getAndParse`
 ## 4.3.0
 
 * Added `Substitution.fromUntis` and a few others for parsing substitutions
-* Fixed a bug in 4.2 (`getAuthToken`)
+* Fixed a bug in `getAuthToken`
 * Added `room` to `Substitution`, because some plans include it
 
 ## 4.2.0
@@ -115,7 +116,7 @@ Many breaking API changes, like:
 
 ## 0.3.2
 
-* Switched to html_search for searching in HTML.
+* Switched to `html_search` for searching in HTML.
 
 ## 0.3.1
 
@@ -123,12 +124,13 @@ Many breaking API changes, like:
 
 ## 0.3.0
 
-* Added support for another substitution plan format, which also means changing DsbSubstitution. (it seems like Untis 2021 changed something there)
+* Added support for another substitution plan format, which also means changing
+`DsbSubstitution`. (it seems like Untis 2021 changed something there)
 
 ## 0.2.0
 
-* Added dsbCheckCredentials
-* Renamed dsbSortAllByHour → dsbSortByLesson
+* Added `dsbCheckCredentials`
+* Renamed `dsbSortAllByHour` → `dsbSortByLesson`
 
 ## 0.1.9
 
