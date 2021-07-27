@@ -10,6 +10,8 @@ class Plan {
   String date;
   String url;
   String previewUrl;
+  // TODO: make this nullable in the next major and make it `null`, if the
+  //       user opted out of downloading the previews
   Uint8List preview;
 
   Plan(this.day, this.subs, this.date, this.url, this.previewUrl, this.preview);

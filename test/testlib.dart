@@ -12,10 +12,11 @@ testCase expectTestCase<T>(
       try {
         res = await tfunc();
       } catch (e) {
-        if (!error)
+        if (!error) {
           rethrow;
-        else
+        } else {
           return;
+        }
       }
       if (error) throw '[ETC($tfunc, $expct)] No error.';
       expect(res, expct);
@@ -24,6 +25,8 @@ testCase expectTestCase<T>(
 void tests(List<testCase> testCases, String groupName) {
   group(groupName, () {
     var i = 1;
-    for (var testCase in testCases) test('case ${i++}', testCase);
+    for (var testCase in testCases) {
+      test('case ${i++}', testCase);
+    }
   });
 }

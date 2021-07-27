@@ -95,10 +95,12 @@ class Substitution extends Comparable {
   @override
   int compareTo(dynamic other) {
     if (!(other is Substitution)) throw ArgumentError('not comparable');
-    final tp = int.tryParse(this.affectedClass[1]) == null ? '0' : '';
+    // TODO: for convenience we might not want to throw when there is a weirdly
+    //       formatted class. so let's just make this safe.
+    final tp = int.tryParse(affectedClass[1]) == null ? '0' : '';
     final op = int.tryParse(other.affectedClass[1]) == null ? '0' : '';
-    final c = (tp + this.affectedClass).compareTo(op + other.affectedClass);
-    return c != 0 ? c : this.lesson.compareTo(other.lesson);
+    final c = (tp + affectedClass).compareTo(op + other.affectedClass);
+    return c != 0 ? c : lesson.compareTo(other.lesson);
   }
 
   @override

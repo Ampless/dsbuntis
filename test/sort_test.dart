@@ -15,7 +15,7 @@ testCase sortTestCase(List<List> input, List<int> expected) => () async {
       }
     };
 
-main() {
+void main() {
   tests([
     sortTestCase(
       [
