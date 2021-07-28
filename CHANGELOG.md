@@ -2,6 +2,8 @@
 
 * Split the code up (breaking if you used it wrong)
 * Finally added the `Session` API
+* Deprecated `getTimetableJson` and `getAndParse`
+* We now accept JSON that doesn't contain certain nullable keys
 
 ## 5.0.0
 

@@ -22,7 +22,8 @@ Future<String> getAuthToken(
       osVersion: osVersion,
     ).then((session) => session.token);
 
-/// deprecated, will be removed in the next major release
+/// will be removed in the next major release
+@deprecated
 Future<List> getTimetableJson(
   String token,
   ScHttpClient http, {
@@ -30,7 +31,8 @@ Future<List> getTimetableJson(
 }) =>
     Session(endpoint, token, http, '').getTimetableJson();
 
-/// deprecated, will be removed in the next major release
+/// will be removed in the next major release
+@deprecated
 Future<List<Plan>> getAndParse(
   List json,
   ScHttpClient http, {

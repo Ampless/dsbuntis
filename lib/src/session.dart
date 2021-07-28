@@ -86,8 +86,9 @@ class Session {
     return j;
   }
 
-  /// this method is deprecated and will be removed in the next major release
+  /// this method will be removed in the next major release
 // TODO: split up
+  @deprecated
   Future<List<Plan>> getAndParse(
     List json, {
     bool downloadPreviews = false,
