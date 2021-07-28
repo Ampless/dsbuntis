@@ -140,7 +140,7 @@ class Session {
           }
         }
         plans.add(Plan(matchDay(planTitle), subs, planTitle, url, previewUrl,
-            downloadPreviews ? await http.getBin(previewUrl) : Uint8List(0)));
+            downloadPreviews ? await http.getBin(previewUrl) : null));
       } catch (e) {}
     }
     return plans;

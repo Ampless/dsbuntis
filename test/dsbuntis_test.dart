@@ -28,7 +28,7 @@ final List<Plan> dsbTest1Expct = [
     '23.6.2020 Dienstag',
     '',
     'https://light.dsbcontrol.de/DSBlightWebsite/Data/asdf.png',
-    Uint8List(0),
+    null,
   ),
   Plan(
     Day.Wednesday,
@@ -36,7 +36,7 @@ final List<Plan> dsbTest1Expct = [
     '24.6.2020 Mittwoch',
     '',
     'https://light.dsbcontrol.de/DSBlightWebsite/Data/qwerty.jpg',
-    Uint8List(0),
+    null,
   ),
 ];
 
@@ -59,7 +59,7 @@ final List<Plan> dsbTest2Expct = [
     '23.6.2020 Dienstag',
     '',
     'https://light.dsbcontrol.de/DSBlightWebsite/Data/lol.gif',
-    Uint8List(0),
+    null,
   ),
   Plan(
     Day.Wednesday,
@@ -67,7 +67,7 @@ final List<Plan> dsbTest2Expct = [
     '24.6.2020 Mittwoch',
     '',
     'https://light.dsbcontrol.de/DSBlightWebsite/Data/lel.bmp',
-    Uint8List(0),
+    null,
   ),
 ];
 
