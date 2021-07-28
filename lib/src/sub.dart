@@ -27,16 +27,16 @@ class Substitution extends Comparable {
     required String notes,
     String? orgTeacher,
     String? room,
-  })  : this.affectedClass = affectedClass[0] == '0'
+  })  : affectedClass = affectedClass[0] == '0'
             ? affectedClass.substring(1).toLowerCase()
             : affectedClass.toLowerCase(),
-        this.lesson = lesson,
-        this.subTeacher = subTeacher,
-        this.subject = subject,
-        this.notes = notes,
-        this.isFree = subTeacher.contains('---'),
-        this.orgTeacher = orgTeacher,
-        this.room = room;
+        lesson = lesson,
+        subTeacher = subTeacher,
+        subject = subject,
+        notes = notes,
+        isFree = subTeacher.contains('---'),
+        orgTeacher = orgTeacher,
+        room = room;
 
   static Substitution fromUntis(int lesson, List<String> e) =>
       e.length < 6 ? fromUntis2020(lesson, e) : fromUntis2021(lesson, e);
@@ -71,16 +71,19 @@ class Substitution extends Comparable {
         notes: e[6],
       );
 
+  static String? _ng(j, String k) => j.containsKey(k) ? j[k] : null;
+
   Substitution.fromJson(dynamic json)
       : affectedClass = json['class'],
         lesson = json['lesson'],
         subTeacher = json['sub_teacher'],
-        orgTeacher = json['org_teacher'],
+        orgTeacher = _ng(json, 'org_teacher'),
         subject = json['subject'],
         notes = json['notes'],
         isFree = json['free'],
-        room = json['room'];
+        room = _ng(json, 'room');
 
+  // TODO: in the next major lets not include anything that is null
   Map<String, dynamic> toJson() => {
         'class': affectedClass,
         'lesson': lesson,
@@ -92,6 +95,8 @@ class Substitution extends Comparable {
         'room': room,
       };
 
+  /// throws when the `affectedClass` is not well formatted,
+  /// that behavior will be changed in the next major release
   @override
   int compareTo(dynamic other) {
     if (!(other is Substitution)) throw ArgumentError('not comparable');

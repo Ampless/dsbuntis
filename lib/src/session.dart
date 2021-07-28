@@ -61,16 +61,16 @@ class Session {
         .get(_authUrl(endpoint, appVersion, osVersion, username, password),
             readCache: false, writeCache: false)
         .then((tkn) {
-      // TODO: check if all of this is correct dsb behavior and if it works
       if (tkn.isEmpty) throw AuthenticationException();
-      String? error;
       try {
-        error = jsonDecode(tkn)['Message'];
-      } catch (s) {}
-      if (error != null) throw DsbException(error);
-      tkn = tkn.replaceAll('"', '');
-      if (tkn.isEmpty) throw AuthenticationException();
-      return tkn;
+        throw DsbException(jsonDecode(tkn)['Message']);
+      } on DsbException {
+        rethrow;
+      } catch (e) {
+        tkn = tkn.replaceAll('"', '');
+        if (tkn.isEmpty) throw AuthenticationException();
+        return tkn;
+      }
     });
     return Session(endpoint, tkn, http, previewEndpoint);
   }
@@ -86,6 +86,7 @@ class Session {
     return j;
   }
 
+  /// this method is deprecated and will be removed in the next major release
 // TODO: split up
   Future<List<Plan>> getAndParse(
     List json, {

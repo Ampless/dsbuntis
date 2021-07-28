@@ -22,8 +22,11 @@ class Plan {
         subs = _subsFromJson(json['subs']),
         url = json['url'],
         previewUrl = json['preview_url'],
-        preview = Uint8List.fromList(List<int>.from(json['preview']));
+        preview = json.containsKey('preview')
+            ? Uint8List.fromList(List<int>.from(json['preview']))
+            : Uint8List(0);
 
+  // TODO: in the next major lets not include anything that is null
   dynamic toJson() => {
         'day': dayToInt(day),
         'date': date,
