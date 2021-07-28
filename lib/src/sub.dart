@@ -83,7 +83,7 @@ class Substitution extends Comparable {
         isFree = json['free'],
         room = _ng(json, 'room');
 
-  // TODO: in the next major lets not include anything that is null
+  // TODO: lets not include anything that is null
   Map<String, dynamic> toJson() => {
         'class': affectedClass,
         'lesson': lesson,

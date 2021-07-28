@@ -22,27 +22,6 @@ Future<String> getAuthToken(
       osVersion: osVersion,
     ).then((session) => session.token);
 
-/// will be removed in the next major release
-@deprecated
-Future<List> getTimetableJson(
-  String token,
-  ScHttpClient http, {
-  String endpoint = 'https://mobileapi.dsbcontrol.de',
-}) =>
-    Session(endpoint, token, http, '').getTimetableJson();
-
-/// will be removed in the next major release
-@deprecated
-Future<List<Plan>> getAndParse(
-  List json,
-  ScHttpClient http, {
-  bool downloadPreviews = false,
-  String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
-  planParser parser = Substitution.fromUntis,
-}) =>
-    Session('noone', 'idc', http, previewEndpoint)
-        .getAndParse(json, downloadPreviews: downloadPreviews, parser: parser);
-
 Future<List<Plan>> getAllSubs(
   String username,
   String password, {

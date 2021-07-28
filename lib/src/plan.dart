@@ -10,9 +10,7 @@ class Plan {
   String date;
   String url;
   String previewUrl;
-  // TODO: make this nullable in the next major and make it `null`, if the
-  //       user opted out of downloading the previews
-  Uint8List preview;
+  Uint8List? preview;
 
   Plan(this.day, this.subs, this.date, this.url, this.previewUrl, this.preview);
 
@@ -24,9 +22,9 @@ class Plan {
         previewUrl = json['preview_url'],
         preview = json.containsKey('preview')
             ? Uint8List.fromList(List<int>.from(json['preview']))
-            : Uint8List(0);
+            : null;
 
-  // TODO: in the next major lets not include anything that is null
+  // TODO: lets not include anything that is null
   dynamic toJson() => {
         'day': dayToInt(day),
         'date': date,

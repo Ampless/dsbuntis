@@ -86,7 +86,6 @@ class Session {
     return j;
   }
 
-  /// this method will be removed in the next major release
 // TODO: split up
   @deprecated
   Future<List<Plan>> getAndParse(
