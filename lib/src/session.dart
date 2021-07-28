@@ -80,7 +80,7 @@ class Session {
         ttl: Duration(minutes: 15),
       ));
 
-  Future<List> timetableJson() async {
+  Future<List> getTimetableJson() async {
     final j = await getJson('dsbtimetables');
     if (j is Map && j.containsKey('Message')) throw DsbException(j['Message']);
     return j;

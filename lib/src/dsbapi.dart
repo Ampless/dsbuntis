@@ -22,13 +22,15 @@ Future<String> getAuthToken(
       osVersion: osVersion,
     ).then((session) => session.token);
 
+/// deprecated, will be removed in the next major release
 Future<List> getTimetableJson(
   String token,
   ScHttpClient http, {
   String endpoint = 'https://mobileapi.dsbcontrol.de',
 }) =>
-    Session(endpoint, token, http, '').timetableJson();
+    Session(endpoint, token, http, '').getTimetableJson();
 
+/// deprecated, will be removed in the next major release
 Future<List<Plan>> getAndParse(
   List json,
   ScHttpClient http, {
@@ -48,14 +50,10 @@ Future<List<Plan>> getAllSubs(
   bool downloadPreviews = false,
   planParser parser = Substitution.fromUntis,
 }) async {
-  http ??= ScHttpClient();
-  final tkn = await getAuthToken(username, password, http, endpoint: endpoint);
-  final json = await getTimetableJson(tkn, http, endpoint: endpoint);
-  return getAndParse(
-    json,
-    http,
-    previewEndpoint: previewEndpoint,
-    downloadPreviews: downloadPreviews,
-    parser: parser,
-  );
+  final session = await Session.login(username, password,
+      endpoint: endpoint,
+      previewEndpoint: previewEndpoint,
+      http: http ?? ScHttpClient());
+  return session.getAndParse(await session.getTimetableJson(),
+      downloadPreviews: downloadPreviews, parser: parser);
 }
