@@ -35,6 +35,12 @@ Future<List<Plan>> getAllSubs(
       endpoint: endpoint,
       previewEndpoint: previewEndpoint,
       http: http ?? ScHttpClient());
-  return session.getAndParse(await session.getTimetableJson(),
-      downloadPreviews: downloadPreviews, parser: parser);
+  final dp = session.downloadPlans(await session.getTimetableJson(),
+      downloadPreviews: downloadPreviews);
+  final plans = <Plan>[];
+  for (final p in session.parsePlans(dp, parser: parser)) {
+    final plan = await p;
+    if (plan != null) plans.add(plan);
+  }
+  return plans;
 }

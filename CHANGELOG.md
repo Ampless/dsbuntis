@@ -1,3 +1,8 @@
+## 6.0.0
+
+* Removed some deprecated APIs
+* Added `Session.downloadPlans`
+
 ## 5.1.0
 
 * Split the code up (breaking if you used it wrong)

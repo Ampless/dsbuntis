@@ -39,6 +39,13 @@ List<int> _parseIntsFromString(String s) {
 
 typedef planParser = Substitution Function(int, List<String>);
 
+class DownloadingPlan {
+  String htmlUrl, previewUrl;
+  Future<String> html;
+  Future<Uint8List>? preview;
+  DownloadingPlan(this.htmlUrl, this.previewUrl, this.html, this.preview);
+}
+
 class Session {
   String endpoint;
   String token;
@@ -86,63 +93,68 @@ class Session {
     return j;
   }
 
-// TODO: split up
-  @deprecated
-  Future<List<Plan>> getAndParse(
+  Iterable<DownloadingPlan> downloadPlans(
     List json, {
     bool downloadPreviews = false,
+  }) =>
+      json.map((p) => p['Childs'][0]).map((p) => DownloadingPlan(
+          p['Detail'],
+          p['Preview'],
+          http.get(p['Detail'], ttl: Duration(days: 4)),
+          downloadPreviews
+              ? http.getBin('$previewEndpoint/${p['Preview']}')
+              : null));
+
+  Iterable<Future<Plan?>> parsePlans(
+    Iterable<DownloadingPlan> plans, {
     planParser parser = Substitution.fromUntis,
-  }) async {
-    final plans = <Plan>[];
-    for (var plan in json) {
-      plan = plan['Childs'][0];
-      final String url = plan['Detail'];
-      final previewUrl = '$previewEndpoint/${plan['Preview']}';
-      final rawHtml = (await http.get(url, ttl: Duration(days: 4)))
-          .replaceAll('\n', '')
-          .replaceAll('\r', '')
-          //just fyi: these regexes only work because there are no more newlines
-          .replaceAll(RegExp(r'<h1.*?</h1>'), '')
-          .replaceAll(RegExp(r'</?p.*?>'), '')
-          .replaceAll(RegExp(r'<th.*?</th>'), '')
-          .replaceAll(RegExp(r'<head.*?</head>'), '')
-          .replaceAll(RegExp(r'<script.*?</script>'), '')
-          .replaceAll(RegExp(r'<style.*?</style>'), '')
-          .replaceAll(RegExp(r'</?html.*?>'), '')
-          .replaceAll(RegExp(r'</?body.*?>'), '')
-          .replaceAll(RegExp(r'</?font.*?>'), '')
-          .replaceAll(RegExp(r'</?span.*?>'), '')
-          .replaceAll(RegExp(r'</?center.*?>'), '')
-          .replaceAll(RegExp(r'</?a.*?>'), '')
-          .replaceAll(RegExp(r'<tr.*?>'), '<tr>')
-          .replaceAll(RegExp(r'<td.*?>'), '<td>')
-          .replaceAll(RegExp(r'<th.*?>'), '<th>')
-          .replaceAll(RegExp(r' +'), ' ')
-          .replaceAll(RegExp(r'<br />'), '')
-          .replaceAll(RegExp(r'<!-- .*? -->'), '');
-      try {
-        var html = parse(rawHtml).first.children[1].children; //body
-        final planTitle =
-            searchFirst(html, (e) => e.className.contains('mon_title'))!
-                .innerHtml;
-        html = searchFirst(html, (e) => e.className.contains('mon_list'))!
-            .children
-            .first //for some reason <table>s like to contain <tbody>s
-            //TODO: just taking first isnt even standard-compliant
-            .children;
-        final subs = <Substitution>[];
-        for (var i = 1; i < html.length; i++) {
-          final e = html[i].children.map(_str).toList();
-          final allLessons = e[1];
-          for (final lesson in _parseIntsFromString(allLessons)) {
-            final sub = parser(lesson, e);
-            subs.add(sub);
+  }) =>
+      plans.map((p) async {
+        final rawHtml = (await p.html)
+            .replaceAll('\n', '')
+            .replaceAll('\r', '')
+            //just fyi: these regexes only work because there are no more newlines
+            .replaceAll(RegExp(r'<h1.*?</h1>'), '')
+            .replaceAll(RegExp(r'</?p.*?>'), '')
+            .replaceAll(RegExp(r'<th.*?</th>'), '')
+            .replaceAll(RegExp(r'<head.*?</head>'), '')
+            .replaceAll(RegExp(r'<script.*?</script>'), '')
+            .replaceAll(RegExp(r'<style.*?</style>'), '')
+            .replaceAll(RegExp(r'</?html.*?>'), '')
+            .replaceAll(RegExp(r'</?body.*?>'), '')
+            .replaceAll(RegExp(r'</?font.*?>'), '')
+            .replaceAll(RegExp(r'</?span.*?>'), '')
+            .replaceAll(RegExp(r'</?center.*?>'), '')
+            .replaceAll(RegExp(r'</?a.*?>'), '')
+            .replaceAll(RegExp(r'<tr.*?>'), '<tr>')
+            .replaceAll(RegExp(r'<td.*?>'), '<td>')
+            .replaceAll(RegExp(r'<th.*?>'), '<th>')
+            .replaceAll(RegExp(r' +'), ' ')
+            .replaceAll(RegExp(r'<br />'), '')
+            .replaceAll(RegExp(r'<!-- .*? -->'), '');
+        try {
+          var html = parse(rawHtml).first.children[1].children; //body
+          final planTitle =
+              searchFirst(html, (e) => e.className.contains('mon_title'))!
+                  .innerHtml;
+          html = searchFirst(html, (e) => e.className.contains('mon_list'))!
+              .children
+              .first //for some reason <table>s like to contain <tbody>s
+              //TODO: just taking first isnt even standard-compliant
+              .children;
+          final subs = <Substitution>[];
+          for (var i = 1; i < html.length; i++) {
+            final e = html[i].children.map(_str).toList();
+            final allLessons = e[1];
+            for (final lesson in _parseIntsFromString(allLessons)) {
+              final sub = parser(lesson, e);
+              subs.add(sub);
+            }
           }
+          return Plan(matchDay(planTitle), subs, planTitle, p.htmlUrl,
+              p.previewUrl, p.preview != null ? await p.preview : null);
+        } catch (e) {
+          return null;
         }
-        plans.add(Plan(matchDay(planTitle), subs, planTitle, url, previewUrl,
-            downloadPreviews ? await http.getBin(previewUrl) : null));
-      } catch (e) {}
-    }
-    return plans;
-  }
+      });
 }
