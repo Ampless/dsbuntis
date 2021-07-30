@@ -2,6 +2,7 @@
 
 * Removed some deprecated APIs
 * Added `Session.downloadPlans`
+* Stripped all values that are `null` from the JSONs
 
 ## 5.1.0
 

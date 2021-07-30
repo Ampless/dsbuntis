@@ -83,17 +83,19 @@ class Substitution extends Comparable {
         isFree = json['free'],
         room = _ng(json, 'room');
 
-  // TODO: lets not include anything that is null
-  Map<String, dynamic> toJson() => {
-        'class': affectedClass,
-        'lesson': lesson,
-        'sub_teacher': subTeacher,
-        'org_teacher': orgTeacher,
-        'subject': subject,
-        'notes': notes,
-        'free': isFree,
-        'room': room,
-      };
+  Map<String, dynamic> toJson() {
+    final m = <String, dynamic>{
+      'class': affectedClass,
+      'lesson': lesson,
+      'sub_teacher': subTeacher,
+      'subject': subject,
+      'notes': notes,
+      'free': isFree,
+    };
+    if (orgTeacher != null) m['org_teacher'] = orgTeacher;
+    if (room != null) m['room'] = room;
+    return m;
+  }
 
   /// throws when the `affectedClass` is not well formatted,
   /// that behavior will be changed in the next major release

@@ -24,15 +24,17 @@ class Plan {
             ? Uint8List.fromList(List<int>.from(json['preview']))
             : null;
 
-  // TODO: lets not include anything that is null
-  dynamic toJson() => {
-        'day': dayToInt(day),
-        'date': date,
-        'subs': _subsToJson(),
-        'url': url,
-        'preview_url': previewUrl,
-        'preview': preview,
-      };
+  Map<String, dynamic> toJson() {
+    final m = <String, dynamic>{
+      'day': dayToInt(day),
+      'date': date,
+      'subs': _subsToJson(),
+      'url': url,
+      'preview_url': previewUrl,
+    };
+    if (preview != null) m['preview'] = preview;
+    return m;
+  }
 
   dynamic _subsToJson() => subs.map((sub) => sub.toJson()).toList();
 
