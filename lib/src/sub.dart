@@ -97,17 +97,19 @@ class Substitution extends Comparable {
     return m;
   }
 
-  /// throws when the `affectedClass` is not well formatted,
-  /// that behavior will be changed in the next major release
   @override
   int compareTo(dynamic other) {
-    if (!(other is Substitution)) throw ArgumentError('not comparable');
-    // TODO: for convenience we might not want to throw when there is a weirdly
-    //       formatted class. so let's just make this safe.
-    final tp = int.tryParse(affectedClass[1]) == null ? '0' : '';
-    final op = int.tryParse(other.affectedClass[1]) == null ? '0' : '';
-    final c = (tp + affectedClass).compareTo(op + other.affectedClass);
-    return c != 0 ? c : lesson.compareTo(other.lesson);
+    if (other is int) {
+      return lesson.compareTo(other);
+    } else if (other is Substitution) {
+      var tc = affectedClass, oc = other.affectedClass;
+      if (tc.isNotEmpty && tc[0] == '0') tc = tc.substring(1);
+      if (oc.isNotEmpty && oc[0] == '0') oc = oc.substring(1);
+      final c = tc.compareTo(oc);
+      return c != 0 ? c : lesson.compareTo(other.lesson);
+    } else {
+      return 0;
+    }
   }
 
   @override

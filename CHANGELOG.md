@@ -3,6 +3,7 @@
 * Removed some deprecated APIs
 * Added `Session.downloadPlans`
 * Stripped all values that are `null` from the JSONs
+* Changed `Substitution.compareTo` to not throw at all
 
 ## 5.1.0
 
