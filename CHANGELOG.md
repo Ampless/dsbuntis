@@ -1,7 +1,8 @@
 ## 6.0.0
 
 * Removed some deprecated APIs
-* Added `Session.downloadPlans`
+* Added `Session.downloadPlans` and `Session.parsePlans`
+(as replacements for the removed `Session.getAndParse`)
 * Stripped all values that are `null` from the JSONs
 * Changed `Substitution.compareTo` to not throw at all
 
