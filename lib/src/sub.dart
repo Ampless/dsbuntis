@@ -103,8 +103,8 @@ class Substitution extends Comparable {
       return lesson.compareTo(other);
     } else if (other is Substitution) {
       var tc = affectedClass, oc = other.affectedClass;
-      if (tc.isNotEmpty && tc[0] == '0') tc = tc.substring(1);
-      if (oc.isNotEmpty && oc[0] == '0') oc = oc.substring(1);
+      if (tc.length > 1 && !'0123456789'.contains(tc[1])) tc = '0' + tc;
+      if (oc.length > 1 && !'0123456789'.contains(oc[1])) oc = '0' + oc;
       final c = tc.compareTo(oc);
       return c != 0 ? c : lesson.compareTo(other.lesson);
     } else {

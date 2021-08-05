@@ -138,8 +138,8 @@ testCase publicTestCase(
   String password,
   planParser parser,
 ) =>
-    () async => print(await getAllSubs(username, password,
-        downloadPreviews: true, parser: parser));
+    () =>
+        getAllSubs(username, password, downloadPreviews: true, parser: parser);
 
 List<testCase> publicTestCases = [
   publicTestCase('187801', 'public', Substitution.fromUntis2019),
