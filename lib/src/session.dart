@@ -140,7 +140,6 @@ class Session {
           html = searchFirst(html, (e) => e.className.contains('mon_list'))!
               .children
               .first //for some reason <table>s like to contain <tbody>s
-              //TODO: just taking first isnt even standard-compliant
               .children;
           final subs = <Substitution>[];
           for (var i = 1; i < html.length; i++) {
