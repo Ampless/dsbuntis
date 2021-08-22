@@ -1,3 +1,7 @@
+## 6.0.1
+
+* `schttp` 4 support
+
 ## 6.0.0
 
 * Removed some deprecated APIs

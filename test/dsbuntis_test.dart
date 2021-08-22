@@ -101,8 +101,8 @@ testCase dsbTestCase(
           username,
           password,
           http: ScHttpClient(
-            getCache: (u) =>
-                htmlCache[htmlCache.keys.firstWhere((k) => u.contains(k))],
+            getCache: (u) => htmlCache[
+                htmlCache.keys.firstWhere((k) => u.toString().contains(k))],
             forceCache: true,
           ),
         )),

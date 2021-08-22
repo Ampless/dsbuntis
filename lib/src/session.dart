@@ -85,6 +85,7 @@ class Session {
   Future<dynamic> getJson(String name) async => jsonDecode(await http.get(
         '$endpoint/$name?authid=$token',
         ttl: Duration(minutes: 15),
+        defaultCharset: (x) => String.fromCharCodes(x),
       ));
 
   Future<List> getTimetableJson() async {
@@ -100,7 +101,9 @@ class Session {
       json.map((p) => p['Childs'][0]).map((p) => DownloadingPlan(
           p['Detail'],
           p['Preview'],
-          http.get(p['Detail'], ttl: Duration(days: 4)),
+          http.get(p['Detail'],
+              ttl: Duration(days: 4),
+              defaultCharset: (x) => String.fromCharCodes(x)),
           downloadPreviews
               ? http.getBin('$previewEndpoint/${p['Preview']}')
               : null));
