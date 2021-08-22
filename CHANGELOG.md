@@ -1,3 +1,7 @@
+## 6.1.0
+
+* Added `Session.fromToken` for quick-and-dirty construction of `Session`s
+
 ## 6.0.1
 
 * `schttp` 4 support

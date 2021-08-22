@@ -54,6 +54,14 @@ class Session {
 
   Session(this.endpoint, this.token, this.http, this.previewEndpoint);
 
+// TODO: get rid of this in the next major by making the constructor nicer
+  static Session fromToken(String token) => Session(
+        'https://mobileapi.dsbcontrol.de',
+        token,
+        ScHttpClient(),
+        'https://light.dsbcontrol.de/DSBlightWebsite/Data',
+      );
+
   static Future<Session> login(
     String username,
     String password, {
