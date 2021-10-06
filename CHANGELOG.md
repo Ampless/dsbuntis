@@ -1,3 +1,8 @@
+## 7.0.0
+
+* Removed the `Session.fromToken` initializer in favor of the revised `Session` constructor
+* Added `Session.defaultEndpoint` and `Session.defaultPreviewEndpoint` for getting those
+
 ## 6.1.0
 
 * Added `Session.fromToken` for quick-and-dirty construction of `Session`s

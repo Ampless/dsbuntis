@@ -47,20 +47,20 @@ class DownloadingPlan {
 }
 
 class Session {
+  static const defaultEndpoint = 'https://mobileapi.dsbcontrol.de';
+  static const defaultPreviewEndpoint =
+      'https://light.dsbcontrol.de/DSBlightWebsite/Data';
+
   String endpoint;
   String token;
   ScHttpClient http;
   String previewEndpoint;
 
-  Session(this.endpoint, this.token, this.http, this.previewEndpoint);
-
-// TODO: get rid of this in the next major by making the constructor nicer
-  static Session fromToken(String token) => Session(
-        'https://mobileapi.dsbcontrol.de',
-        token,
-        ScHttpClient(),
-        'https://light.dsbcontrol.de/DSBlightWebsite/Data',
-      );
+  Session(this.token,
+      {this.endpoint = defaultEndpoint,
+      http,
+      this.previewEndpoint = defaultPreviewEndpoint})
+      : http = http ?? ScHttpClient();
 
   static Future<Session> login(
     String username,
@@ -87,7 +87,8 @@ class Session {
         return tkn;
       }
     });
-    return Session(endpoint, tkn, http, previewEndpoint);
+    return Session(tkn,
+        endpoint: endpoint, http: http, previewEndpoint: previewEndpoint);
   }
 
   Future<dynamic> getJson(String name) async => jsonDecode(await http.get(
@@ -102,6 +103,7 @@ class Session {
     return j;
   }
 
+  // TODO: these kind of things should be out of here probably
   Iterable<DownloadingPlan> downloadPlans(
     List json, {
     bool downloadPreviews = false,
