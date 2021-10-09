@@ -5,23 +5,7 @@ import 'package:dsbuntis/src/session.dart';
 import 'package:dsbuntis/src/sub.dart';
 import 'package:schttp/schttp.dart';
 
-Future<String> getAuthToken(
-  String username,
-  String password,
-  ScHttpClient http, {
-  String endpoint = 'https://mobileapi.dsbcontrol.de',
-  String appVersion = '36',
-  String osVersion = '30',
-}) =>
-    Session.login(
-      username,
-      password,
-      http: http,
-      endpoint: endpoint,
-      appVersion: appVersion,
-      osVersion: osVersion,
-    ).then((session) => session.token);
-
+// TODO: get rid of like half the params
 Future<List<Plan>> getAllSubs(
   String username,
   String password, {
