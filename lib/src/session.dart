@@ -37,7 +37,7 @@ List<int> _parseIntsFromString(String s) {
   return out;
 }
 
-typedef planParser = Substitution Function(int, List<String>);
+typedef PlanParser = Substitution Function(int, List<String>);
 
 class DownloadingPlan {
   String htmlUrl, previewUrl;
@@ -120,7 +120,7 @@ class Session {
 
   Iterable<Future<Plan?>> parsePlans(
     Iterable<DownloadingPlan> plans, {
-    planParser parser = Substitution.fromUntis,
+    PlanParser parser = Substitution.fromUntis,
   }) =>
       plans.map((p) async {
         final rawHtml = (await p.html)

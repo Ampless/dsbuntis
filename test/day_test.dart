@@ -2,10 +2,10 @@ import 'package:dsbuntis/dsbuntis.dart';
 
 import 'testlib.dart';
 
-testCase dayTestCase(input, expct, bool error, [Function tfunc = matchDay]) =>
+TestCase dayTestCase(input, expct, bool error, [Function tfunc = matchDay]) =>
     expectTestCase(() async => tfunc(input), expct, error);
 
-List<testCase> dayTestCases = [
+List<TestCase> dayTestCases = [
   dayTestCase('', Day.Null, false),
   dayTestCase('_kEkW_freiTaG_llUUULW', Day.Friday, false),
   dayTestCase('FvCkDaY', null, true),

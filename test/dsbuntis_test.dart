@@ -87,7 +87,7 @@ void assertPlanListsEqual(List<Plan> l1, List<Plan> l2) {
   }
 }
 
-testCase dsbTestCase(
+TestCase dsbTestCase(
   String username,
   String password,
   Map<String, String> htmlCache,
@@ -114,34 +114,34 @@ testCase dsbTestCase(
       assertPlanListsEqual(plans, expectedPlans);
     };
 
-List<testCase> dsbTestCases = [
+List<TestCase> dsbTestCases = [
   dsbTestCase('', 'null', dsbTest1Cache, dsbTest1Expct, '11', 'q'),
   dsbTestCase('null', '', dsbTest1Cache, dsbTest1Expct, '11', ''),
   dsbTestCase('null', 'null', dsbTest2Cache, dsbTest2Expct, '', 'q'),
   dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, '', ''),
 ];
 
-testCase jsonTestCase(List<Plan> plans) => () async {
+TestCase jsonTestCase(List<Plan> plans) => () async {
       assertPlanListsEqual(
         Plan.plansFromJsonString(Plan.plansToJsonString(plans)),
         plans,
       );
     };
 
-List<testCase> jsonTestCases = [
+List<TestCase> jsonTestCases = [
   jsonTestCase(dsbTest1Expct),
   jsonTestCase(dsbTest2Expct),
 ];
 
-testCase publicTestCase(
+TestCase publicTestCase(
   String username,
   String password,
-  planParser parser,
+  PlanParser parser,
 ) =>
     () =>
         getAllSubs(username, password, downloadPreviews: true, parser: parser);
 
-List<testCase> publicTestCases = [
+List<TestCase> publicTestCases = [
   publicTestCase('187801', 'public', Substitution.fromUntis2019),
 ];
 

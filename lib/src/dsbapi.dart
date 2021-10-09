@@ -13,7 +13,7 @@ Future<List<Plan>> getAllSubs(
   String endpoint = Session.defaultEndpoint,
   String previewEndpoint = Session.defaultPreviewEndpoint,
   bool downloadPreviews = false,
-  planParser parser = Substitution.fromUntis,
+  PlanParser parser = Substitution.fromUntis,
 }) async {
   final session = await Session.login(username, password,
       endpoint: endpoint,

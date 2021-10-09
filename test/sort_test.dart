@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 import 'testlib.dart';
 
-testCase sortTestCase(List<List> input, List<int> expected) => () async {
+TestCase sortTestCase(List<List> input, List<int> expected) => () async {
       if (input.length != expected.length) throw 'Invalid test.';
       final s = input
           .map((e) => Substitution(e[0], e[1], '', '', false))

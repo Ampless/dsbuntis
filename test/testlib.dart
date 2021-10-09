@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
 
-typedef testCase = Future Function();
+typedef TestCase = Future Function();
 
-testCase expectTestCase<T>(
+TestCase expectTestCase<T>(
   Future<T> Function() tfunc,
   T expct,
   bool error,
@@ -22,7 +22,7 @@ testCase expectTestCase<T>(
       expect(res, expct);
     };
 
-void tests(List<testCase> testCases, String groupName) {
+void tests(List<TestCase> testCases, String groupName) {
   group(groupName, () {
     var i = 1;
     for (var testCase in testCases) {
