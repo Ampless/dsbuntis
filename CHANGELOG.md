@@ -2,6 +2,10 @@
 
 * Removed the `Session.fromToken` initializer in favor of the revised `Session` constructor
 * Added `Session.defaultEndpoint` and `Session.defaultPreviewEndpoint` for getting those
+* Got rid of `getAuthToken`, since it is trivial and rarely used
+* [Better documentation](README.md)
+* Migrated from `pedantic` to `lints` for linting
+* Renamed `planParser` to `PlanParser` (that seems to be the new convention)
 
 ## 6.1.0
 

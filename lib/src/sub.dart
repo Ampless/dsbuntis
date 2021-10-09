@@ -20,23 +20,17 @@ class Substitution extends Comparable {
   });
 
   Substitution.raw(
-    int lesson, {
+    this.lesson, {
     required String affectedClass,
-    required String subTeacher,
-    required String subject,
-    required String notes,
-    String? orgTeacher,
-    String? room,
+    required this.subTeacher,
+    required this.subject,
+    required this.notes,
+    this.orgTeacher,
+    this.room,
   })  : affectedClass = affectedClass[0] == '0'
             ? affectedClass.substring(1).toLowerCase()
             : affectedClass.toLowerCase(),
-        lesson = lesson,
-        subTeacher = subTeacher,
-        subject = subject,
-        notes = notes,
-        isFree = subTeacher.contains('---'),
-        orgTeacher = orgTeacher,
-        room = room;
+        isFree = subTeacher.contains('---');
 
   static Substitution fromUntis(int lesson, List<String> e) =>
       e.length < 6 ? fromUntis2020(lesson, e) : fromUntis2021(lesson, e);
