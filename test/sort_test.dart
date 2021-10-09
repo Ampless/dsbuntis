@@ -8,7 +8,7 @@ testCase sortTestCase(List<List> input, List<int> expected) => () async {
       final s = input
           .map((e) => Substitution(e[0], e[1], '', '', false))
           .toList()
-            ..sort();
+        ..sort();
       for (var i = 0; i < s.length; i++) {
         expect(s[i].affectedClass, input[expected[i]][0]);
         expect(s[i].lesson, input[expected[i]][1]);

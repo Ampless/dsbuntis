@@ -66,10 +66,10 @@ class Session {
     String username,
     String password, {
     ScHttpClient? http,
-    String endpoint = 'https://mobileapi.dsbcontrol.de',
+    String endpoint = defaultEndpoint,
     String appVersion = '36',
     String osVersion = '30',
-    String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
+    String previewEndpoint = defaultPreviewEndpoint,
   }) async {
     http ??= ScHttpClient();
     final tkn = await http

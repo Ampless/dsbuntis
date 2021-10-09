@@ -26,8 +26,8 @@ Future<List<Plan>> getAllSubs(
   String username,
   String password, {
   ScHttpClient? http,
-  String endpoint = 'https://mobileapi.dsbcontrol.de',
-  String previewEndpoint = 'https://light.dsbcontrol.de/DSBlightWebsite/Data',
+  String endpoint = Session.defaultEndpoint,
+  String previewEndpoint = Session.defaultPreviewEndpoint,
   bool downloadPreviews = false,
   planParser parser = Substitution.fromUntis,
 }) async {
