@@ -22,7 +22,7 @@ Future<List<Plan>> getAllSubs(
   final dp = session.downloadPlans(await session.getTimetableJson(),
       downloadPreviews: downloadPreviews);
   final plans = <Plan>[];
-  for (final p in session.parsePlans(dp, parser: parser)) {
+  for (final p in parsePlans(dp, parser: parser)) {
     final plan = await p;
     if (plan != null) plans.add(plan);
   }
