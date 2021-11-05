@@ -8,6 +8,7 @@
 * Renamed `planParser` to `PlanParser` (that seems to be the new convention)
 * Extracted `parsePlans` out of `Session` (which also makes it static), because it doesn't
 depend on any of its members
+* Added `Session.getJsonString` and `Session.getTimetableJsonString`
 
 ## 6.1.0
 

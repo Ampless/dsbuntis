@@ -91,14 +91,15 @@ class Session {
         endpoint: endpoint, http: http, previewEndpoint: previewEndpoint);
   }
 
-  // TODO: json string
-
-  Future<dynamic> getJson(String name) async => jsonDecode(await http.get(
+  Future<String> getJsonString(String name) async => await http.get(
         '$endpoint/$name?authid=$token',
         ttl: Duration(minutes: 15),
         defaultCharset: (x) => String.fromCharCodes(x),
-      ));
+      );
 
+  Future<dynamic> getJson(String name) => getJsonString(name).then(jsonDecode);
+
+  Future<String> getTimetableJsonString() => getJsonString('dsbtimetables');
   Future<List> getTimetableJson() async {
     final j = await getJson('dsbtimetables');
     if (j is Map && j.containsKey('Message')) throw DsbException(j['Message']);
