@@ -9,6 +9,7 @@
 * Extracted `parsePlans` out of `Session` (which also makes it static), because it doesn't
 depend on any of its members
 * Added `Session.getJsonString` and `Session.getTimetableJsonString`
+* Removed `Day.Null`, camel-cased the other values, and used `Day?` whereever needed.
 
 ## 6.1.0
 

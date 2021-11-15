@@ -5,7 +5,6 @@ import 'package:dsbuntis/src/session.dart';
 import 'package:dsbuntis/src/sub.dart';
 import 'package:schttp/schttp.dart';
 
-// TODO: get rid of like half the params
 Future<List<Plan>> getAllSubs(
   String username,
   String password, {

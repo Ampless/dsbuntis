@@ -18,7 +18,7 @@ final Map<String, String> dsbTest1Cache = {
 
 final List<Plan> dsbTest1Expct = [
   Plan(
-    Day.Tuesday,
+    Day.tuesday,
     [
       Substitution('11q', 7, '---', '1sk1', true, orgTeacher: 'Aschi'),
       Substitution('11q', 8, '---', '1sk1', true, orgTeacher: 'Aschi'),
@@ -29,7 +29,7 @@ final List<Plan> dsbTest1Expct = [
     null,
   ),
   Plan(
-    Day.Wednesday,
+    Day.wednesday,
     [],
     '24.6.2020 Mittwoch',
     '',
@@ -52,7 +52,7 @@ final Map<String, String> dsbTest2Cache = {
 
 final List<Plan> dsbTest2Expct = [
   Plan(
-    Day.Tuesday,
+    Day.tuesday,
     [],
     '23.6.2020 Dienstag',
     '',
@@ -60,7 +60,7 @@ final List<Plan> dsbTest2Expct = [
     null,
   ),
   Plan(
-    Day.Wednesday,
+    Day.wednesday,
     [],
     '24.6.2020 Mittwoch',
     '',
@@ -110,7 +110,9 @@ TestCase dsbTestCase(
             sub.affectedClass.contains(stage) &&
             sub.affectedClass.contains(char),
       );
-      plans.forEach((plan) => plan.subs.sort());
+      for (final plan in plans) {
+        plan.subs.sort();
+      }
       assertPlanListsEqual(plans, expectedPlans);
     };
 

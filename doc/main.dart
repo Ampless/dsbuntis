@@ -1,5 +1,5 @@
-//If you are looking for something that you would actually want to use:
-//https://github.com/Ampless/Accemus
+// If you are looking for something that you would actually want to use:
+// https://github.com/Ampless/Accemus
 
 import 'package:dsbuntis/dsbuntis.dart';
 

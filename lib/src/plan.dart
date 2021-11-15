@@ -5,7 +5,7 @@ import 'package:dsbuntis/src/day.dart';
 import 'package:dsbuntis/src/sub.dart';
 
 class Plan {
-  Day day;
+  Day? day;
   List<Substitution> subs;
   String date;
   String url;
