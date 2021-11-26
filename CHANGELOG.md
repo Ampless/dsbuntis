@@ -1,3 +1,9 @@
+## 7.0.1
+
+* Enabled caching for `Session.login` with a TTL of 30 days, based on
+[findings](https://twitter.com/pixelcmtd/status/1464213128682610706)
+from [aggregamus](https://github.com/Ampless/aggregamus)
+
 ## 7.0.0
 
 * Removed the `Session.fromToken` initializer in favor of a revised `Session` constructor
@@ -9,7 +15,7 @@
 * Extracted `parsePlans` out of `Session` (which also makes it static), because it doesn't
 depend on any of its members
 * Added `Session.getJsonString` and `Session.getTimetableJsonString`
-* Removed `Day.Null`, camel-cased the other values, and used `Day?` whereever needed.
+* Removed `Day.Null`, camel-cased the other values, and used `Day?` wherever needed.
 
 ## 6.1.0
 

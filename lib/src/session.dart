@@ -74,7 +74,7 @@ class Session {
     http ??= ScHttpClient();
     final tkn = await http
         .get(_authUrl(endpoint, appVersion, osVersion, username, password),
-            readCache: false, writeCache: false)
+            ttl: Duration(days: 30))
         .then((tkn) {
       if (tkn.isEmpty) throw AuthenticationException();
       try {
