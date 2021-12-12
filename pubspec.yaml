@@ -1,6 +1,6 @@
 name: dsbuntis
 description: This package allows you to crawl the DSB/DSBMobile API and parse Untis's HTML.
-version: 7.0.1
+version: 7.1.0
 homepage: https://github.com/Ampless/dsbuntis
 
 environment:
@@ -14,5 +14,5 @@ dependencies:
 
 dev_dependencies:
   lints: ^1.0.1
-  test: ^1.19.4
+  test: ^1.19.5
   test_coverage_badge: ^0.2.0

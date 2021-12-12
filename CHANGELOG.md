@@ -1,3 +1,9 @@
+## 7.1.0
+
+* Started exposing other defaults as globals (`Session.defaultAppVersion`,
+`Session.defaultOsVersion`, `Session.defaultBundleId`)
+* Added support for a custom bundle id to `Session.login`
+
 ## 7.0.1
 
 * Enabled caching for `Session.login` with a TTL of 30 days, based on

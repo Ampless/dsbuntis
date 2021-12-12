@@ -10,9 +10,10 @@ import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:schttp/schttp.dart';
 
-String _authUrl(String ep, String av, String ov, String u, String pw) =>
+String _authUrl(
+        String ep, String av, String ov, String u, String pw, String bi) =>
     '$ep/authid'
-    '?bundleid=de.heinekingmedia.dsbmobile'
+    '?bundleid=$bi'
     '&appversion=$av'
     '&osversion=$ov'
     '&pushid'
@@ -50,6 +51,9 @@ class Session {
   static const defaultEndpoint = 'https://mobileapi.dsbcontrol.de';
   static const defaultPreviewEndpoint =
       'https://light.dsbcontrol.de/DSBlightWebsite/Data';
+  static const defaultAppVersion = '36';
+  static const defaultOsVersion = '30';
+  static const defaultBundleId = 'de.heinekingmedia.dsbmobile';
 
   String endpoint;
   String token;
@@ -67,13 +71,16 @@ class Session {
     String password, {
     ScHttpClient? http,
     String endpoint = defaultEndpoint,
-    String appVersion = '36',
-    String osVersion = '30',
+    String appVersion = defaultAppVersion,
+    String osVersion = defaultOsVersion,
+    String bundleId = defaultBundleId,
     String previewEndpoint = defaultPreviewEndpoint,
   }) async {
     http ??= ScHttpClient();
     final tkn = await http
-        .get(_authUrl(endpoint, appVersion, osVersion, username, password),
+        .get(
+            _authUrl(
+                endpoint, appVersion, osVersion, username, password, bundleId),
             ttl: Duration(days: 30))
         .then((tkn) {
       if (tkn.isEmpty) throw AuthenticationException();
