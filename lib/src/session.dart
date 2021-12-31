@@ -113,19 +113,23 @@ class Session {
     return j;
   }
 
+  // TODO: make this more robust
   Iterable<DownloadingPlan> downloadPlans(
     List json, {
     bool downloadPreviews = false,
   }) =>
-      json.map((p) => p['Childs'][0]).map((p) => DownloadingPlan(
-          p['Detail'],
-          p['Preview'],
-          http.get(p['Detail'],
-              ttl: Duration(days: 4),
-              defaultCharset: (x) => String.fromCharCodes(x)),
-          downloadPreviews
-              ? http.getBin('$previewEndpoint/${p['Preview']}')
-              : null));
+      json
+          .map((p) => p['Childs'])
+          .reduce((v, e) => [...v, ...e])
+          .map<DownloadingPlan>((p) => DownloadingPlan(
+              p['Detail'],
+              p['Preview'],
+              http.get(p['Detail'],
+                  ttl: Duration(days: 4),
+                  defaultCharset: (x) => String.fromCharCodes(x)),
+              downloadPreviews
+                  ? http.getBin('$previewEndpoint/${p['Preview']}')
+                  : null));
 }
 
 Iterable<Future<Plan?>> parsePlans(

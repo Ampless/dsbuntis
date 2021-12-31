@@ -11,6 +11,7 @@ class Plan {
   String url;
   String previewUrl;
   Uint8List? preview;
+  // TODO: include more info from dsb
 
   Plan(this.day, this.subs, this.date, this.url, this.previewUrl, this.preview);
 

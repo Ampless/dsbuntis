@@ -1,3 +1,8 @@
+## 7.1.1
+
+* Hotfix to represent every page of multi-page plans as their own plan
+(to not break everything before we know how to do it properly)
+
 ## 7.1.0
 
 * Started exposing other defaults as globals (`Session.defaultAppVersion`,
