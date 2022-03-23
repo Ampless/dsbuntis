@@ -1,8 +1,9 @@
+import 'package:dsbuntis/dsbuntis.dart';
 import 'package:schttp/schttp.dart';
 import 'package:test/test.dart';
-import 'package:dsbuntis/dsbuntis.dart';
+import 'package:untis/untis.dart' as untis;
 
-import 'testlib.dart';
+import '../../../testlib.dart';
 
 final Map<String, String> dsbTest1Cache = {
   '/authid': 'randomauthid',
@@ -18,10 +19,10 @@ final Map<String, String> dsbTest1Cache = {
 
 final List<Plan> dsbTest1Expct = [
   Plan(
-    Day.tuesday,
+    untis.Day.tuesday,
     [
-      Substitution('11q', 7, '---', '1sk1', true, orgTeacher: 'Aschi'),
-      Substitution('11q', 8, '---', '1sk1', true, orgTeacher: 'Aschi'),
+      untis.Substitution('11q', 7, '---', '1sk1', true, orgTeacher: 'Aschi'),
+      untis.Substitution('11q', 8, '---', '1sk1', true, orgTeacher: 'Aschi'),
     ],
     '23.6.2020 Dienstag',
     '',
@@ -29,7 +30,7 @@ final List<Plan> dsbTest1Expct = [
     null,
   ),
   Plan(
-    Day.wednesday,
+    untis.Day.wednesday,
     [],
     '24.6.2020 Mittwoch',
     '',
@@ -52,7 +53,7 @@ final Map<String, String> dsbTest2Cache = {
 
 final List<Plan> dsbTest2Expct = [
   Plan(
-    Day.tuesday,
+    untis.Day.tuesday,
     [],
     '23.6.2020 Dienstag',
     '',
@@ -60,7 +61,7 @@ final List<Plan> dsbTest2Expct = [
     null,
   ),
   Plan(
-    Day.wednesday,
+    untis.Day.wednesday,
     [],
     '24.6.2020 Mittwoch',
     '',
@@ -138,13 +139,16 @@ List<TestCase> jsonTestCases = [
 TestCase publicTestCase(
   String username,
   String password,
-  PlanParser parser,
+  untis.PlanParser parser,
 ) =>
     () =>
         getAllSubs(username, password, downloadPreviews: true, parser: parser);
 
 List<TestCase> publicTestCases = [
-  publicTestCase('187801', 'public', Substitution.fromUntis2019),
+  publicTestCase('187801', 'public', untis.Substitution.fromUntis2019),
+  // TODO: make this a better test
+  publicTestCase(
+      '152321', 'krsmrz21', untis.Substitution.fromUntis), //THANKS @3liFi!
 ];
 
 void main() {

@@ -1,3 +1,11 @@
+## 8.0.0-alpha.1
+
+* First attempt at pulling `untis` out of `dsbuntis`
+
+## 8.0.0-alpha.0
+
+* First attempt at pulling `dsb` out of `dsbuntis`
+
 ## 7.1.1
 
 * Hotfix to represent every page of multi-page plans as their own plan

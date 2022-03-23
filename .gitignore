@@ -1,14 +1,10 @@
 .DS_Store
 .buildlog/
 .history
-
-# IntelliJ related
 *.iml
 *.ipr
 *.iws
 .idea/
-
-# Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/
 .flutter-plugins

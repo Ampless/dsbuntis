@@ -65,31 +65,26 @@ class Substitution extends Comparable {
         notes: e[6],
       );
 
-  static String? _ng(j, String k) => j.containsKey(k) ? j[k] : null;
-
   Substitution.fromJson(dynamic json)
       : affectedClass = json['class'],
         lesson = json['lesson'],
         subTeacher = json['sub_teacher'],
-        orgTeacher = _ng(json, 'org_teacher'),
+        orgTeacher = json['org_teacher'],
         subject = json['subject'],
         notes = json['notes'],
         isFree = json['free'],
-        room = _ng(json, 'room');
+        room = json['room'];
 
-  Map<String, dynamic> toJson() {
-    final m = <String, dynamic>{
-      'class': affectedClass,
-      'lesson': lesson,
-      'sub_teacher': subTeacher,
-      'subject': subject,
-      'notes': notes,
-      'free': isFree,
-    };
-    if (orgTeacher != null) m['org_teacher'] = orgTeacher;
-    if (room != null) m['room'] = room;
-    return m;
-  }
+  Map<String, dynamic> toJson() => {
+        'class': affectedClass,
+        'lesson': lesson,
+        'sub_teacher': subTeacher,
+        'subject': subject,
+        'notes': notes,
+        'free': isFree,
+        if (orgTeacher != null) 'org_teacher': orgTeacher,
+        if (room != null) 'room': room,
+      };
 
   @override
   int compareTo(dynamic other) {

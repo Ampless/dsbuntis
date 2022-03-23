@@ -1,0 +1,16 @@
+name: untis
+description: This package allows you to parse Untis's HTML.
+version: 0.1.0-alpha.0
+homepage: https://github.com/Ampless/dsbuntis
+
+environment:
+  sdk: '>=2.15.0 <3.0.0'
+
+dependencies:
+  html: ^0.15.0
+  html_unescape: ^2.0.0
+  html_search: ^0.2.0
+
+dev_dependencies:
+  lints: ^1.0.1
+  test: ^1.20.1

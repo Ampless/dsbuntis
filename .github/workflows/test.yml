@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1.2
-      - run: dart test
+      - run: cd packages && for x in * ; do cd $x && dart test && cd .. ; done

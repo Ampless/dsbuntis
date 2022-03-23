@@ -1,6 +1,6 @@
-import 'package:dsbuntis/dsbuntis.dart';
+import 'package:untis/untis.dart';
 
-import 'testlib.dart';
+import '../../../testlib.dart';
 
 TestCase dayTestCase(input, expct, bool error, [Function tfunc = matchDay]) =>
     expectTestCase(() async => tfunc(input), expct, error);
@@ -24,7 +24,6 @@ List<TestCase> dayTestCases = [
   dayTestCase(Day.wednesday, 2, false, dayToInt),
   dayTestCase(Day.thursday, 3, false, dayToInt),
   dayTestCase(Day.friday, 4, false, dayToInt),
-  dayTestCase(null, -1, false, dayToInt),
   dayTestCase(0, Day.monday, false, dayFromInt),
   dayTestCase(1, Day.tuesday, false, dayFromInt),
   dayTestCase(2, Day.wednesday, false, dayFromInt),
