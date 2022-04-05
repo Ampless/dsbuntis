@@ -27,7 +27,7 @@ class Substitution extends Comparable {
     required this.notes,
     this.orgTeacher,
     this.room,
-  })  : affectedClass = affectedClass[0] == '0'
+  })  : affectedClass = affectedClass.isNotEmpty && affectedClass[0] == '0'
             ? affectedClass.substring(1).toLowerCase()
             : affectedClass.toLowerCase(),
         isFree = subTeacher.contains('---');

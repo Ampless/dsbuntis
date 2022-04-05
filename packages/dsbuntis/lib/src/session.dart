@@ -13,7 +13,8 @@ class DownloadingPlan {
   DownloadingPlan(this.htmlUrl, this.previewUrl, this.html, this.preview,
       this.id, this.dsbDate, this.dsbTitle);
 
-  Future<Plan?> parse(untis.PlanParser parser) async {
+  Future<Plan?> parse(
+      [untis.PlanParser parser = untis.Substitution.fromUntis]) async {
     final up = untis.Plan.parsePlan(await html, parser);
     return up != null
         ? Plan.from(up, htmlUrl, previewUrl, await preview)

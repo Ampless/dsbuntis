@@ -1,3 +1,8 @@
+## 8.0.0-alpha.2
+
+* Made the `parser` in `DownloadingPlans.parse` optional
+(I thought it wasn't necessary previously)
+
 ## 8.0.0-alpha.1
 
 * First attempt at pulling `untis` out of `dsbuntis`
