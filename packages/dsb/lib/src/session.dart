@@ -74,7 +74,15 @@ class Session {
   Future<List<Item>> get(String name) =>
       getJson(name).then((x) => List<Item>.from(x.map(Item.fromJson)));
 
-  Future<String> getTimetableJsonString() => getJsonString('dsbtimetables');
-  Future<dynamic> getTimetableJson() => getJson('dsbtimetables');
-  Future<List<Item>> getTimetable() => get('dsbtimetables');
+  Future<String> getTimetablesJsonString() => getJsonString('dsbtimetables');
+  Future<dynamic> getTimetablesJson() => getJson('dsbtimetables');
+  Future<List<Item>> getTimetables() => get('dsbtimetables');
+
+  Future<String> getDocumentsJsonString() => getJsonString('dsbdocuments');
+  Future<dynamic> getDocumentsJson() => getJson('dsbdocuments');
+  Future<List<Item>> getDocuments() => get('dsbdocuments');
+
+  Future<String> getNewsJsonString() => getJsonString('newstab');
+  Future<dynamic> getNewsJson() => getJson('newstab');
+  Future<List<Item>> getNews() => get('newstab');
 }

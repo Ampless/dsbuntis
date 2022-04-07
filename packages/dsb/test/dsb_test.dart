@@ -4,17 +4,19 @@ import '../../../testlib.dart';
 
 // TODO: proper tests
 
-TestCase publicTestCase(
+List<TestCase> publicTestCases(
   String username,
   String password,
 ) =>
-    () => Session.login(username, password).then((x) => x.getTimetable());
-
-List<TestCase> publicTestCases = [
-  publicTestCase('187801', 'public'),
-  publicTestCase('152321', 'krsmrz21'), //THANKS @3liFi!
-];
+    [
+      () => Session.login(username, password).then((x) => x.getTimetables()),
+      () => Session.login(username, password).then((x) => x.getDocuments()),
+      () => Session.login(username, password).then((x) => x.getNews()),
+    ];
 
 void main() {
-  tests(publicTestCases, 'public');
+  tests([
+    ...publicTestCases('187801', 'public'),
+    ...publicTestCases('152321', 'krsmrz21'), //THANKS @3liFi!
+  ], 'public');
 }

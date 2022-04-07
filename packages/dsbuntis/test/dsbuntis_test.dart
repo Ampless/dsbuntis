@@ -117,24 +117,12 @@ TestCase dsbTestCase(
       assertPlanListsEqual(plans, expectedPlans);
     };
 
-List<TestCase> dsbTestCases = [
-  dsbTestCase('', 'null', dsbTest1Cache, dsbTest1Expct, '11', 'q'),
-  dsbTestCase('null', '', dsbTest1Cache, dsbTest1Expct, '11', ''),
-  dsbTestCase('null', 'null', dsbTest2Cache, dsbTest2Expct, '', 'q'),
-  dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, '', ''),
-];
-
 TestCase jsonTestCase(List<Plan> plans) => () async {
       assertPlanListsEqual(
         Plan.plansFromJsonString(Plan.plansToJsonString(plans)),
         plans,
       );
     };
-
-List<TestCase> jsonTestCases = [
-  jsonTestCase(dsbTest1Expct),
-  jsonTestCase(dsbTest2Expct),
-];
 
 TestCase publicTestCase(
   String username,
@@ -144,15 +132,21 @@ TestCase publicTestCase(
     () =>
         getAllSubs(username, password, downloadPreviews: true, parser: parser);
 
-List<TestCase> publicTestCases = [
-  publicTestCase('187801', 'public', untis.Substitution.fromUntis2019),
-  // TODO: make this a better test
-  publicTestCase(
-      '152321', 'krsmrz21', untis.Substitution.fromUntis), //THANKS @3liFi!
-];
-
 void main() {
-  tests(dsbTestCases, 'dsb');
-  tests(jsonTestCases, 'json');
-  tests(publicTestCases, 'public');
+  tests([
+    dsbTestCase('', 'null', dsbTest1Cache, dsbTest1Expct, '11', 'q'),
+    dsbTestCase('null', '', dsbTest1Cache, dsbTest1Expct, '11', ''),
+    dsbTestCase('null', 'null', dsbTest2Cache, dsbTest2Expct, '', 'q'),
+    dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, '', ''),
+  ], 'dsb');
+  tests([
+    jsonTestCase(dsbTest1Expct),
+    jsonTestCase(dsbTest2Expct),
+  ], 'json');
+  tests([
+    publicTestCase('187801', 'public', untis.Substitution.fromUntis2019),
+    // TODO: make this a better test
+    publicTestCase(
+        '152321', 'krsmrz21', untis.Substitution.fromUntis), //THANKS @3liFi!
+  ], 'public');
 }
