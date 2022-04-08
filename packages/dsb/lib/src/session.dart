@@ -71,6 +71,7 @@ class Session {
     return j;
   }
 
+  // TODO: i think this can be done better
   Future<List<Item>> get(String name) =>
       getJson(name).then((x) => List<Item>.from(x.map(Item.fromJson)));
 

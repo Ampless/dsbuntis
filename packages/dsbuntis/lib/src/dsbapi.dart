@@ -19,12 +19,26 @@ Future<List<Plan>> getAllSubs(
       endpoint: endpoint,
       previewEndpoint: previewEndpoint,
       http: http ?? ScHttpClient());
-  final dp = session.downloadPlans(await session.getTimetableJson(),
-      downloadPreviews: downloadPreviews);
+  final dp = session
+      .downloadPlans(await session.getTimetables(),
+          downloadPreviews: downloadPreviews)
+      .map((p) => p.map((p) => p.parse(parser)));
   final plans = <Plan>[];
-  for (final p in dp.map((p) => p.parse(parser))) {
-    final plan = await p;
-    if (plan != null) plans.add(plan);
+  for (final p in dp) {
+    final pages = <Plan>[];
+    for (final p in p) {
+      final page = await p;
+      if (page != null) pages.add(page);
+    }
+    if (pages.isNotEmpty) {
+      plans.add(Plan(
+          pages.first.day,
+          pages.map((e) => e.subs).reduce((v, e) => [...v, ...e]),
+          pages.first.date,
+          pages.first.url,
+          pages.first.previewUrl,
+          pages.first.preview));
+    }
   }
   return plans;
 }

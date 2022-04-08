@@ -4,13 +4,13 @@ import 'package:dsb/dsb.dart' as dsb;
 import 'package:dsbuntis/src/plan.dart';
 import 'package:untis/untis.dart' as untis;
 
-class DownloadingPlan {
+class DownloadingPage {
   String htmlUrl, previewUrl;
   String? id, dsbDate, dsbTitle;
   Future<String> html;
   Future<Uint8List>? preview;
 
-  DownloadingPlan(this.htmlUrl, this.previewUrl, this.html, this.preview,
+  DownloadingPage(this.htmlUrl, this.previewUrl, this.html, this.preview,
       this.id, this.dsbDate, this.dsbTitle);
 
   Future<Plan?> parse(
@@ -22,26 +22,23 @@ class DownloadingPlan {
   }
 }
 
-extension UntisParsing on dsb.Session {
+extension Downloading on dsb.Session {
   // TODO: completely rework this
-  Iterable<DownloadingPlan> downloadPlans(
-    List json, {
+  Iterable<Iterable<DownloadingPage>> downloadPlans(
+    Iterable<dsb.Item> timetables, {
     bool downloadPreviews = false,
   }) =>
-      json
-          .map((p) => p['Childs'])
-          .reduce((v, e) => [...v, ...e])
-          .where((x) => !x['Detail'].endsWith('.png'))
-          .where((x) => !x['Detail'].endsWith('.jpg'))
-          .map<DownloadingPlan>((p) => DownloadingPlan(
-              p['Detail'],
-              p['Preview'],
-              http.get(p['Detail'],
+      timetables.map((p) => p.childs).map<Iterable<DownloadingPage>>((p) => p
+          .where((x) => x.conType == 6)
+          .map((p) => DownloadingPage(
+              p.detail,
+              p.preview,
+              http.get(p.detail,
                   ttl: Duration(days: 4), defaultCharset: String.fromCharCodes),
               downloadPreviews
-                  ? http.getBin('$previewEndpoint/${p['Preview']}')
+                  ? http.getBin('$previewEndpoint/${p.preview}')
                   : null,
-              p['Id'],
-              p['Date'],
-              p['Title']));
+              p.id,
+              p.date,
+              p.title)));
 }
