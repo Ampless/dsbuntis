@@ -1,6 +1,11 @@
+## 8.0.0-alpha.4
+
+* `MergePlans` on `Iterable<Iterable<Page>>` to merge multi-page plans easily
+
 ## 8.0.0-alpha.3
 
 * Got rid of the idea of a plan, they're now `List<Page>`s
+* `Session.downloadPlans` is now also more spec compliant (respects `ConType`)
 * Got rid of unnecessary JSON helpers (that didn't help)
 
 ## 8.0.0-alpha.2

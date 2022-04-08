@@ -73,7 +73,7 @@ class Session {
 
   // TODO: i think this can be done better
   Future<List<Item>> get(String name) =>
-      getJson(name).then((x) => List<Item>.from(x.map(Item.fromJson)));
+      getJson(name).then((x) => x.map<Item>(Item.fromJson).toList());
 
   Future<String> getTimetablesJsonString() => getJsonString('dsbtimetables');
   Future<dynamic> getTimetablesJson() => getJson('dsbtimetables');

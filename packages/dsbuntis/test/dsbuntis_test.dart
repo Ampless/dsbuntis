@@ -111,7 +111,7 @@ TestCase dsbTestCase(
   String char,
 ) =>
     () async {
-      final plans = Page.searchInPages(
+      final plans = Page.searchInPlans(
         (await getAllSubs(
           username,
           password,

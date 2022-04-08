@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:untis/untis.dart' as untis;
 
 // TODO: add A LOT more documentation
-// TODO: this whole structure has to be rethought
 class Page extends untis.Page {
   String url;
   String previewUrl;
@@ -42,7 +41,7 @@ class Page extends untis.Page {
       jsonDecode(json).map<Iterable<Page>>(
           (p) => p.map<Page>(Page.fromJson) as Iterable<Page>);
 
-  static Iterable<Iterable<Page>> searchInPages(
+  static Iterable<Iterable<Page>> searchInPlans(
     Iterable<Iterable<Page>> pages,
     bool Function(untis.Substitution) predicate,
   ) =>

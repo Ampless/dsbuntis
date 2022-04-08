@@ -23,7 +23,6 @@ class DownloadingPage {
 }
 
 extension Downloading on dsb.Session {
-  // TODO: completely rework this
   Iterable<Iterable<DownloadingPage>> downloadPlans(
     Iterable<dsb.Item> timetables, {
     bool downloadPreviews = false,

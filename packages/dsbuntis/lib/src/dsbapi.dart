@@ -36,3 +36,9 @@ Future<List<List<Page>>> getAllSubs(
   }
   return plans;
 }
+
+extension MergePlans on Iterable<Iterable<Page>> {
+  Iterable<untis.Page> merge() =>
+      where((e) => e.isNotEmpty).map((e) => untis.Page(e.first.day,
+          e.map((p) => p.subs).reduce((a, b) => [...a, ...b]), e.first.date));
+}
