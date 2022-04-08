@@ -6,7 +6,7 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:untis/src/day.dart';
 import 'package:untis/src/sub.dart';
 
-typedef PlanParser = Substitution Function(int, List<String>);
+typedef Parser = Substitution Function(int, List<String>);
 
 final _tag = RegExp(r'</?.+?>');
 final _unescape = HtmlUnescape();
@@ -28,19 +28,19 @@ List<int> _parseIntsFromString(String s) {
 
 // TODO: add A LOT more documentation
 // TODO: this whole structure has to be rethought
-class Plan {
+class Page {
   Day? day;
   List<Substitution> subs;
   String date;
 
-  Plan(this.day, this.subs, this.date);
+  Page(this.day, this.subs, this.date);
 
-  Plan.fromJson(Map<String, dynamic> json)
+  Page.fromJson(dynamic json)
       : day = dayFromInt(json['day']),
         date = json['date'],
         subs = json['subs'].map<Substitution>(Substitution.fromJson).toList();
 
-  Map<String, dynamic> toJson() => {
+  dynamic toJson() => {
         if (day != null) 'day': day?.toInt(),
         'date': date,
         'subs': subs.map((sub) => sub.toJson()).toList(),
@@ -49,29 +49,17 @@ class Plan {
   @override
   String toString() => '$day: $subs';
 
-  static List plansToJson(Iterable<Plan> plans) =>
-      plans.map((e) => e.toJson()).toList();
-
-  static List<Plan> plansFromJson(dynamic plans) =>
-      plans.map<Plan>((e) => Plan.fromJson(e)).toList();
-
-  static String plansToJsonString(List<Plan> plans) =>
-      jsonEncode(plansToJson(plans));
-
-  static List<Plan> plansFromJsonString(String plans) =>
-      plansFromJson(jsonDecode(plans));
-
-  static List<Plan> searchInPlans(
-    Iterable<Plan> plans,
+  static List<Page> searchInPages(
+    Iterable<Page> pages,
     bool Function(Substitution) predicate,
   ) =>
-      plans
-          .map((p) => Plan(p.day, p.subs.where(predicate).toList(), p.date))
+      pages
+          .map((p) => Page(p.day, p.subs.where(predicate).toList(), p.date))
           .toList();
 
-  static Plan? parsePlan(
+  static Page? parsePage(
     String html, [
-    PlanParser parser = Substitution.fromUntis,
+    Parser parser = Substitution.fromUntis,
   ]) {
     final rawHtml = html
         .replaceAll('\n', '')
@@ -97,7 +85,7 @@ class Plan {
         .replaceAll(RegExp(r'<!-- .*? -->'), '');
     try {
       var html = parse(rawHtml).first.children[1].children; //body
-      final planTitle =
+      final pageTitle =
           searchFirst(html, (e) => e.className.contains('mon_title'))!
               .innerHtml;
       html = searchFirst(html, (e) => e.className.contains('mon_list'))!
@@ -113,15 +101,15 @@ class Plan {
           subs.add(sub);
         }
       }
-      return Plan(matchDay(planTitle), subs, planTitle);
+      return Page(matchDay(pageTitle), subs, pageTitle);
     } catch (e) {
       return null;
     }
   }
 
-  static Iterable<Plan> parsePlans(
+  static Iterable<Page> parsePages(
     Iterable<String> htmls, [
-    PlanParser parser = Substitution.fromUntis,
+    Parser parser = Substitution.fromUntis,
   ]) =>
-      htmls.map(parsePlan).where((e) => e != null).map((e) => e!);
+      htmls.map(parsePage).where((e) => e != null).map((e) => e!);
 }

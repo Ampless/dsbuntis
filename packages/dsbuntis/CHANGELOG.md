@@ -1,3 +1,8 @@
+## 8.0.0-alpha.3
+
+* Got rid of the idea of a plan, they're now `List<Page>`s
+* Got rid of unnecessary JSON helpers (that didn't help)
+
 ## 8.0.0-alpha.2
 
 * Made the `parser` in `DownloadingPlans.parse` optional

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dsbuntis/dsbuntis.dart';
 import 'package:schttp/schttp.dart';
 import 'package:test/test.dart';
@@ -18,26 +20,30 @@ final Map<String, String> dsbTest1Cache = {
       '<table class="mon_head"> <tr> <td></td> <td></td> <td> GYM. MIT SCHÜLERHEIM ROSENHOF D-91257,P1meml Gymnasium Rosenhof 2019/2020 Stand: 23.06.2020 08:55 </td> </tr></table><div class="mon_title">24.6.2020 Mittwoch</div><table class="info" ><tr></tr><tr><td>Betroffene Klassen </td><td>05a, 05b, 05c, 05d, Heim</td></tr></table><table class="mon_list" ><tr></tr><tr><td>05abcd</td><td>6</td><td>---</td><td>Ethik</td><td> </td></tr></table>Untis Stundenplan Software',
 };
 
-final List<Plan> dsbTest1Expct = [
-  Plan(
-    untis.Day.tuesday,
-    [
-      untis.Substitution('11q', 7, '---', '1sk1', true, orgTeacher: 'Aschi'),
-      untis.Substitution('11q', 8, '---', '1sk1', true, orgTeacher: 'Aschi'),
-    ],
-    '23.6.2020 Dienstag',
-    '',
-    'https://light.dsbcontrol.de/DSBlightWebsite/Data/asdf.png',
-    null,
-  ),
-  Plan(
-    untis.Day.wednesday,
-    [],
-    '24.6.2020 Mittwoch',
-    '',
-    'https://light.dsbcontrol.de/DSBlightWebsite/Data/qwerty.jpg',
-    null,
-  ),
+final List<List<Page>> dsbTest1Expct = [
+  [
+    Page(
+      untis.Day.tuesday,
+      [
+        untis.Substitution('11q', 7, '---', '1sk1', true, orgTeacher: 'Aschi'),
+        untis.Substitution('11q', 8, '---', '1sk1', true, orgTeacher: 'Aschi'),
+      ],
+      '23.6.2020 Dienstag',
+      '',
+      'https://light.dsbcontrol.de/DSBlightWebsite/Data/asdf.png',
+      null,
+    ),
+  ],
+  [
+    Page(
+      untis.Day.wednesday,
+      [],
+      '24.6.2020 Mittwoch',
+      '',
+      'https://light.dsbcontrol.de/DSBlightWebsite/Data/qwerty.jpg',
+      null,
+    ),
+  ],
 ];
 
 final Map<String, String> dsbTest2Cache = {
@@ -52,39 +58,46 @@ final Map<String, String> dsbTest2Cache = {
       '<table class="mon_head"> <tr> <td></td> <td></td> <td> GYM. NULL Stand: 23.06.2020 08:55 </td> </tr></table><div class="mon_title">24.6.2020 Mittwoch</div><table class="mon_list" ><tr></tr></table>Untis Stundenplan Software',
 };
 
-final List<Plan> dsbTest2Expct = [
-  Plan(
-    untis.Day.tuesday,
-    [],
-    '23.6.2020 Dienstag',
-    '',
-    'https://light.dsbcontrol.de/DSBlightWebsite/Data/lol.gif',
-    null,
-  ),
-  Plan(
-    untis.Day.wednesday,
-    [],
-    '24.6.2020 Mittwoch',
-    '',
-    'https://light.dsbcontrol.de/DSBlightWebsite/Data/lel.bmp',
-    null,
-  ),
+final List<List<Page>> dsbTest2Expct = [
+  [
+    Page(
+      untis.Day.tuesday,
+      [],
+      '23.6.2020 Dienstag',
+      '',
+      'https://light.dsbcontrol.de/DSBlightWebsite/Data/lol.gif',
+      null,
+    ),
+  ],
+  [
+    Page(
+      untis.Day.wednesday,
+      [],
+      '24.6.2020 Mittwoch',
+      '',
+      'https://light.dsbcontrol.de/DSBlightWebsite/Data/lel.bmp',
+      null,
+    ),
+  ],
 ];
 
-void assertPlanListsEqual(List<Plan> l1, List<Plan> l2) {
+void assertPlanListsEqual(List<List<Page>> l1, List<List<Page>> l2) {
   expect(l1.length, l2.length);
-  for (var i = 0; i < l1.length; i++) {
-    expect(l1[i].date, l2[i].date);
-    expect(l1[i].day, l2[i].day);
-    expect(l1[i].subs.length, l2[i].subs.length);
-    for (var j = 0; j < l1[i].subs.length; j++) {
-      expect(l1[i].subs[j].affectedClass, l2[i].subs[j].affectedClass);
-      expect(l1[i].subs[j].lesson, l2[i].subs[j].lesson);
-      expect(l1[i].subs[j].isFree, l2[i].subs[j].isFree);
-      expect(l1[i].subs[j].notes, l2[i].subs[j].notes);
-      expect(l1[i].subs[j].subject, l2[i].subs[j].subject);
-      expect(l1[i].subs[j].subTeacher, l2[i].subs[j].subTeacher);
-      expect(l1[i].subs[j].orgTeacher, l2[i].subs[j].orgTeacher);
+  for (var k = 0; k < l1.length; k++) {
+    expect(l1[k].length, l2[k].length);
+    for (var i = 0; i < l1[k].length; i++) {
+      expect(l1[k][i].date, l2[k][i].date);
+      expect(l1[k][i].day, l2[k][i].day);
+      expect(l1[k][i].subs.length, l2[k][i].subs.length);
+      for (var j = 0; j < l1[k][i].subs.length; j++) {
+        expect(l1[k][i].subs[j].affectedClass, l2[k][i].subs[j].affectedClass);
+        expect(l1[k][i].subs[j].lesson, l2[k][i].subs[j].lesson);
+        expect(l1[k][i].subs[j].isFree, l2[k][i].subs[j].isFree);
+        expect(l1[k][i].subs[j].notes, l2[k][i].subs[j].notes);
+        expect(l1[k][i].subs[j].subject, l2[k][i].subs[j].subject);
+        expect(l1[k][i].subs[j].subTeacher, l2[k][i].subs[j].subTeacher);
+        expect(l1[k][i].subs[j].orgTeacher, l2[k][i].subs[j].orgTeacher);
+      }
     }
   }
 }
@@ -93,12 +106,12 @@ TestCase dsbTestCase(
   String username,
   String password,
   Map<String, String> htmlCache,
-  List<Plan> expectedPlans,
+  List<List<Page>> expectedPlans,
   String stage,
   String char,
 ) =>
     () async {
-      final plans = Plan.searchInPlans(
+      final plans = Page.searchInPages(
         (await getAllSubs(
           username,
           password,
@@ -113,14 +126,19 @@ TestCase dsbTestCase(
             sub.affectedClass.contains(char),
       );
       for (final plan in plans) {
-        plan.subs.sort();
+        for (final page in plan) {
+          page.subs.sort();
+        }
       }
-      assertPlanListsEqual(plans, expectedPlans);
+      assertPlanListsEqual(
+          plans.map((e) => e.toList()).toList(), expectedPlans);
     };
 
-TestCase jsonTestCase(List<Plan> plans) => () async {
+TestCase jsonTestCase(List<List<Page>> plans) => () async {
       assertPlanListsEqual(
-        Plan.plansFromJsonString(Plan.plansToJsonString(plans)),
+        Page.plansFromJsonString(jsonEncode(plans))
+            .map((e) => e.toList())
+            .toList(),
         plans,
       );
     };
@@ -128,7 +146,7 @@ TestCase jsonTestCase(List<Plan> plans) => () async {
 TestCase publicTestCase(
   String username,
   String password,
-  untis.PlanParser parser,
+  untis.Parser parser,
 ) =>
     () =>
         getAllSubs(username, password, downloadPreviews: true, parser: parser);

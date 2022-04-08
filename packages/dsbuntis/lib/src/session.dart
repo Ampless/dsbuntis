@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dsb/dsb.dart' as dsb;
-import 'package:dsbuntis/src/plan.dart';
+import 'package:dsbuntis/src/page.dart';
 import 'package:untis/untis.dart' as untis;
 
 class DownloadingPage {
@@ -13,11 +13,11 @@ class DownloadingPage {
   DownloadingPage(this.htmlUrl, this.previewUrl, this.html, this.preview,
       this.id, this.dsbDate, this.dsbTitle);
 
-  Future<Plan?> parse(
-      [untis.PlanParser parser = untis.Substitution.fromUntis]) async {
-    final up = untis.Plan.parsePlan(await html, parser);
+  Future<Page?> parse(
+      [untis.Parser parser = untis.Substitution.fromUntis]) async {
+    final up = untis.Page.parsePage(await html, parser);
     return up != null
-        ? Plan.from(up, htmlUrl, previewUrl, await preview)
+        ? Page.from(up, htmlUrl, previewUrl, await preview)
         : null;
   }
 }
