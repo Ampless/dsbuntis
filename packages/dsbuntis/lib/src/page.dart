@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:untis/untis.dart' as untis;
 
-// TODO: add A LOT more documentation
+// TODO: add A LOT more documentation (also check readmes)
 class Page extends untis.Page {
   String url;
   String previewUrl;

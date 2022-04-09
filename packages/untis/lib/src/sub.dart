@@ -1,3 +1,5 @@
+import 'package:untis/src/page.dart';
+
 class Substitution extends Comparable {
   String affectedClass;
   int lesson;
@@ -32,11 +34,11 @@ class Substitution extends Comparable {
             : affectedClass.toLowerCase(),
         isFree = subTeacher.contains('---');
 
-  static Substitution fromUntis(int lesson, List<String> e) =>
-      e.length < 6 ? fromUntis2020(lesson, e) : fromUntis2021(lesson, e);
+  // TODO: more smarts
+  static Parser fromUntis(List<String> h) =>
+      h.length < 6 ? fromUntis2020(h) : fromUntis2021(h);
 
-  static Substitution fromUntis2021(int lesson, List<String> e) =>
-      Substitution.raw(
+  static Parser fromUntis2021(_) => (lesson, e) => Substitution.raw(
         lesson,
         affectedClass: e[0],
         subTeacher: e[2],
@@ -45,8 +47,7 @@ class Substitution extends Comparable {
         orgTeacher: e[4],
       );
 
-  static Substitution fromUntis2020(int lesson, List<String> e) =>
-      Substitution.raw(
+  static Parser fromUntis2020(_) => (lesson, e) => Substitution.raw(
         lesson,
         affectedClass: e[0],
         subTeacher: e[2],
@@ -54,8 +55,7 @@ class Substitution extends Comparable {
         notes: e[4],
       );
 
-  static Substitution fromUntis2019(int lesson, List<String> e) =>
-      Substitution.raw(
+  static Parser fromUntis2019(_) => (lesson, e) => Substitution.raw(
         lesson,
         affectedClass: e[0],
         subject: e[2],

@@ -2,7 +2,10 @@
 
 [![pub points](https://badges.bar/dsb/pub%20points)](https://pub.dev/packages/dsb/score)
 
-This package allows you to crawl DSB's "Mobile API". 
+This package allows you to crawl DSB's "Mobile API".
+
+If you want a higher-level API and need to parse Untis, too, consider using
+[dsbuntis](https://pub.dev/packages/dsbuntis).
 
 ## Usage
 
@@ -20,10 +23,10 @@ To use an existing token, the `Session` constructor allows for passing them:
 final session = Session('13ccccbb-e6a8-466a-addc-00bba830c6cf');
 ```
 
-Then you can get the JSON with timetable information:
+Then you can, for example, get the timetable information:
 
 ```dart
-final ttJson = await session.getTimetableJson();
+final timetables = await session.getTimetables();
 ```
 
 ### Caching and best practices

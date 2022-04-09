@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:html/dom.dart' as dom;
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -7,6 +5,7 @@ import 'package:untis/src/day.dart';
 import 'package:untis/src/sub.dart';
 
 typedef Parser = Substitution Function(int, List<String>);
+typedef ParserBuilder = Parser Function(List<String>);
 
 final _tag = RegExp(r'</?.+?>');
 final _unescape = HtmlUnescape();
@@ -59,7 +58,7 @@ class Page {
 
   static Page? parsePage(
     String html, [
-    Parser parser = Substitution.fromUntis,
+    ParserBuilder parser = Substitution.fromUntis,
   ]) {
     final rawHtml = html
         .replaceAll('\n', '')
@@ -83,6 +82,7 @@ class Page {
         .replaceAll(RegExp(r' +'), ' ')
         .replaceAll(RegExp(r'<br />'), '')
         .replaceAll(RegExp(r'<!-- .*? -->'), '');
+    // TODO: try to find a way to have less in this try block
     try {
       var html = parse(rawHtml).first.children[1].children; //body
       final pageTitle =
@@ -93,12 +93,12 @@ class Page {
           .first //for some reason <table>s like to contain <tbody>s
           .children;
       final subs = <Substitution>[];
+      final p = parser(html[0].children.map(_str).toList());
       for (var i = 1; i < html.length; i++) {
         final e = html[i].children.map(_str).toList();
-        final allLessons = e[1];
-        for (final lesson in _parseIntsFromString(allLessons)) {
-          final sub = parser(lesson, e);
-          subs.add(sub);
+        // TODO: find a way for the `parser` to determine what the lesson is
+        for (final lesson in _parseIntsFromString(e[1])) {
+          subs.add(p(lesson, e));
         }
       }
       return Page(matchDay(pageTitle), subs, pageTitle);
@@ -109,7 +109,7 @@ class Page {
 
   static Iterable<Page> parsePages(
     Iterable<String> htmls, [
-    Parser parser = Substitution.fromUntis,
+    ParserBuilder parser = Substitution.fromUntis,
   ]) =>
       htmls.map(parsePage).where((e) => e != null).map((e) => e!);
 }

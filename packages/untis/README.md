@@ -4,8 +4,11 @@
 
 This package allows you to parse Untis's HTML. 
 
+If you want a higher-level API and need to use the DSBMobile API, too,
+consider using [dsbuntis](https://pub.dev/packages/dsbuntis).
+
 ## Usage
 
 ```dart
-final plans = Substitution.parsePlans(htmls);
+final plans = Page.parsePage(html);
 ```

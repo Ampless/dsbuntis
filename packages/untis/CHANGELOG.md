@@ -1,3 +1,7 @@
+## 0.1.0-alpha.4
+
+- Introduced the new `Parser`/`ParserBuilder` API to allow for smarter parsing
+
 ## 0.1.0-alpha.3
 
 - Removed `Page.toJson`, `Page.toJsonString`, `Page.fromJson` and `Page.fromJsonString`,
