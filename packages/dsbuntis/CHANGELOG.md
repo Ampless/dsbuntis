@@ -1,3 +1,9 @@
+## 8.0.0-alpha.7
+
+- Added `Session.downloadAndParsePlans` to ease certain use cases
+- Added `Iterable<Iterable<T>>.toNestedList` for temporarily making that easier
+(will be removed in 9.0 probably)
+
 ## 8.0.0-alpha.6
 
 - Got rid of the multi-file architecture

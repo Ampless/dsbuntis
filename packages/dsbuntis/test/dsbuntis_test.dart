@@ -130,15 +130,12 @@ TestCase dsbTestCase(
           page.subs.sort();
         }
       }
-      assertPlanListsEqual(
-          plans.map((e) => e.toList()).toList(), expectedPlans);
+      assertPlanListsEqual(plans.toNestedList(), expectedPlans);
     };
 
 TestCase jsonTestCase(List<List<Page>> plans) => () async {
       assertPlanListsEqual(
-        Page.plansFromJsonString(jsonEncode(plans))
-            .map((e) => e.toList())
-            .toList(),
+        Page.plansFromJsonString(jsonEncode(plans)).toNestedList(),
         plans,
       );
     };

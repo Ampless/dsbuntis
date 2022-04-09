@@ -92,6 +92,22 @@ extension Downloading on dsb.Session {
               p.id,
               p.date,
               p.title)));
+
+  Future<Iterable<Iterable<Page>>> downloadAndParsePlans(
+    Iterable<dsb.Item> timetables, {
+    bool downloadPreviews = false,
+    untis.ParserBuilder parser = untis.Substitution.fromUntis,
+  }) =>
+      Future.wait(downloadPlans(timetables, downloadPreviews: downloadPreviews)
+              .map((e) => Future.wait(e.map((p) => p.parse(parser)))
+                  .then((x) => x.where((p) => p != null).map((p) => p!))))
+          .then((x) => x.where((p) => p.isNotEmpty));
+}
+
+// TODO: make a package with this
+extension ToNestedList<T> on Iterable<Iterable<T>> {
+  List<List<T>> toNestedList({bool growable = true}) =>
+      map((x) => x.toList(growable: growable)).toList(growable: growable);
 }
 
 Future<List<List<Page>>> getAllSubs(
@@ -107,22 +123,10 @@ Future<List<List<Page>>> getAllSubs(
       endpoint: endpoint,
       previewEndpoint: previewEndpoint,
       http: http ?? ScHttpClient());
-  final dp = session
-      .downloadPlans(await session.getTimetables(),
-          downloadPreviews: downloadPreviews)
-      .map((p) => p.map((p) => p.parse(parser)));
-  final plans = <List<Page>>[];
-  for (final p in dp) {
-    final pages = <Page>[];
-    for (final p in p) {
-      final page = await p;
-      if (page != null) pages.add(page);
-    }
-    if (pages.isNotEmpty) {
-      plans.add(pages);
-    }
-  }
-  return plans;
+  return await session
+      .downloadAndParsePlans(await session.getTimetables(),
+          downloadPreviews: downloadPreviews, parser: parser)
+      .then((x) => x.toNestedList());
 }
 
 extension MergePlans on Iterable<Iterable<Page>> {
