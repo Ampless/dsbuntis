@@ -1,3 +1,7 @@
+## 0.1.0-alpha.3
+
+- Got rid of the multi-file architecture
+
 ## 0.1.0-alpha.2
 
 - Added support for the other known DSB "Data types"

@@ -1,3 +1,9 @@
+## 0.1.0-alpha.5
+
+- Fixed some incorrect tests (oh god)
+- Fixed parser throwing when the raw lesson doesn't end with a letter
+- Got rid of the multi-file architecture
+
 ## 0.1.0-alpha.4
 
 - Introduced the new `Parser`/`ParserBuilder` API to allow for smarter parsing

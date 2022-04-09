@@ -1,3 +1,7 @@
+## 8.0.0-alpha.6
+
+- Got rid of the multi-file architecture
+
 ## 8.0.0-alpha.5
 
 * Fixed incompatibilities with `untis` 0.1.0-alpha.4
