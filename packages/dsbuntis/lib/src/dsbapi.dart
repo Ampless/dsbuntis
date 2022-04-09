@@ -13,7 +13,7 @@ Future<List<List<Page>>> getAllSubs(
   String endpoint = dsb.Session.defaultEndpoint,
   String previewEndpoint = dsb.Session.defaultPreviewEndpoint,
   bool downloadPreviews = false,
-  untis.Parser parser = untis.Substitution.fromUntis,
+  untis.ParserBuilder parser = untis.Substitution.fromUntis,
 }) async {
   final session = await dsb.Session.login(username, password,
       endpoint: endpoint,

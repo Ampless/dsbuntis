@@ -14,7 +14,7 @@ class DownloadingPage {
       this.id, this.dsbDate, this.dsbTitle);
 
   Future<Page?> parse(
-      [untis.Parser parser = untis.Substitution.fromUntis]) async {
+      [untis.ParserBuilder parser = untis.Substitution.fromUntis]) async {
     final up = untis.Page.parsePage(await html, parser);
     return up != null
         ? Page.from(up, htmlUrl, previewUrl, await preview)

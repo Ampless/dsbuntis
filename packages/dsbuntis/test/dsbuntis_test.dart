@@ -146,7 +146,7 @@ TestCase jsonTestCase(List<List<Page>> plans) => () async {
 TestCase publicTestCase(
   String username,
   String password,
-  untis.Parser parser,
+  untis.ParserBuilder parser,
 ) =>
     () =>
         getAllSubs(username, password, downloadPreviews: true, parser: parser);

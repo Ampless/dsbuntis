@@ -1,3 +1,7 @@
+## 8.0.0-alpha.5
+
+* Fixed incompatibilities with `untis` 0.1.0-alpha.4
+
 ## 8.0.0-alpha.4
 
 * `MergePlans` on `Iterable<Iterable<Page>>` to merge multi-page plans easily
