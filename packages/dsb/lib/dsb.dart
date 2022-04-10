@@ -128,6 +128,7 @@ class Session {
 
   Future<String> getJsonString(String name) => http.get(
         '$endpoint/$name?authid=$token',
+// TODO: think about ttl parameter
         ttl: Duration(minutes: 15),
         defaultCharset: String.fromCharCodes,
       );
