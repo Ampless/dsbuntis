@@ -2,7 +2,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
 
-// TODO: put this into its own package
+// TODO: put this into its own package, then deprecate, then remove
 extension WhereNotNull<T> on Iterable<T?> {
   Iterable<T> whereNotNull() => where((x) => x != null).map((x) => x!);
 }
@@ -62,7 +62,6 @@ extension DayImpl on Day {
 }
 
 class Substitution extends Comparable {
-  // TODO: think about the ordering of attributes
   String affectedClass;
   int lesson;
   String? orgTeacher;
@@ -139,8 +138,6 @@ class Substitution extends Comparable {
         'sub_teacher': subTeacher,
         'subject': subject,
         'notes': notes,
-        // TODO: remove?
-        'free': isFree,
         if (orgTeacher != null) 'org_teacher': orgTeacher,
         if (room != null) 'room': room,
       };
@@ -165,7 +162,7 @@ class Substitution extends Comparable {
 
   @override
   String toString() =>
-      "['$affectedClass', $lesson, '$orgTeacher' → '$subTeacher' at '$room', '$subject', '$notes', $isFree]";
+      "['$affectedClass', $lesson, '$orgTeacher' → '$subTeacher' at '$room', '$subject', '$notes']";
 }
 
 final _tag = RegExp(r'</?.+?>');
@@ -210,15 +207,6 @@ class Page {
 
   @override
   String toString() => '$day ($date): $subs';
-
-  // TODO: is this just badly named or a bad function?
-  static List<Page> searchInPages(
-    Iterable<Page> pages,
-    bool Function(Substitution) predicate,
-  ) =>
-      pages
-          .map((p) => Page(p.day, p.subs.where(predicate).toList(), p.date))
-          .toList();
 
   static Page? parsePage(
     String html, [
@@ -272,10 +260,9 @@ class Page {
       return null;
     }
   }
+}
 
-  static Iterable<Page> parsePages(
-    Iterable<String> htmls, [
-    ParserBuilder parser = Substitution.fromUntis,
-  ]) =>
-      htmls.map(parsePage).whereNotNull();
+extension SearchInPages on Iterable<Page> {
+  Iterable<Page> search(bool Function(Substitution) predicate) =>
+      map((p) => Page(p.day, p.subs.where(predicate).toList(), p.date));
 }

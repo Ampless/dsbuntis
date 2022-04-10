@@ -57,12 +57,13 @@ TestCase untisTestCase(
   String char,
 ) =>
     () async {
-      final plans = Page.searchInPages(
-        Page.parsePages(htmls),
-        (sub) =>
-            sub.affectedClass.contains(stage) &&
-            sub.affectedClass.contains(char),
-      );
+      final plans = htmls
+          .map(Page.parsePage)
+          .whereNotNull()
+          .search((sub) =>
+              sub.affectedClass.contains(stage) &&
+              sub.affectedClass.contains(char))
+          .toList();
       for (final plan in plans) {
         plan.subs.sort();
       }
