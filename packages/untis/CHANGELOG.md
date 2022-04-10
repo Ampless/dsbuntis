@@ -1,3 +1,12 @@
+## 0.1.0-alpha.6
+
+- Added the `WhereNotNull` extension on `Iterable<T?>` to temporarily mitigate
+the Dart language having problems
+- Added `UnknownDayException` to throw from `Day.match`/`matchDay`
+- Got a proper Haiku
+- Removed the `isFree` attribute from `Substitution` and made it a getter instead
+- Added the `date` to the `toString` of `Page` (why wasn't it there?!)
+
 ## 0.1.0-alpha.5
 
 - Fixed some incorrect tests (oh god)

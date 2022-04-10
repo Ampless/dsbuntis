@@ -1,6 +1,6 @@
 name: dsb
 description: This package allows you to crawl the DSB/DSBMobile API.
-version: 0.1.0-alpha.3
+version: 0.1.0-alpha.4
 homepage: https://github.com/Ampless/dsbuntis
 
 environment:

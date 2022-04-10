@@ -2,6 +2,11 @@ import 'package:html/dom.dart' as dom;
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
 
+// TODO: put this into its own package
+extension WhereNotNull<T> on Iterable<T?> {
+  Iterable<T> whereNotNull() => where((x) => x != null).map((x) => x!);
+}
+
 typedef Parser = Substitution Function(int, List<String>);
 typedef ParserBuilder = Parser Function(List<String>);
 
@@ -13,10 +18,18 @@ enum Day {
   friday,
 }
 
-// The fact that this has to exist is a shame,
-// But the Dart team is to blame.
+class UnknownDayException implements Exception {
+  final String _day;
+  UnknownDayException(this._day);
+
+  @override
+  String toString() => 'Unknown day: $_day';
+}
+
+// This code is a shame
+// But the Dart team is to blame
+// Spam their whole GitHub
 //
-// Real poetry.
 // https://github.com/dart-lang/language/issues/723
 const dayFromInt = DayImpl.fromInt;
 int dayToInt(Day d) => d.toInt();
@@ -43,12 +56,13 @@ extension DayImpl on Day {
     } else if (s.contains('fr')) {
       return Day.friday;
     } else {
-      throw Error();
+      throw UnknownDayException(s);
     }
   }
 }
 
 class Substitution extends Comparable {
+  // TODO: think about the ordering of attributes
   String affectedClass;
   int lesson;
   String? orgTeacher;
@@ -56,14 +70,12 @@ class Substitution extends Comparable {
   String subject;
   String notes;
   String? room;
-  bool isFree;
 
   Substitution(
     this.affectedClass,
     this.lesson,
     this.subTeacher,
-    this.subject,
-    this.isFree, {
+    this.subject, {
     this.notes = '',
     this.orgTeacher,
     this.room,
@@ -77,12 +89,11 @@ class Substitution extends Comparable {
     required this.notes,
     this.orgTeacher,
     this.room,
-  })  : affectedClass = affectedClass.isNotEmpty && affectedClass[0] == '0'
+  }) : affectedClass = affectedClass.isNotEmpty && affectedClass[0] == '0'
             ? affectedClass.substring(1).toLowerCase()
-            : affectedClass.toLowerCase(),
-        isFree = subTeacher.contains('---');
+            : affectedClass.toLowerCase();
 
-  // TODO: more smarts
+  // TODO: more smarts (see #13)
   static Parser fromUntis(List<String> h) =>
       h.length < 6 ? fromUntis2020(h) : fromUntis2021(h);
 
@@ -120,7 +131,6 @@ class Substitution extends Comparable {
         orgTeacher = json['org_teacher'],
         subject = json['subject'],
         notes = json['notes'],
-        isFree = json['free'],
         room = json['room'];
 
   dynamic toJson() => {
@@ -129,11 +139,15 @@ class Substitution extends Comparable {
         'sub_teacher': subTeacher,
         'subject': subject,
         'notes': notes,
+        // TODO: remove?
         'free': isFree,
         if (orgTeacher != null) 'org_teacher': orgTeacher,
         if (room != null) 'room': room,
       };
 
+  bool get isFree => subTeacher.contains('---');
+
+// TODO: scream at dart people about algebraic data types
   @override
   int compareTo(dynamic other) {
     if (other is int) {
@@ -159,6 +173,7 @@ final _unescape = HtmlUnescape();
 String _str(dom.Element e) =>
     _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
 
+// TODO: try to come up with a better, more functional algorithm
 List<int> _parseIntsFromString(String s) {
   final out = <int>[];
   var lastindex = 0;
@@ -173,12 +188,11 @@ List<int> _parseIntsFromString(String s) {
   return out;
 }
 
-// TODO: add A LOT more documentation
-// TODO: this whole structure has to be rethought
 class Page {
   Day? day;
   List<Substitution> subs;
   String date;
+  // TODO: add info from above the table
 
   Page(this.day, this.subs, this.date);
 
@@ -188,14 +202,16 @@ class Page {
         subs = json['subs'].map<Substitution>(Substitution.fromJson).toList();
 
   dynamic toJson() => {
+        // TODO: scream at the dart team
         if (day != null) 'day': day?.toInt(),
         'date': date,
         'subs': subs.map((sub) => sub.toJson()).toList(),
       };
 
   @override
-  String toString() => '$day: $subs';
+  String toString() => '$day ($date): $subs';
 
+  // TODO: is this just badly named or a bad function?
   static List<Page> searchInPages(
     Iterable<Page> pages,
     bool Function(Substitution) predicate,
@@ -212,6 +228,7 @@ class Page {
         .replaceAll('\n', '')
         .replaceAll('\r', '')
         //just fyi: these regexes only work because there are no more newlines
+        // TODO: rethink all the regexes
         .replaceAll(RegExp(r'<h1.*?</h1>'), '')
         .replaceAll(RegExp(r'</?p.*?>'), '')
         .replaceAll(RegExp(r'<th.*?</th>'), '')
@@ -232,6 +249,7 @@ class Page {
         .replaceAll(RegExp(r'<!-- .*? -->'), '');
     // TODO: try to find a way to have less in this try block
     try {
+      // TODO: let's also rethink the parsing code in general
       var html = parse(rawHtml).first.children[1].children; //body
       final pageTitle =
           searchFirst(html, (e) => e.className.contains('mon_title'))!
@@ -259,5 +277,5 @@ class Page {
     Iterable<String> htmls, [
     ParserBuilder parser = Substitution.fromUntis,
   ]) =>
-      htmls.map(parsePage).where((e) => e != null).map((e) => e!);
+      htmls.map(parsePage).whereNotNull();
 }

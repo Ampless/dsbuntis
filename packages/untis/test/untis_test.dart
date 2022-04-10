@@ -14,8 +14,8 @@ final List<Page> untisTest1Expct = [
   Page(
     Day.tuesday,
     [
-      Substitution('11q', 7, '---', '1sk1', true, orgTeacher: 'Aschi'),
-      Substitution('11q', 8, '---', '1sk1', true, orgTeacher: 'Aschi'),
+      Substitution('11q', 7, '---', '1sk1', orgTeacher: 'Aschi'),
+      Substitution('11q', 8, '---', '1sk1', orgTeacher: 'Aschi'),
     ],
     '23.6.2020 Dienstag',
   ),

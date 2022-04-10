@@ -42,18 +42,17 @@ class Item {
     required this.preview,
   });
 
-  static Item fromJson(dynamic json) => Item(
-        id: json['Id'],
-        date: json['Date'],
-        title: json['Title'],
-        detail: json['Detail'],
-        tags: json['Tags'],
-        conType: json['ConType'],
-        prio: json['Prio'],
-        index: json['Index'],
-        childs: List<Item>.from(json['Childs'].map(fromJson)),
-        preview: json['Preview'],
-      );
+  Item.fromJson(dynamic json)
+      : id = json['Id'],
+        date = json['Date'],
+        title = json['Title'],
+        detail = json['Detail'],
+        tags = json['Tags'],
+        conType = json['ConType'],
+        prio = json['Prio'],
+        index = json['Index'],
+        childs = List<Item>.from(json['Childs'].map(Item.fromJson)),
+        preview = json['Preview'];
 
   dynamic toJson() => {
         'Id': id,
@@ -97,10 +96,12 @@ class Session {
     String osVersion = defaultOsVersion,
     String bundleId = defaultBundleId,
     String previewEndpoint = defaultPreviewEndpoint,
+    // TODO: support `pushid`
   }) async {
     http ??= ScHttpClient();
     final tkn = await http
         .get(
+            // TODO: improve this
             Uri.encodeFull('$endpoint/authid'
                 '?bundleid=$bundleId'
                 '&appversion=$appVersion'
@@ -110,6 +111,7 @@ class Session {
                 '&password=$password'),
             ttl: Duration(days: 30))
         .then((tkn) {
+      // TODO: this code is very cool but also hacky, let's improve it
       try {
         throw DsbException(jsonDecode(tkn)['Message']);
       } on DsbException {
@@ -124,7 +126,7 @@ class Session {
         endpoint: endpoint, http: http, previewEndpoint: previewEndpoint);
   }
 
-  Future<String> getJsonString(String name) async => await http.get(
+  Future<String> getJsonString(String name) => http.get(
         '$endpoint/$name?authid=$token',
         ttl: Duration(minutes: 15),
         defaultCharset: String.fromCharCodes,
@@ -136,7 +138,6 @@ class Session {
     return j;
   }
 
-  // TODO: i think this can be done better
   Future<List<Item>> get(String name) =>
       getJson(name).then((x) => x.map<Item>(Item.fromJson).toList());
 

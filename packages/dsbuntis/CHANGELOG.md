@@ -1,3 +1,11 @@
+## 8.0.0-alpha.8
+
+- Got rid of `id`, `dsbDate` and `dsbTitle` from `DownloadingPage`
+(they might be reintroduced once we figured out how to put more information
+from DSB into `Page`s)
+- Heavily improved the `getAllSubs` code
+- Adopted `.whereNotNull`
+
 ## 8.0.0-alpha.7
 
 - Added `Session.downloadAndParsePlans` to ease certain use cases

@@ -5,13 +5,13 @@ import 'package:dsb/dsb.dart' as dsb;
 import 'package:schttp/schttp.dart';
 import 'package:untis/untis.dart' as untis;
 
-// TODO: add A LOT more documentation (also check readmes)
 class Page extends untis.Page {
   String url;
   String previewUrl;
   Uint8List? preview;
   // TODO: more data from dsb
 
+  // TODO: simplify once super-parameters are stable
   Page(untis.Day? day, List<untis.Substitution> subs, String date, this.url,
       this.previewUrl, this.preview)
       : super(day, subs, date);
@@ -23,6 +23,7 @@ class Page extends untis.Page {
       : url = json['url'],
         previewUrl = json['preview_url'],
         preview = json.containsKey('preview')
+            // TODO: hate on this code
             ? Uint8List.fromList(List<int>.from(json['preview']))
             : null,
         super.fromJson(json);
@@ -57,13 +58,12 @@ class Page extends untis.Page {
 }
 
 class DownloadingPage {
-  String htmlUrl, previewUrl;
-  String? id, dsbDate, dsbTitle;
+  String htmlUrl;
+  String previewUrl;
   Future<String> html;
   Future<Uint8List>? preview;
 
-  DownloadingPage(this.htmlUrl, this.previewUrl, this.html, this.preview,
-      this.id, this.dsbDate, this.dsbTitle);
+  DownloadingPage(this.htmlUrl, this.previewUrl, this.html, this.preview);
 
   Future<Page?> parse(
       [untis.ParserBuilder parser = untis.Substitution.fromUntis]) async {
@@ -88,10 +88,7 @@ extension Downloading on dsb.Session {
                   ttl: Duration(days: 4), defaultCharset: String.fromCharCodes),
               downloadPreviews
                   ? http.getBin('$previewEndpoint/${p.preview}')
-                  : null,
-              p.id,
-              p.date,
-              p.title)));
+                  : null)));
 
   Future<Iterable<Iterable<Page>>> downloadAndParsePlans(
     Iterable<dsb.Item> timetables, {
@@ -100,7 +97,7 @@ extension Downloading on dsb.Session {
   }) =>
       Future.wait(downloadPlans(timetables, downloadPreviews: downloadPreviews)
               .map((e) => Future.wait(e.map((p) => p.parse(parser)))
-                  .then((x) => x.where((p) => p != null).map((p) => p!))))
+                  .then((x) => x.whereNotNull())))
           .then((x) => x.where((p) => p.isNotEmpty));
 }
 
@@ -118,16 +115,15 @@ Future<List<List<Page>>> getAllSubs(
   String previewEndpoint = dsb.Session.defaultPreviewEndpoint,
   bool downloadPreviews = false,
   untis.ParserBuilder parser = untis.Substitution.fromUntis,
-}) async {
-  final session = await dsb.Session.login(username, password,
-      endpoint: endpoint,
-      previewEndpoint: previewEndpoint,
-      http: http ?? ScHttpClient());
-  return await session
-      .downloadAndParsePlans(await session.getTimetables(),
-          downloadPreviews: downloadPreviews, parser: parser)
-      .then((x) => x.toNestedList());
-}
+}) =>
+    dsb.Session.login(username, password,
+            endpoint: endpoint, previewEndpoint: previewEndpoint, http: http)
+        .then((s) => s.getTimetables().then(
+              (t) => s
+                  .downloadAndParsePlans(t,
+                      downloadPreviews: downloadPreviews, parser: parser)
+                  .then((x) => x.toNestedList()),
+            ));
 
 extension MergePlans on Iterable<Iterable<Page>> {
   Iterable<untis.Page> merge() =>

@@ -25,8 +25,8 @@ final List<List<Page>> dsbTest1Expct = [
     Page(
       untis.Day.tuesday,
       [
-        untis.Substitution('11q', 7, '---', '1sk1', true, orgTeacher: 'Aschi'),
-        untis.Substitution('11q', 8, '---', '1sk1', true, orgTeacher: 'Aschi'),
+        untis.Substitution('11q', 7, '---', '1sk1', orgTeacher: 'Aschi'),
+        untis.Substitution('11q', 8, '---', '1sk1', orgTeacher: 'Aschi'),
       ],
       '23.6.2020 Dienstag',
       '',
