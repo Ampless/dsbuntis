@@ -22,7 +22,7 @@ class Page extends untis.Page {
   Page.fromJson(dynamic json)
       : url = json['url'],
         previewUrl = json['preview_url'],
-        preview = json.containsKey('preview')
+        preview = json.containsKey('preview') && json['preview'] != null
             // TODO: hate on this code
             ? Uint8List.fromList(List<int>.from(json['preview']))
             : null,
@@ -43,18 +43,12 @@ class Page extends untis.Page {
   static Iterable<Iterable<Page>> plansFromJsonString(String json) =>
       jsonDecode(json).map<Iterable<Page>>(
           (p) => p.map<Page>(Page.fromJson) as Iterable<Page>);
+}
 
-  static Iterable<Iterable<Page>> searchInPlans(
-    Iterable<Iterable<Page>> pages,
-    bool Function(untis.Substitution) predicate,
-  ) =>
-      pages.map((p) => p.map((p) => Page(
-          p.day,
-          p.subs.where(predicate).toList(),
-          p.date,
-          p.url,
-          p.previewUrl,
-          p.preview)));
+extension SearchInPlans on Iterable<Iterable<Page>> {
+  Iterable<Iterable<Page>> search(bool Function(untis.Substitution) pred) =>
+      map((p) => p.map((p) => Page(p.day, p.subs.where(pred).toList(), p.date,
+          p.url, p.previewUrl, p.preview)));
 }
 
 class DownloadingPage {
@@ -101,7 +95,7 @@ extension Downloading on dsb.Session {
           .then((x) => x.where((p) => p.isNotEmpty));
 }
 
-// TODO: make a package with this
+// TODO: put this into its own package, then deprecate, then remove
 extension ToNestedList<T> on Iterable<Iterable<T>> {
   List<List<T>> toNestedList({bool growable = true}) =>
       map((x) => x.toList(growable: growable)).toList(growable: growable);

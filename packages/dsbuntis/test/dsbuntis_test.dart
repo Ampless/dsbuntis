@@ -111,20 +111,17 @@ TestCase dsbTestCase(
   String char,
 ) =>
     () async {
-      final plans = Page.searchInPlans(
-        (await getAllSubs(
-          username,
-          password,
-          http: ScHttpClient(
-            getCache: (u) => htmlCache[
-                htmlCache.keys.firstWhere((k) => u.toString().contains(k))],
-            forceCache: true,
-          ),
-        )),
-        (sub) =>
-            sub.affectedClass.contains(stage) &&
-            sub.affectedClass.contains(char),
-      );
+      final plans = await getAllSubs(
+        username,
+        password,
+        http: ScHttpClient(
+          getCache: (u) => htmlCache[
+              htmlCache.keys.firstWhere((k) => u.toString().contains(k))],
+          forceCache: true,
+        ),
+      ).then((x) => x.search((sub) =>
+          sub.affectedClass.contains(stage) &&
+          sub.affectedClass.contains(char)));
       for (final plan in plans) {
         for (final page in plan) {
           page.subs.sort();

@@ -1,47 +1,13 @@
-## 8.0.0-alpha.8
+## 8.0.0
 
-- Got rid of `id`, `dsbDate` and `dsbTitle` from `DownloadingPage`
-(they might be reintroduced once we figured out how to put more information
-from DSB into `Page`s)
-- Heavily improved the `getAllSubs` code
-- Adopted `.whereNotNull`
-
-## 8.0.0-alpha.7
-
+- Pulled the lower-level DSB and Untis code out of `dsbuntis` and made them
+their own packages (`dsb`, `untis`)
+- Got rid of the idea of a plan, they're now `Iterable<Page>`s
+- Got rid of unnecessary JSON helpers (that didn't help)
 - Added `Session.downloadAndParsePlans` to ease certain use cases
-- Added `Iterable<Iterable<T>>.toNestedList` for temporarily making that easier
-(will be removed in 9.0 probably)
-
-## 8.0.0-alpha.6
-
-- Got rid of the multi-file architecture
-
-## 8.0.0-alpha.5
-
-* Fixed incompatibilities with `untis` 0.1.0-alpha.4
-
-## 8.0.0-alpha.4
-
-* `MergePlans` on `Iterable<Iterable<Page>>` to merge multi-page plans easily
-
-## 8.0.0-alpha.3
-
-* Got rid of the idea of a plan, they're now `List<Page>`s
-* `Session.downloadPlans` is now also more spec compliant (respects `ConType`)
-* Got rid of unnecessary JSON helpers (that didn't help)
-
-## 8.0.0-alpha.2
-
-* Made the `parser` in `DownloadingPlans.parse` optional
-(I thought it wasn't necessary previously)
-
-## 8.0.0-alpha.1
-
-* First attempt at pulling `untis` out of `dsbuntis`
-
-## 8.0.0-alpha.0
-
-* First attempt at pulling `dsb` out of `dsbuntis`
+- `MergePlans` on `Iterable<Iterable<Page>>` to merge multi-page plans easily
+- `Session.downloadPlans` is now also more spec compliant (respects `ConType`)
+- Heavily improved the `getAllSubs` code
 
 ## 7.1.1
 
