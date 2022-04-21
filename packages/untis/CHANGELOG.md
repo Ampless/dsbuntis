@@ -1,3 +1,8 @@
+## 0.1.1
+
+- Optimized `Page.parsePage`
+- Upgrade to `html_search` 0.3
+
 ## 0.1.0
 
 - Initial attempt at making a DSB-independent Untis parser

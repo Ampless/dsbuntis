@@ -213,36 +213,17 @@ class Page {
     ParserBuilder parser = Substitution.fromUntis,
   ]) {
     final rawHtml = html
-        .replaceAll('\n', '')
-        .replaceAll('\r', '')
-        //just fyi: these regexes only work because there are no more newlines
-        // TODO: rethink all the regexes
-        .replaceAll(RegExp(r'<h1.*?</h1>'), '')
-        .replaceAll(RegExp(r'</?p.*?>'), '')
-        .replaceAll(RegExp(r'<th.*?</th>'), '')
-        .replaceAll(RegExp(r'<head.*?</head>'), '')
-        .replaceAll(RegExp(r'<script.*?</script>'), '')
-        .replaceAll(RegExp(r'<style.*?</style>'), '')
-        .replaceAll(RegExp(r'</?html.*?>'), '')
-        .replaceAll(RegExp(r'</?body.*?>'), '')
-        .replaceAll(RegExp(r'</?font.*?>'), '')
-        .replaceAll(RegExp(r'</?span.*?>'), '')
-        .replaceAll(RegExp(r'</?center.*?>'), '')
-        .replaceAll(RegExp(r'</?a.*?>'), '')
-        .replaceAll(RegExp(r'<tr.*?>'), '<tr>')
-        .replaceAll(RegExp(r'<td.*?>'), '<td>')
-        .replaceAll(RegExp(r'<th.*?>'), '<th>')
-        .replaceAll(RegExp(r' +'), ' ')
-        .replaceAll(RegExp(r'<br />'), '')
-        .replaceAll(RegExp(r'<!-- .*? -->'), '');
+        .replaceAll('\n', ' ')
+        .replaceAll('\r', ' ')
+        .replaceAll(RegExp(r' +'), ' ');
     // TODO: try to find a way to have less in this try block
     try {
       // TODO: let's also rethink the parsing code in general
-      var html = parse(rawHtml).first.children[1].children; //body
+      var html = htmlParse(rawHtml).first.children[1].children; //body
       final pageTitle =
-          searchFirst(html, (e) => e.className.contains('mon_title'))!
-              .innerHtml;
-      html = searchFirst(html, (e) => e.className.contains('mon_list'))!
+          html.searchFirst((e) => e.className.contains('mon_title'))!.innerHtml;
+      html = html
+          .searchFirst((e) => e.className.contains('mon_list'))!
           .children
           .first //for some reason <table>s like to contain <tbody>s
           .children;
