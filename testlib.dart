@@ -22,6 +22,10 @@ TestCase expectTestCase<T>(
       expect(res, expct);
     };
 
+TestCase Function(A, B, bool) functionTestCase<A, B>(B Function(A) tfunc) =>
+    (A input, B expct, bool error) =>
+        expectTestCase(() async => tfunc(input), expct, error);
+
 void tests(List<TestCase> testCases, String groupName) {
   group(groupName, () {
     var i = 1;

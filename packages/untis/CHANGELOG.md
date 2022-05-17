@@ -1,7 +1,12 @@
+## 0.2.0-alpha.0
+
+- Replaced `dayFromInt`, `dayToInt`, `matchDay` and `DayImpl` with methods on
+`Day` (thanks Dart 2.17!)
+
 ## 0.1.1
 
 - Optimized `Page.parsePage`
-- Upgrade to `html_search` 0.3
+- Upgraded to `html_search` 0.3
 
 ## 0.1.0
 

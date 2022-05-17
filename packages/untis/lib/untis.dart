@@ -10,32 +10,14 @@ extension WhereNotNull<T> on Iterable<T?> {
 typedef Parser = Substitution Function(int, List<String>);
 typedef ParserBuilder = Parser Function(List<String>);
 
+// TODO: think about supporting sat and sun (why wouldnt we)
 enum Day {
   monday,
   tuesday,
   wednesday,
   thursday,
-  friday,
-}
+  friday;
 
-class UnknownDayException implements Exception {
-  final String _day;
-  UnknownDayException(this._day);
-
-  @override
-  String toString() => 'Unknown day: $_day';
-}
-
-// This code is a shame
-// But the Dart team is to blame
-// Spam their whole GitHub
-//
-// https://github.com/dart-lang/language/issues/723
-const dayFromInt = DayImpl.fromInt;
-int dayToInt(Day d) => d.toInt();
-const matchDay = DayImpl.match;
-
-extension DayImpl on Day {
   static Day? fromInt(int? i) =>
       i == null || [-1, 5].contains(i) ? null : Day.values[i];
 
@@ -59,6 +41,14 @@ extension DayImpl on Day {
       throw UnknownDayException(s);
     }
   }
+}
+
+class UnknownDayException implements Exception {
+  final String _day;
+  UnknownDayException(this._day);
+
+  @override
+  String toString() => 'Unknown day: $_day';
 }
 
 class Substitution extends Comparable {
@@ -151,8 +141,8 @@ class Substitution extends Comparable {
       return lesson.compareTo(other);
     } else if (other is Substitution) {
       var tc = affectedClass, oc = other.affectedClass;
-      if (tc.length > 1 && !'0123456789'.contains(tc[1])) tc = '0' + tc;
-      if (oc.length > 1 && !'0123456789'.contains(oc[1])) oc = '0' + oc;
+      if (tc.length > 1 && !'0123456789'.contains(tc[1])) tc = '0$tc';
+      if (oc.length > 1 && !'0123456789'.contains(oc[1])) oc = '0$oc';
       final c = tc.compareTo(oc);
       return c != 0 ? c : lesson.compareTo(other.lesson);
     } else {
@@ -194,7 +184,7 @@ class Page {
   Page(this.day, this.subs, this.date);
 
   Page.fromJson(dynamic json)
-      : day = dayFromInt(json['day']),
+      : day = Day.fromInt(json['day']),
         date = json['date'],
         subs = json['subs'].map<Substitution>(Substitution.fromJson).toList();
 
@@ -236,7 +226,7 @@ class Page {
           subs.add(p(lesson, e));
         }
       }
-      return Page(matchDay(pageTitle), subs, pageTitle);
+      return Page(Day.match(pageTitle), subs, pageTitle);
     } catch (e) {
       return null;
     }
