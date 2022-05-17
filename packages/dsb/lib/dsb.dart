@@ -12,9 +12,7 @@ class DsbException implements Exception {
 
 class AuthenticationException extends DsbException {
   AuthenticationException(
-      // TODO: use super-parameters (Dart feature 1855)
-      [String _message = 'An authentication error has occurred.'])
-      : super(_message);
+      [super._message = 'An authentication error has occurred.']);
 }
 
 class Item {
