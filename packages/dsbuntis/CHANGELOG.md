@@ -1,3 +1,7 @@
+## 8.1.0-alpha.0
+
+- Upgraded to dsb `0.1.1-alpha.0`, schttp `5.0.0-alpha.2` and untis `0.1.1`
+
 ## 8.0.0
 
 - Pulled the lower-level DSB and Untis code out of `dsbuntis` and made them

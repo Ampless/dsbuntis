@@ -114,10 +114,9 @@ TestCase dsbTestCase(
       final plans = await getAllSubs(
         username,
         password,
-        http: ScHttpClient(
+        http: SCacheClient(
           getCache: (u) => htmlCache[
               htmlCache.keys.firstWhere((k) => u.toString().contains(k))],
-          forceCache: true,
         ),
       ).then((x) => x.search((sub) =>
           sub.affectedClass.contains(stage) &&
