@@ -10,6 +10,11 @@ import 'package:hex/hex.dart';
 import 'package:highlight/highlight.dart';
 import 'package:schttp/schttp.dart';
 
+final green = AnsiPen()..green(),
+    yellow = AnsiPen()..yellow(),
+    magenta = AnsiPen()..magenta(),
+    red = AnsiPen()..red();
+
 String skrcli(Result r) {
   var str = '';
 
@@ -47,11 +52,7 @@ class LogHttpClient extends ScHttpClient {
         readCache: readCache,
         writeCache: writeCache,
         ttl: ttl);
-    print((AnsiPen()..green())('GET_BIN') +
-        ' ' +
-        (AnsiPen()..yellow())(url) +
-        ' → ' +
-        HEX.encode(res));
+    print('${green('GET_BIN')} ${yellow(url)} → ${HEX.encode(res)}');
     return res;
   }
 
@@ -70,11 +71,7 @@ class LogHttpClient extends ScHttpClient {
         headers: headers,
         defaultCharset: defaultCharset,
         forcedCharset: forcedCharset);
-    print((AnsiPen()..green())('GET') +
-        ' ' +
-        (AnsiPen()..yellow())(url) +
-        ' → ' +
-        res);
+    print('${green('GET')} ${yellow(url)} → $res');
     return res;
   }
 
@@ -93,13 +90,7 @@ class LogHttpClient extends ScHttpClient {
         headers: headers,
         defaultCharset: defaultCharset,
         forcedCharset: forcedCharset);
-    print((AnsiPen()..green())('POST') +
-        ' ' +
-        (AnsiPen()..yellow())(body) +
-        ' → ' +
-        (AnsiPen()..magenta())(url) +
-        ' → ' +
-        res);
+    print('${green('POST')} ${yellow(body)} → ${magenta(url)} → $res');
     return res;
   }
 }
@@ -215,9 +206,8 @@ void main(List<String> argv) async {
         try {
           json = jsonEncode(jsonDecode(json));
         } catch (e) {
-          stderr.writeln((AnsiPen()..red())(
-              'Timetable JSON is actually not valid JSON: ' +
-                  (traces && e is Error ? '$e\n\n${e.stackTrace}' : '$e')));
+          stderr.writeln(red(
+              'Timetable JSON is actually not valid JSON: ${traces && e is Error ? '$e\n\n${e.stackTrace}' : '$e'}'));
         }
         print(skrcli(highlight.parse(json, language: 'json')));
       } else {
@@ -235,8 +225,7 @@ void main(List<String> argv) async {
     stderr.writeln();
     stderr.writeln(parser.usage);
     stderr.writeln();
-    stderr.writeln(
-        (AnsiPen()..red())(traces && e is Error ? '$e\n\n${e.stackTrace}' : e));
+    stderr.writeln(red(traces && e is Error ? '$e\n\n${e.stackTrace}' : e));
     exit(1);
   }
 }
