@@ -2,19 +2,25 @@ import 'dart:convert';
 
 import 'package:schttp/schttp.dart';
 
+/// An error was returned by DSBMobile.
 class DsbException implements Exception {
   final String _message;
-  DsbException([this._message = 'A DSB error has occurred.']);
+  DsbException(this._message);
 
   @override
   String toString() => _message;
 }
 
+/// The DSBMobile backend returned an empty token.
+///
+/// Usually this means that the username or password is invalid.
 class AuthenticationException extends DsbException {
   AuthenticationException(
       [super._message = 'An authentication error has occurred.']);
 }
 
+/// A single `Item` from the DSBMobile API.
+/// (https://github.com/Ampless/Adsignificamus#response-1)
 class Item {
   String id;
   String date;
@@ -74,9 +80,9 @@ class Session {
   static const defaultOsVersion = '30';
   static const defaultBundleId = 'de.heinekingmedia.dsbmobile';
 
-  String endpoint;
-  String token;
   ScHttpClient http;
+  String token;
+  String endpoint;
   String previewEndpoint;
 
   Session(this.token,
@@ -85,6 +91,12 @@ class Session {
       this.previewEndpoint = defaultPreviewEndpoint})
       : http = http ?? ScHttpClient();
 
+  /// Tries using the given [username] and [password] to log in.
+  ///
+  /// Makes an `Auth` request (https://github.com/Ampless/Adsignificamus#auth)
+  /// to the [endpoint] using [http] with [appVersion], [osVersion] and
+  /// [bundleId] encoded in the request. [previewEndpoint] is passed onto the
+  /// raw constructor.
   static Future<Session> login(
     String username,
     String password, {
@@ -109,16 +121,13 @@ class Session {
                 '&password=$password'),
             ttl: Duration(days: 30))
         .then((tkn) {
-      // TODO: this code is very cool but also hacky, let's improve it
-      try {
-        throw DsbException(jsonDecode(tkn)['Message']);
-      } on DsbException {
-        rethrow;
-      } catch (e) {
-        tkn = tkn.replaceAll('"', '');
-        if (tkn.isEmpty) throw AuthenticationException();
-        return tkn;
+      final json = jsonDecode(tkn);
+      if (json is Map && json.containsKey('Message')) {
+        throw DsbException(json['Message']);
+      } else if (json == '') {
+        throw AuthenticationException();
       }
+      return json;
     });
     return Session(tkn,
         endpoint: endpoint, http: http, previewEndpoint: previewEndpoint);
