@@ -10,18 +10,22 @@ extension WhereNotNull<T> on Iterable<T?> {
 typedef Parser = Substitution Function(int, List<String>);
 typedef ParserBuilder = Parser Function(List<String>);
 
-// TODO: think about supporting sat and sun (why wouldnt we)
 enum Day {
   monday,
   tuesday,
   wednesday,
   thursday,
-  friday;
+  friday,
+  saturday,
+  sunday;
 
   static Day? fromInt(int? i) =>
-      i == null || [-1, 5].contains(i) ? null : Day.values[i];
+      i == null || i == -1 || i == 5 ? null : values[i > 4 ? i - 1 : i];
 
-  int toInt() => Day.values.indexOf(this);
+  int toInt() {
+    final i = values.indexOf(this);
+    return i > 4 ? i + 1 : i;
+  }
 
   static Day? match(String s) {
     s = s.toLowerCase();
@@ -37,6 +41,10 @@ enum Day {
       return Day.thursday;
     } else if (s.contains('fr')) {
       return Day.friday;
+    } else if (s.contains('sa')) {
+      return Day.saturday;
+    } else if (s.contains('so') || s.contains('sun')) {
+      return Day.sunday;
     } else {
       throw UnknownDayException(s);
     }
@@ -209,7 +217,7 @@ class Page {
     // TODO: try to find a way to have less in this try block
     try {
       // TODO: let's also rethink the parsing code in general
-      var html = htmlParse(rawHtml).first.children[1].children; //body
+      var html = htmlParse(rawHtml);
       final pageTitle =
           html.searchFirst((e) => e.className.contains('mon_title'))!.innerHtml;
       html = html

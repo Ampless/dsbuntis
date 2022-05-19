@@ -1,7 +1,8 @@
-## 0.2.0-alpha.0
+## 0.2.0-alpha.1
 
 - Replaced `dayFromInt`, `dayToInt`, `matchDay` and `DayImpl` with methods on
 `Day` (thanks Dart 2.17!)
+- Added `saturday` and `sunday` to `Day`
 
 ## 0.1.1
 
