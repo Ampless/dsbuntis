@@ -11,10 +11,8 @@ class Page extends untis.Page {
   Uint8List? preview;
   // TODO: more data from dsb
 
-  // TODO: simplify once super-parameters are stable
-  Page(untis.Day? day, List<untis.Substitution> subs, String date, this.url,
-      this.previewUrl, this.preview)
-      : super(day, subs, date);
+  Page(super.day, super.subs, super.date, this.url, this.previewUrl,
+      this.preview);
 
   Page.from(untis.Page p, this.url, this.previewUrl, this.preview)
       : super(p.day, p.subs, p.date);
