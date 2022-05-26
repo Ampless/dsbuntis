@@ -70,13 +70,6 @@ TestCase untisTestCase(
       assertPageListsEqual(plans, expectedPages);
     };
 
-List<TestCase> dsbTestCases = [
-  untisTestCase(untisTest1, untisTest1Expct, '11', 'q'),
-  untisTestCase(untisTest1, untisTest1Expct, '11', ''),
-  untisTestCase(untisTest2, untisTest2Expct, '', 'q'),
-  untisTestCase(untisTest2, untisTest2Expct, '', ''),
-];
-
 TestCase jsonTestCase(List<Page> plans) => () async {
       assertPageListsEqual(
         jsonDecode(jsonEncode(plans)).map<Page>(Page.fromJson).toList(),
@@ -84,12 +77,15 @@ TestCase jsonTestCase(List<Page> plans) => () async {
       );
     };
 
-List<TestCase> jsonTestCases = [
-  jsonTestCase(untisTest1Expct),
-  jsonTestCase(untisTest2Expct),
-];
-
 void main() {
-  tests(dsbTestCases, 'dsb');
-  tests(jsonTestCases, 'json');
+  tests([
+    untisTestCase(untisTest1, untisTest1Expct, '11', 'q'),
+    untisTestCase(untisTest1, untisTest1Expct, '11', ''),
+    untisTestCase(untisTest2, untisTest2Expct, '', 'q'),
+    untisTestCase(untisTest2, untisTest2Expct, '', ''),
+  ], 'untis');
+  tests([
+    jsonTestCase(untisTest1Expct),
+    jsonTestCase(untisTest2Expct),
+  ], 'json');
 }

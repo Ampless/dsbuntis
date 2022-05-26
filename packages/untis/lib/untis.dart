@@ -168,20 +168,8 @@ final _unescape = HtmlUnescape();
 String _str(dom.Element e) =>
     _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
 
-// TODO: try to come up with a better, more functional algorithm
-List<int> _parseIntsFromString(String s) {
-  final out = <int>[];
-  var lastindex = 0;
-  for (var i = 0; i < s.length; i++) {
-    if (!'0123456789'.contains(s[i])) {
-      if (lastindex != i) out.add(int.parse(s.substring(lastindex, i)));
-      lastindex = i + 1;
-    }
-  }
-  final i = int.tryParse(s.substring(lastindex));
-  if (i != null) out.add(i);
-  return out;
-}
+List<int> _parseIntsFromString(String s) =>
+    s.split(RegExp('[^0-9]+')).map(int.tryParse).whereNotNull().toList();
 
 class Page {
   Day? day;
