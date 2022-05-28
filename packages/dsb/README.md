@@ -31,12 +31,12 @@ final timetables = await session.getTimetables();
 
 ### Caching and best practices
 
-<!-- TODO: rephrase -->
-
-A very important feature in `dsbuntis` from the beginning has been good caching. For documentation on
-how to set it up for the actual requests, please refer to the `schttp` documentation, as it is our
-HTTP backend. However, you can aditionally cache `Session`s.
-[AFAIK](https://twitter.com/pixelcmtd/status/1464213128682610706) the login of DSBMobile is idempotent
-(as indicated by it being a `GET` request) and always returns the same token. If it is, which you can
-safely assume by now, you can cache the `Session`'s `token` forever. Otherwise you can still keep the
+A very important feature in `dsbuntis` from the beginning has been good caching.
+For documentation on how to set it up for the actual requests, please refer to
+the `schttp` documentation, as it is our HTTP backend. However, you can
+aditionally cache the `Session` objects.
+[AFAIK](https://twitter.com/pixelcmtd/status/1464213128682610706) the login of
+DSBMobile is idempotent (as indicated by it being a `GET` request) and always
+returns the same token. If it is, which you can safely assume by now, you can
+cache the `Session`'s `token` forever. Otherwise you can still keep the
 `Session` object around for a while.
