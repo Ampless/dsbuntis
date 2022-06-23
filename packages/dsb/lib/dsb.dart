@@ -73,6 +73,7 @@ class Item {
 }
 
 class Session {
+  // TODO: maybe make this a uri in the next major
   static const defaultEndpoint = 'https://mobileapi.dsbcontrol.de';
   static const defaultPreviewEndpoint =
       'https://light.dsbcontrol.de/DSBlightWebsite/Data';
@@ -111,14 +112,13 @@ class Session {
     http ??= ScHttpClient();
     final tkn = await http
         .get(
-            // TODO: improve this
-            Uri.encodeFull('$endpoint/authid'
-                '?bundleid=$bundleId'
-                '&appversion=$appVersion'
-                '&osversion=$osVersion'
-                '&pushid'
-                '&user=$username'
-                '&password=$password'),
+            '$endpoint/authid'
+            '?bundleid=${Uri.encodeComponent(bundleId)}'
+            '&appversion=${Uri.encodeComponent(appVersion)}'
+            '&osversion=${Uri.encodeComponent(osVersion)}'
+            '&pushid'
+            '&user=${Uri.encodeComponent(username)}'
+            '&password=${Uri.encodeComponent(password)}',
             ttl: Duration(days: 30))
         .then((tkn) {
       final json = jsonDecode(tkn);
@@ -134,7 +134,7 @@ class Session {
   }
 
   Future<String> getJsonString(String name) => http.get(
-        '$endpoint/$name?authid=$token',
+        '$endpoint/${Uri.encodeComponent(name)}?authid=$token',
 // TODO: think about ttl parameter
         ttl: Duration(minutes: 15),
         defaultCharset: String.fromCharCodes,
