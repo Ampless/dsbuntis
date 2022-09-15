@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:test/test.dart';
 import 'package:untis/untis.dart';
+import 'package:where_not_null/where_not_null.dart';
 
 import '../../../testlib.dart';
 

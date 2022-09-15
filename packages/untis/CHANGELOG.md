@@ -1,10 +1,12 @@
-## 0.2.0-alpha.2
+## 0.2.0-alpha.3
 
 - Replaced `dayFromInt`, `dayToInt`, `matchDay` and `DayImpl` with methods on
 `Day` (thanks Dart 2.17!)
 - Added `saturday` and `sunday` to `Day`
 - Replaced the number parsing algorithm with a simpler one that should always
 yield the same results
+- Removed `WhereNotNull`, use `package:where_not_null` instead
+- `Substitution`s are only `Comparable<Substitution>` now
 
 ## 0.1.1
 

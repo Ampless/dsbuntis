@@ -1,11 +1,7 @@
 import 'package:html/dom.dart' as dom;
 import 'package:html_search/html_search.dart';
 import 'package:html_unescape/html_unescape.dart';
-
-// TODO: put this into its own package, then deprecate, then remove
-extension WhereNotNull<T> on Iterable<T?> {
-  Iterable<T> whereNotNull() => where((x) => x != null).map((x) => x!);
-}
+import 'package:where_not_null/where_not_null.dart';
 
 typedef Parser = Substitution Function(int, List<String>);
 typedef ParserBuilder = Parser Function(List<String>);
@@ -59,7 +55,7 @@ class UnknownDayException implements Exception {
   String toString() => 'Unknown day: $_day';
 }
 
-class Substitution extends Comparable {
+class Substitution extends Comparable<Substitution> {
   String affectedClass;
   int lesson;
   String? orgTeacher;
@@ -142,20 +138,13 @@ class Substitution extends Comparable {
 
   bool get isFree => subTeacher.contains('---');
 
-// TODO: scream at dart people about algebraic data types
   @override
-  int compareTo(dynamic other) {
-    if (other is int) {
-      return lesson.compareTo(other);
-    } else if (other is Substitution) {
-      var tc = affectedClass, oc = other.affectedClass;
-      if (tc.length > 1 && !'0123456789'.contains(tc[1])) tc = '0$tc';
-      if (oc.length > 1 && !'0123456789'.contains(oc[1])) oc = '0$oc';
-      final c = tc.compareTo(oc);
-      return c != 0 ? c : lesson.compareTo(other.lesson);
-    } else {
-      return 0;
-    }
+  int compareTo(Substitution other) {
+    var tc = affectedClass, oc = other.affectedClass;
+    if (tc.length > 1 && !'0123456789'.contains(tc[1])) tc = '0$tc';
+    if (oc.length > 1 && !'0123456789'.contains(oc[1])) oc = '0$oc';
+    final c = tc.compareTo(oc);
+    return c != 0 ? c : lesson.compareTo(other.lesson);
   }
 
   @override
@@ -165,8 +154,6 @@ class Substitution extends Comparable {
 
 final _tag = RegExp(r'</?.+?>');
 final _unescape = HtmlUnescape();
-String _str(dom.Element e) =>
-    _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
 
 List<int> _parseIntsFromString(String s) =>
     s.split(RegExp('[^0-9]+')).map(int.tryParse).whereNotNull().toList();
@@ -198,6 +185,8 @@ class Page {
     String html, [
     ParserBuilder parser = Substitution.fromUntis,
   ]) {
+    String str(dom.Element e) =>
+        _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
     final rawHtml = html
         .replaceAll('\n', ' ')
         .replaceAll('\r', ' ')
@@ -214,13 +203,11 @@ class Page {
           .first //for some reason <table>s like to contain <tbody>s
           .children;
       final subs = <Substitution>[];
-      final p = parser(html[0].children.map(_str).toList());
-      for (var i = 1; i < html.length; i++) {
-        final e = html[i].children.map(_str).toList();
+      final p = parser(html[0].children.map(str).toList());
+      for (final raw in html.sublist(1)) {
+        final e = raw.children.map(str).toList();
         // TODO: find a way for the `parser` to determine what the lesson is
-        for (final lesson in _parseIntsFromString(e[1])) {
-          subs.add(p(lesson, e));
-        }
+        subs.addAll(_parseIntsFromString(e[1]).map((l) => p(l, e)));
       }
       return Page(Day.match(pageTitle), subs, pageTitle);
     } catch (e) {
