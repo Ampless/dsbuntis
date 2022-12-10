@@ -4,8 +4,17 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   test:
+    strategy:
+      matrix:
+        package: [dsb, untis, dsbuntis, accemus]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1.2
-      - run: cd packages && for x in * ; do cd $x && dart test && cd .. ; done
+      - run: cd packages/${{ matrix.package }} && dart test --file-reporter=json:results.json
+      - uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: ${{ matrix.package }} Tests
+          path: reports/results.json
+          reporter: dart-json
