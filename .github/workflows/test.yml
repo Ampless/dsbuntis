@@ -16,5 +16,5 @@ jobs:
         if: success() || failure()
         with:
           name: ${{ matrix.package }} Tests
-          path: packages/${{ matrix.package }}/reports/results.json
+          path: packages/${{ matrix.package }}/results.json
           reporter: dart-json
