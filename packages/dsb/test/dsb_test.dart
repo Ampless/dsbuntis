@@ -1,6 +1,5 @@
 import 'package:dsb/dsb.dart';
-
-import '../../../testlib.dart';
+import 'package:tested/tested.dart';
 
 // TODO: proper tests
 
@@ -18,5 +17,5 @@ void main() {
   tests([
     ...publicTestCases('187801', 'public'),
     ...publicTestCases('152321', 'krsmrz21'), //THANKS @3liFi!
-  ], 'public');
+  ]);
 }

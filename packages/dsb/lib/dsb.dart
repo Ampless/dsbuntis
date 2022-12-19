@@ -73,7 +73,7 @@ class Item {
 }
 
 class Session {
-  // TODO: maybe make this a uri in the next major
+  // TODO(major): maybe make this a uri
   static const defaultEndpoint = 'https://mobileapi.dsbcontrol.de';
   static const defaultPreviewEndpoint =
       'https://light.dsbcontrol.de/DSBlightWebsite/Data';
@@ -112,6 +112,7 @@ class Session {
     http ??= ScHttpClient();
     final tkn = await http
         .get(
+            // TODO: consider using package:uri here and otherwhere
             '$endpoint/authid'
             '?bundleid=${Uri.encodeComponent(bundleId)}'
             '&appversion=${Uri.encodeComponent(appVersion)}'
@@ -135,7 +136,7 @@ class Session {
 
   Future<String> getJsonString(String name) => http.get(
         '$endpoint/${Uri.encodeComponent(name)}?authid=$token',
-// TODO: think about ttl parameter
+        // TODO: think about ttl parameter
         ttl: Duration(minutes: 15),
         defaultCharset: String.fromCharCodes,
       );
