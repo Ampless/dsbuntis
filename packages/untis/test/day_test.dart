@@ -1,6 +1,9 @@
+import 'package:tested/tested.dart';
 import 'package:untis/untis.dart';
 
-import '../../../testlib.dart';
+TestCase Function(A, B, bool) functionTestCase<A, B>(B Function(A) tfunc) =>
+    (A input, B expct, bool error) =>
+        expectTestCase(() async => tfunc(input), expct, error);
 
 final matchTestCase = functionTestCase(Day.match);
 final toIntTestCase = functionTestCase((Day d) => d.toInt());

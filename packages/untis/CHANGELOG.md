@@ -1,4 +1,4 @@
-## 0.2.0-alpha.3
+## 0.2.0-alpha.4
 
 - Replaced `dayFromInt`, `dayToInt`, `matchDay` and `DayImpl` with methods on
 `Day` (thanks Dart 2.17!)
@@ -7,6 +7,7 @@
 yield the same results
 - Removed `WhereNotNull`, use `package:where_not_null` instead
 - `Substitution`s are only `Comparable<Substitution>` now
+- Adopted tested 1 for testing
 
 ## 0.1.1
 

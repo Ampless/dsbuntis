@@ -23,6 +23,17 @@ enum Day {
     return i > 4 ? i + 1 : i;
   }
 
+  /// Searches `s` for English or German day abbreviations.
+  ///
+  /// Returns `null` if `s` is empty or contains `null` or `none`.
+  ///
+  /// Throws an `UnknownDayException` if no day is found.
+  ///
+  /// Examples:
+  /// - "Monday" ↦ `Day.monday`
+  /// - "di" ↦ `Day.tuesday`
+  /// - "abc" ↦ throws `UnknownDayException("abc")`
+  // TODO: think about supporting `String?` like `fromInt`
   static Day? match(String s) {
     s = s.toLowerCase();
     if (s.isEmpty || s.contains('null') || s.contains('none')) {
@@ -136,6 +147,8 @@ class Substitution extends Comparable<Substitution> {
         if (room != null) 'room': room,
       };
 
+  /// As far as we can tell, when lessons are completely cancelled, the
+  /// substituting teacher is "---". This method checks for that.
   bool get isFree => subTeacher.contains('---');
 
   @override
@@ -181,6 +194,9 @@ class Page {
   @override
   String toString() => '$day ($date): $subs';
 
+  /// Tries to parse the `html` using the given `parser`, or the default
+  /// `Substitution.fromUntis`.
+  // TODO: consider renaming to `parse`
   static Page? parsePage(
     String html, [
     ParserBuilder parser = Substitution.fromUntis,
@@ -217,6 +233,8 @@ class Page {
 }
 
 extension SearchInPages on Iterable<Page> {
+  /// Returns the same `Page`s, with just the `Substitution`s that match the
+  /// `predicate`.
   Iterable<Page> search(bool Function(Substitution) predicate) =>
       map((p) => Page(p.day, p.subs.where(predicate).toList(), p.date));
 }

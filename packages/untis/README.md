@@ -10,5 +10,5 @@ using [dsbuntis](https://pub.dev/packages/dsbuntis).
 ## Usage
 
 ```dart
-final plans = Page.parsePage(html);
+final page = Page.parsePage(html);
 ```

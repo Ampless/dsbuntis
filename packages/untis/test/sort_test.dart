@@ -1,7 +1,6 @@
+import 'package:tested/tested.dart';
 import 'package:untis/untis.dart';
 import 'package:test/test.dart';
-
-import '../../../testlib.dart';
 
 TestCase sortTestCase(List<List> input, List<int> expected) => () async {
       if (input.length != expected.length) throw 'Invalid test.';

@@ -1,10 +1,9 @@
 import 'dart:convert';
 
 import 'package:test/test.dart';
+import 'package:tested/tested.dart';
 import 'package:untis/untis.dart';
 import 'package:where_not_null/where_not_null.dart';
-
-import '../../../testlib.dart';
 
 const untisTest1 = [
   '<table class="mon_head"> <tr> <td></td> <td></td> <td> GYM. MIT SCHÜLERHEIM ROSENHOF D-91257,P1meml Gymnasium Rosenhof 2019/2020 Stand: 23.06.2020 08:55 </td> </tr></table><div class="mon_title">23.6.2020 Dienstag</div><table class="info" ><tr></tr><tr><td>Betroffene Klassen </td><td>11Q</td></tr></table><table class="mon_list" ><tr><td>Kl.</td><td>Std.</td><td>Vertreter*in</td><td>Fach</td><td>((Lehrer))</td><td>Text</td></tr><tr><td>11Q</td><td> 7 &nbsp; 8 </td><td>---</td><td>1sk1</td><td>&nbsp;Aschi</td><td> </td></tr></table>Untis Stundenplan Software',
