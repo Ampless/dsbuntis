@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dsb/dsb.dart' as dsb;
 import 'package:schttp/schttp.dart';
 import 'package:untis/untis.dart' as untis;
+import 'package:where_not_null/where_not_null.dart';
 
 class Page extends untis.Page {
   String url;
@@ -99,6 +100,13 @@ extension ToNestedList<T> on Iterable<Iterable<T>> {
       map((x) => x.toList(growable: growable)).toList(growable: growable);
 }
 
+/// Logs into a DSBMobile account and downloads all timetables.
+/// 
+/// Uses `username` and `password` to `Session.login` (`package:dsb`) to the
+/// given `endpoint`/`previewEndpoint` using `http`.
+/// 
+/// Then it uses `Session.getTimetables` with `downloadPreviews` and `parser`
+/// and `Session.downloadAndParsePlans` to get the actual plans.
 Future<List<List<Page>>> getAllSubs(
   String username,
   String password, {
@@ -117,7 +125,10 @@ Future<List<List<Page>>> getAllSubs(
                   .then((x) => x.toNestedList()),
             ));
 
+// TODO: think about making one for a single Iterable<Page>
 extension MergePlans on Iterable<Iterable<Page>> {
+  /// Merges plans consisting of multiple `Page`s into one that contains all
+  /// `subs`, and `day` and `date` of the first one.
   Iterable<untis.Page> merge() =>
       where((e) => e.isNotEmpty).map((e) => untis.Page(e.first.day,
           e.map((p) => p.subs).reduce((a, b) => [...a, ...b]), e.first.date));

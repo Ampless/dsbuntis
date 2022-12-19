@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:dsbuntis/dsbuntis.dart';
 import 'package:schttp/schttp.dart';
 import 'package:test/test.dart';
+import 'package:tested/tested.dart';
 import 'package:untis/untis.dart' as untis;
-
-import '../../../testlib.dart';
 
 final Map<String, String> dsbTest1Cache = {
   '/authid': 'randomauthid',
@@ -115,7 +114,7 @@ TestCase dsbTestCase(
         username,
         password,
         http: SCacheClient(
-          getCache: (u) => htmlCache[
+          getCache: (u, _) => htmlCache[
               htmlCache.keys.firstWhere((k) => u.toString().contains(k))],
         ),
       ).then((x) => x.search((sub) =>
