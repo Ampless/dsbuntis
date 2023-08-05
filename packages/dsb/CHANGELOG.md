@@ -1,9 +1,9 @@
-## 0.1.1-alpha.3
+## 0.1.1
 
-- Upgraded to schttp 5
+- Upgraded to `schttp` 5
 - Fixed an issue with `endpoint` being escaped in `Session.login`
 - The `name` is now escaped in `Session.getJsonString`
-- Adopted tested 1 for testing
+- Adopted `tested` 1 for testing
 
 ## 0.1.0
 

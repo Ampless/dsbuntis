@@ -73,7 +73,7 @@ class Item {
 }
 
 class Session {
-  // TODO(major): maybe make this a uri
+  // TODO(major): consider making this a uri
   static const defaultEndpoint = 'https://mobileapi.dsbcontrol.de';
   static const defaultPreviewEndpoint =
       'https://light.dsbcontrol.de/DSBlightWebsite/Data';
@@ -136,7 +136,7 @@ class Session {
 
   Future<String> getJsonString(String name) => http.get(
         '$endpoint/${Uri.encodeComponent(name)}?authid=$token',
-        // TODO: think about ttl parameter
+        // TODO: consider adding a ttl parameter, or removing it from here
         ttl: Duration(minutes: 15),
         defaultCharset: String.fromCharCodes,
       );
