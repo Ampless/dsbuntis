@@ -15,4 +15,5 @@ test/.test_coverage.dart
 .pub/
 build/
 coverage/
+reports/
 pubspec.lock
