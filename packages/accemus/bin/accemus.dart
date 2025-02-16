@@ -18,7 +18,7 @@ final green = AnsiPen()..green(),
 String skrcli(Result r) {
   var str = '';
 
-  void _traverse(Node node, int? color) {
+  void traverse(Node node, int? color) {
     if (node.className != null &&
         ((node.value != null && node.value!.isNotEmpty) ||
             (node.children != null && node.children!.isNotEmpty))) {
@@ -29,11 +29,15 @@ String skrcli(Result r) {
       str +=
           color != null ? (AnsiPen()..xterm(color))(node.value!) : node.value!;
     } else if (node.children != null) {
-      node.children!.forEach((c) => _traverse(c, color));
+      for (var c in node.children!) {
+        traverse(c, color);
+      }
     }
   }
 
-  r.nodes!.forEach((c) => _traverse(c, null));
+  for (var c in r.nodes!) {
+    traverse(c, null);
+  }
   return str;
 }
 
@@ -194,20 +198,18 @@ void main(List<String> argv) async {
           args['documents'] ||
           args['news'] ||
           args.wasParsed('json')) {
-        var json = await session.getJsonString(
-          args['timetables']
-              ? 'dsbtimetables'
-              : args['documents']
-                  ? 'dsbdocuments'
-                  : args['news']
-                      ? 'newstab'
-                      : args['json'],
-        );
+        var json = await session.getJsonString(args['timetables']
+            ? 'dsbtimetables'
+            : args['documents']
+                ? 'dsbdocuments'
+                : args['news']
+                    ? 'newstab'
+                    : args['json']);
         try {
           json = jsonEncode(jsonDecode(json));
         } catch (e) {
           stderr.writeln(red(
-              'Timetable JSON is actually not valid JSON: ${traces && e is Error ? '$e\n\n${e.stackTrace}' : '$e'}'));
+              'Timetable JSON is not actually valid JSON: ${traces && e is Error ? '$e\n\n${e.stackTrace}' : '$e'}'));
         }
         print(skrcli(highlight.parse(json, language: 'json')));
       } else {

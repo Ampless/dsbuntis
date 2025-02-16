@@ -1,6 +1,6 @@
-## 0.2.1-alpha.0
+## 0.2.1-alpha.1
 
-- Upgraded to dsb `0.1.1-alpha.0`, dsbuntis `8.1.0-alpha.1` and schttp `5.0.0-alpha.2`
+- Upgraded to dsb `0.1.2-alpha.0`, dsbuntis `8.1.0-alpha.4` and schttp 5
 
 ## 0.2.0
 
