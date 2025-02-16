@@ -42,7 +42,10 @@ void main() {
     fromIntTestCase(4, Day.friday, false),
     fromIntTestCase(6, Day.saturday, false),
     fromIntTestCase(7, Day.sunday, false),
+    fromIntTestCase(null, null, false),
     fromIntTestCase(-1, null, false),
     fromIntTestCase(5, null, false),
+    fromIntTestCase(42, null, false),
+    fromIntTestCase(-1337, null, false),
   ], 'day');
 }

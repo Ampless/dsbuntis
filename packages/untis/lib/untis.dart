@@ -6,7 +6,7 @@ import 'package:where_not_null/where_not_null.dart';
 typedef Parser = Substitution Function(int, List<String>);
 typedef ParserBuilder = Parser Function(List<String>);
 
-enum Day {
+enum Day implements Comparable<Day?> {
   monday,
   tuesday,
   wednesday,
@@ -15,26 +15,30 @@ enum Day {
   saturday,
   sunday;
 
+  /// Deserializes [i] as a [Day].
+  /// 
+  /// Fully backwards compatible with older untis/dsbuntis/
+  /// Amplissimus/Amplessimus versions. Never throws.
   static Day? fromInt(int? i) =>
-      i == null || i == -1 || i == 5 ? null : values[i > 4 ? i - 1 : i];
+      i == null || i < 0 || i == 5 || i > 7 ? null : values[i > 4 ? i - 1 : i];
 
   int toInt() {
     final i = values.indexOf(this);
     return i > 4 ? i + 1 : i;
   }
 
-  /// Searches `s` for English or German day abbreviations.
+  /// Searches [s] for English or German day abbreviations.
   ///
-  /// Returns `null` if `s` is empty or contains `null` or `none`.
+  /// Returns `null` if [s] is empty or contains `null` or `none`.
   ///
-  /// Throws an `UnknownDayException` if no day is found.
+  /// Throws an [UnknownDayException] if no day is found.
   ///
   /// Examples:
-  /// - "Monday" ↦ `Day.monday`
-  /// - "di" ↦ `Day.tuesday`
-  /// - "abc" ↦ throws `UnknownDayException("abc")`
-  // TODO: think about supporting `String?` like `fromInt`
-  static Day? match(String s) {
+  /// - "Monday" ↦ [Day.monday]
+  /// - "di" ↦ [Day.tuesday]
+  /// - "abc" ↦ throws [UnknownDayException]
+  static Day? match(String? s) {
+    if (s == null) return null;
     s = s.toLowerCase();
     if (s.isEmpty || s.contains('null') || s.contains('none')) {
       return null;
@@ -56,6 +60,11 @@ enum Day {
       throw UnknownDayException(s);
     }
   }
+
+  @override
+  int compareTo(Day? other) {
+    return toInt().compareTo(other?.toInt() ?? -1);
+  }
 }
 
 class UnknownDayException implements Exception {
@@ -66,7 +75,7 @@ class UnknownDayException implements Exception {
   String toString() => 'Unknown day: $_day';
 }
 
-class Substitution extends Comparable<Substitution> {
+class Substitution implements Comparable<Substitution> {
   String affectedClass;
   int lesson;
   String? orgTeacher;
@@ -148,7 +157,7 @@ class Substitution extends Comparable<Substitution> {
       };
 
   /// As far as we can tell, when lessons are completely cancelled, the
-  /// substituting teacher is "---". This method checks for that.
+  /// substituting teacher is "---". This getter checks for that.
   bool get isFree => subTeacher.contains('---');
 
   @override
@@ -168,9 +177,6 @@ class Substitution extends Comparable<Substitution> {
 final _tag = RegExp(r'</?.+?>');
 final _unescape = HtmlUnescape();
 
-List<int> _parseIntsFromString(String s) =>
-    s.split(RegExp('[^0-9]+')).map(int.tryParse).whereNotNull().toList();
-
 class Page {
   Day? day;
   List<Substitution> subs;
@@ -185,7 +191,6 @@ class Page {
         subs = json['subs'].map<Substitution>(Substitution.fromJson).toList();
 
   dynamic toJson() => {
-        // TODO: scream at the dart team
         if (day != null) 'day': day?.toInt(),
         'date': date,
         'subs': subs.map((sub) => sub.toJson()).toList(),
@@ -194,15 +199,19 @@ class Page {
   @override
   String toString() => '$day ($date): $subs';
 
-  /// Tries to parse the `html` using the given `parser`, or the default
-  /// `Substitution.fromUntis`.
-  // TODO: consider renaming to `parse`
-  static Page? parsePage(
+  /// Tries to parse the [html] using the given [parser].
+  ///
+  /// Currently never* throws, which will change in the future.
+  /// (for better error handling)
+  static Page? parse(
     String html, [
     ParserBuilder parser = Substitution.fromUntis,
   ]) {
     String str(dom.Element e) =>
         _unescape.convert(e.innerHtml.replaceAll(_tag, '')).trim();
+    List<int> parseIntsFromString(String s) =>
+        s.split(RegExp('[^0-9]+')).map(int.tryParse).whereNotNull().toList();
+
     final rawHtml = html
         .replaceAll('\n', ' ')
         .replaceAll('\r', ' ')
@@ -223,7 +232,7 @@ class Page {
       for (final raw in html.sublist(1)) {
         final e = raw.children.map(str).toList();
         // TODO: find a way for the `parser` to determine what the lesson is
-        subs.addAll(_parseIntsFromString(e[1]).map((l) => p(l, e)));
+        subs.addAll(parseIntsFromString(e[1]).map((l) => p(l, e)));
       }
       return Page(Day.match(pageTitle), subs, pageTitle);
     } catch (e) {
@@ -233,8 +242,8 @@ class Page {
 }
 
 extension SearchInPages on Iterable<Page> {
-  /// Returns the same `Page`s, with just the `Substitution`s that match the
-  /// `predicate`.
+  /// Returns the same [Page]s, with just the [Substitution]s that match the
+  /// [predicate].
   Iterable<Page> search(bool Function(Substitution) predicate) =>
       map((p) => Page(p.day, p.subs.where(predicate).toList(), p.date));
 }

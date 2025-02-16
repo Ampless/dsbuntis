@@ -1,13 +1,18 @@
-## 0.2.0-alpha.4
+## 0.2.0-alpha.5
 
 - Replaced `dayFromInt`, `dayToInt`, `matchDay` and `DayImpl` with methods on
 `Day` (thanks Dart 2.17!)
 - Added `saturday` and `sunday` to `Day`
 - Replaced the number parsing algorithm with a simpler one that should always
 yield the same results
-- Removed `WhereNotNull`, use `package:where_not_null` instead
+- Renamed `Page.parsePage` to `Page.parse`
+- Removed `WhereNotNull` (use `package:where_not_null` instead)
 - `Substitution`s are only `Comparable<Substitution>` now
-- Adopted tested 1 for testing
+- `Day`s are `Comparable<Day?>` now
+- Documentation improvements
+- Better testing, using `tested` 1
+- `dart 3`.
+- `lints 5`.
 
 ## 0.1.1
 

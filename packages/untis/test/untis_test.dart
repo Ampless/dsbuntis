@@ -22,6 +22,8 @@ final List<Page> untisTest1Expct = [
   Page(Day.wednesday, [], '24.6.2020 Mittwoch'),
 ];
 
+const untisTest1Json = '[{"day":1,"date":"23.6.2020 Dienstag","subs":[{"class":"11q","lesson":7,"sub_teacher":"---","subject":"1sk1","notes":"","org_teacher":"Aschi"},{"class":"11q","lesson":8,"sub_teacher":"---","subject":"1sk1","notes":"","org_teacher":"Aschi"}]},{"day":2,"date":"24.6.2020 Mittwoch","subs":[]}]';
+
 const untisTest2 = [
   '<table class="mon_head"> <tr> <td></td> <td></td> <td> null 2019/2020 Stand: 23.06.2020 08:55 </td> </tr></table><div class="mon_title">23.6.2020 Dienstag</div><table class="info" ><tr></tr><tr><td>Betroffene Klassen </td><td>11Q</td></tr></table><table class="mon_list" ><tr></tr></table>Untis Stundenplan Software',
   '<table class="mon_head"> <tr> <td></td> <td></td> <td> GYM. NULL Stand: 23.06.2020 08:55 </td> </tr></table><div class="mon_title">24.6.2020 Mittwoch</div><table class="mon_list" ><tr><td>s</td><td>c</td><td>h</td><td>w</td><td>a</td><td>n</td><td>z</td></tr></table>Untis Stundenplan Software',
@@ -32,6 +34,8 @@ final List<Page> untisTest2Expct = [
   Page(Day.wednesday, [], '24.6.2020 Mittwoch'),
 ];
 
+const untisTest2Json = '[{"day":1,"date":"23.6.2020 Dienstag","subs":[]},{"day":2,"date":"24.6.2020 Mittwoch","subs":[]}]';
+
 void assertPageListsEqual(List<Page> l1, List<Page> l2) {
   expect(l1.length, l2.length);
   for (var i = 0; i < l1.length; i++) {
@@ -41,7 +45,6 @@ void assertPageListsEqual(List<Page> l1, List<Page> l2) {
     for (var j = 0; j < l1[i].subs.length; j++) {
       expect(l1[i].subs[j].affectedClass, l2[i].subs[j].affectedClass);
       expect(l1[i].subs[j].lesson, l2[i].subs[j].lesson);
-      expect(l1[i].subs[j].isFree, l2[i].subs[j].isFree);
       expect(l1[i].subs[j].notes, l2[i].subs[j].notes);
       expect(l1[i].subs[j].subject, l2[i].subs[j].subject);
       expect(l1[i].subs[j].subTeacher, l2[i].subs[j].subTeacher);
@@ -58,7 +61,7 @@ TestCase untisTestCase(
 ) =>
     () async {
       final plans = htmls
-          .map(Page.parsePage)
+          .map(Page.parse)
           .whereNotNull()
           .search((sub) =>
               sub.affectedClass.contains(stage) &&
@@ -77,6 +80,9 @@ TestCase jsonTestCase(List<Page> plans) => () async {
       );
     };
 
+TestCase toJsonTestCase(List<Page> p, String j) => expectTestCase(() => jsonEncode(p), j);
+TestCase fromJsonTestCase(String j, List<Page> p) => () => assertPageListsEqual(jsonDecode(j).map<Page>(Page.fromJson).toList(), p);
+
 void main() {
   tests([
     untisTestCase(untisTest1, untisTest1Expct, '11', 'q'),
@@ -88,4 +94,14 @@ void main() {
     jsonTestCase(untisTest1Expct),
     jsonTestCase(untisTest2Expct),
   ], 'json');
+  tests([
+    toJsonTestCase([Page(Day.monday, [], "Flex"), Page(null, [], "A")], '[{"day":0,"date":"Flex","subs":[]},{"date":"A","subs":[]}]'),
+    toJsonTestCase(untisTest1Expct, untisTest1Json),
+    toJsonTestCase(untisTest2Expct, untisTest2Json),
+  ], 'to json');
+  tests([
+    fromJsonTestCase('[{"day":1,"date":"Date","subs":[]},{"date":"mhm","subs":[]}]', [Page(Day.tuesday, [], "Date"), Page(null, [], "mhm")]),
+    fromJsonTestCase(untisTest1Json, untisTest1Expct),
+    fromJsonTestCase(untisTest2Json, untisTest2Expct),
+  ], 'from json');
 }
