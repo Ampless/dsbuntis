@@ -134,6 +134,32 @@ class Session {
         endpoint: endpoint, http: http, previewEndpoint: previewEndpoint);
   }
 
+  /// Checks whether the supplied [username] and [password] are valid without
+  /// actually "logging in" (obtaining a token).
+  ///
+  /// It is unclear whether this has any use, but it is included here for
+  /// completeness.
+  ///
+  /// Makes an `authcheck` request
+  /// (https://notabug.org/fynngodau/DSBDirect/wiki/mobileapi.dsbcontrol.de#verify-credentials-authcheck; Adsignificamus TBD)
+  /// to the [endpoint] using [http] with [appVersion], [osVersion] and
+  /// [bundleId] encoded in the request. [previewEndpoint] is passed onto the
+  /// raw constructor.
+  static Future<bool> authcheck(
+    String username,
+    String password, {
+    ScHttpClient? http,
+    String endpoint = defaultEndpoint,
+  }) async {
+    http ??= ScHttpClient();
+    final res = await http.get(
+        '$endpoint/authcheck'
+        '?user=${Uri.encodeComponent(username)}'
+        '&password=${Uri.encodeComponent(password)}',
+        ttl: Duration(days: 30));
+    return bool.tryParse(res) ?? false;
+  }
+
   Future<String> getJsonString(String name) => http.get(
         '$endpoint/${Uri.encodeComponent(name)}?authid=$token',
         // TODO: consider adding a ttl parameter, or removing it from here

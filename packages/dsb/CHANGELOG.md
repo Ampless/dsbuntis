@@ -1,3 +1,8 @@
+## 0.1.2-alpha.0
+
+- Add support for `authcheck`.
+- `lints 5`.
+
 ## 0.1.1
 
 - Upgraded to `schttp` 5
