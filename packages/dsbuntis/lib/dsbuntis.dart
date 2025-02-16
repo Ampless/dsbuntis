@@ -15,17 +15,18 @@ class Page extends untis.Page {
   Page(super.day, super.subs, super.date, this.url, this.previewUrl,
       this.preview);
 
-  Page.from(untis.Page p, this.url, this.previewUrl, this.preview)
-      : super(p.day, p.subs, p.date);
+  /// Creates a dsbuntis [Page] from an untis `Page`,
+  /// and [url], [previewUrl] and [preview].
+  Page.from(untis.Page page, this.url, this.previewUrl, [this.preview])
+      : super(page.day, page.subs, page.date);
 
-  Page.fromJson(dynamic json)
+  Page.fromJson(super.json)
       : url = json['url'],
         previewUrl = json['preview_url'],
-        preview = json.containsKey('preview') && json['preview'] != null
-            // TODO: hate on this code
+        preview = json['preview'] != null
             ? Uint8List.fromList(List<int>.from(json['preview']))
             : null,
-        super.fromJson(json);
+        super.fromJson();
 
   @override
   dynamic toJson() => super.toJson()
@@ -60,7 +61,7 @@ class DownloadingPage {
 
   Future<Page?> parse(
       [untis.ParserBuilder parser = untis.Substitution.fromUntis]) async {
-    final up = untis.Page.parsePage(await html, parser);
+    final up = untis.Page.parse(await html, parser);
     return up != null
         ? Page.from(up, htmlUrl, previewUrl, await preview)
         : null;
@@ -101,12 +102,12 @@ extension ToNestedList<T> on Iterable<Iterable<T>> {
 }
 
 /// Logs into a DSBMobile account and downloads all timetables.
-/// 
-/// Uses `username` and `password` to `Session.login` (`package:dsb`) to the
-/// given `endpoint`/`previewEndpoint` using `http`.
-/// 
-/// Then it uses `Session.getTimetables` with `downloadPreviews` and `parser`
-/// and `Session.downloadAndParsePlans` to get the actual plans.
+///
+/// Uses [username] and [password] to `Session.login` (`package:dsb`) to the
+/// given [endpoint]/[previewEndpoint] using [http].
+///
+/// Then it uses dsb `Session.getTimetables` with [downloadPreviews], and
+/// [parser] and `Session.downloadAndParsePlans` to get the actual plans.
 Future<List<List<Page>>> getAllSubs(
   String username,
   String password, {
@@ -125,11 +126,16 @@ Future<List<List<Page>>> getAllSubs(
                   .then((x) => x.toNestedList()),
             ));
 
-// TODO: think about making one for a single Iterable<Page>
+extension MergePlan on Iterable<Page> {
+  /// Merges a plan consisting of multiple [Page]s into one that contains all
+  /// `subs`, and `day` and `date` of the first one.
+  untis.Page merge() => untis.Page(
+      first.day, map((p) => p.subs).reduce((a, b) => [...a, ...b]), first.date);
+}
+
 extension MergePlans on Iterable<Iterable<Page>> {
-  /// Merges plans consisting of multiple `Page`s into one that contains all
+  /// Merges plans consisting of multiple [Page]s into one that contains all
   /// `subs`, and `day` and `date` of the first one.
   Iterable<untis.Page> merge() =>
-      where((e) => e.isNotEmpty).map((e) => untis.Page(e.first.day,
-          e.map((p) => p.subs).reduce((a, b) => [...a, ...b]), e.first.date));
+      where((e) => e.isNotEmpty).map((e) => e.merge());
 }

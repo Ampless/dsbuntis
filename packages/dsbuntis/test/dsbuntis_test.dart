@@ -117,6 +117,7 @@ TestCase dsbTestCase(
           getCache: (u, _) => htmlCache[
               htmlCache.keys.firstWhere((k) => u.toString().contains(k))],
         ),
+        downloadPreviews: true,
       ).then((x) => x.search((sub) =>
           sub.affectedClass.contains(stage) &&
           sub.affectedClass.contains(char)));

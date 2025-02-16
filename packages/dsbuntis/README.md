@@ -1,7 +1,5 @@
 # dsbuntis
 
-[![pub points](https://badges.bar/dsbuntis/pub%20points)](https://pub.dev/packages/dsbuntis/score)
-
 This package allows you to crawl DSB's "Mobile API" and parse Untis's HTML.
 
 ## Usage
@@ -38,7 +36,7 @@ Then you can get the timetable information:
 final timetables = await session.getTimetables();
 ```
 
-And download and parse the plans, with the `dsbuntis` `Downloading` `extension`:
+And download and parse the plans, with the extension provided by this package:
 
 ```dart
 final plans = await session.downloadAndParsePlans(timetables);
@@ -50,8 +48,6 @@ A very important feature in `dsbuntis` from the beginning has been good caching.
 For documentation on how to set it up for the actual requests, please refer to
 the `schttp` documentation, as it is the HTTP backend of `dsbuntis`. In recent
 versions, however, you can aditionally cache the `Session` objects from `dsb`.
-[AFAIK](https://twitter.com/pixelcmtd/status/1464213128682610706) the login of
-DSBMobile is idempotent (as indicated by it being a `GET` request) and always
-returns the same token. If it is, which you can safely assume by now, you can
-cache the `Session`'s `token` forever. Otherwise you can still keep the
-`Session` object around for a while.
+The "login" of DSBMobile is idempotent (as indicated by it being a `GET`
+request) and always returns the same token. Therefore, you can cache the
+`Session`'s `token` "forever".

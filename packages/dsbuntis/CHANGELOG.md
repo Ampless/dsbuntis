@@ -1,7 +1,10 @@
-## 8.1.0-alpha.3
+## 8.1.0-alpha.4
 
-- Upgraded to dsb 0.1.1, schttp 5 and untis 0.2
-- Adopted tested 1 for testing
+- Upgraded to `dsb` 0.1.1, `schttp` 5 and `untis` 0.2
+- Added `MergePlan` for merging a single plan
+- Better documentation
+- Adopted `tested` 1 for testing
+- `dart 3`, `lints 5`.
 
 ## 8.0.0
 
