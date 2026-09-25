@@ -16,7 +16,7 @@ enum Day implements Comparable<Day?> {
   sunday;
 
   /// Deserializes [i] as a [Day].
-  /// 
+  ///
   /// Fully backwards compatible with older untis/dsbuntis/
   /// Amplissimus/Amplessimus versions. Never throws.
   static Day? fromInt(int? i) =>
@@ -103,14 +103,15 @@ class Substitution implements Comparable<Substitution> {
     this.orgTeacher,
     this.room,
   }) : affectedClass = affectedClass.isNotEmpty && affectedClass[0] == '0'
-            ? affectedClass.substring(1).toLowerCase()
-            : affectedClass.toLowerCase();
+           ? affectedClass.substring(1).toLowerCase()
+           : affectedClass.toLowerCase();
 
   // TODO: more smarts (see #13)
   static Parser fromUntis(List<String> h) =>
       h.length < 6 ? fromUntis2020(h) : fromUntis2021(h);
 
-  static Parser fromUntis2021(_) => (lesson, e) => Substitution.raw(
+  static Parser fromUntis2021(_) =>
+      (lesson, e) => Substitution.raw(
         lesson,
         affectedClass: e[0],
         subTeacher: e[2],
@@ -119,7 +120,8 @@ class Substitution implements Comparable<Substitution> {
         orgTeacher: e[4],
       );
 
-  static Parser fromUntis2020(_) => (lesson, e) => Substitution.raw(
+  static Parser fromUntis2020(_) =>
+      (lesson, e) => Substitution.raw(
         lesson,
         affectedClass: e[0],
         subTeacher: e[2],
@@ -127,7 +129,8 @@ class Substitution implements Comparable<Substitution> {
         notes: e[4],
       );
 
-  static Parser fromUntis2019(_) => (lesson, e) => Substitution.raw(
+  static Parser fromUntis2019(_) =>
+      (lesson, e) => Substitution.raw(
         lesson,
         affectedClass: e[0],
         subject: e[2],
@@ -138,23 +141,23 @@ class Substitution implements Comparable<Substitution> {
       );
 
   Substitution.fromJson(dynamic json)
-      : affectedClass = json['class'],
-        lesson = json['lesson'],
-        subTeacher = json['sub_teacher'],
-        orgTeacher = json['org_teacher'],
-        subject = json['subject'],
-        notes = json['notes'],
-        room = json['room'];
+    : affectedClass = json['class'],
+      lesson = json['lesson'],
+      subTeacher = json['sub_teacher'],
+      orgTeacher = json['org_teacher'],
+      subject = json['subject'],
+      notes = json['notes'],
+      room = json['room'];
 
   dynamic toJson() => {
-        'class': affectedClass,
-        'lesson': lesson,
-        'sub_teacher': subTeacher,
-        'subject': subject,
-        'notes': notes,
-        if (orgTeacher != null) 'org_teacher': orgTeacher,
-        if (room != null) 'room': room,
-      };
+    'class': affectedClass,
+    'lesson': lesson,
+    'sub_teacher': subTeacher,
+    'subject': subject,
+    'notes': notes,
+    if (orgTeacher != null) 'org_teacher': orgTeacher,
+    if (room != null) 'room': room,
+  };
 
   /// As far as we can tell, when lessons are completely cancelled, the
   /// substituting teacher is "---". This getter checks for that.
@@ -186,15 +189,15 @@ class Page {
   Page(this.day, this.subs, this.date);
 
   Page.fromJson(dynamic json)
-      : day = Day.fromInt(json['day']),
-        date = json['date'],
-        subs = json['subs'].map<Substitution>(Substitution.fromJson).toList();
+    : day = Day.fromInt(json['day']),
+      date = json['date'],
+      subs = json['subs'].map<Substitution>(Substitution.fromJson).toList();
 
   dynamic toJson() => {
-        if (day != null) 'day': day?.toInt(),
-        'date': date,
-        'subs': subs.map((sub) => sub.toJson()).toList(),
-      };
+    if (day != null) 'day': day?.toInt(),
+    'date': date,
+    'subs': subs.map((sub) => sub.toJson()).toList(),
+  };
 
   @override
   String toString() => '$day ($date): $subs';
@@ -220,8 +223,9 @@ class Page {
     try {
       // TODO: let's also rethink the parsing code in general
       var html = htmlParse(rawHtml);
-      final pageTitle =
-          html.searchFirst((e) => e.className.contains('mon_title'))!.innerHtml;
+      final pageTitle = html
+          .searchFirst((e) => e.className.contains('mon_title'))!
+          .innerHtml;
       html = html
           .searchFirst((e) => e.className.contains('mon_list'))!
           .children

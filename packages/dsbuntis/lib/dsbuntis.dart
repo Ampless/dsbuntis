@@ -12,21 +12,27 @@ class Page extends untis.Page {
   Uint8List? preview;
   // TODO: more data from dsb
 
-  Page(super.day, super.subs, super.date, this.url, this.previewUrl,
-      this.preview);
+  Page(
+    super.day,
+    super.subs,
+    super.date,
+    this.url,
+    this.previewUrl,
+    this.preview,
+  );
 
   /// Creates a dsbuntis [Page] from an untis `Page`,
   /// and [url], [previewUrl] and [preview].
   Page.from(untis.Page page, this.url, this.previewUrl, [this.preview])
-      : super(page.day, page.subs, page.date);
+    : super(page.day, page.subs, page.date);
 
   Page.fromJson(super.json)
-      : url = json['url'],
-        previewUrl = json['preview_url'],
-        preview = json['preview'] != null
-            ? Uint8List.fromList(List<int>.from(json['preview']))
-            : null,
-        super.fromJson();
+    : url = json['url'],
+      previewUrl = json['preview_url'],
+      preview = json['preview'] != null
+          ? Uint8List.fromList(List<int>.from(json['preview']))
+          : null,
+      super.fromJson();
 
   @override
   dynamic toJson() => super.toJson()
@@ -42,13 +48,24 @@ class Page extends untis.Page {
 
   static Iterable<Iterable<Page>> plansFromJsonString(String json) =>
       jsonDecode(json).map<Iterable<Page>>(
-          (p) => p.map<Page>(Page.fromJson) as Iterable<Page>);
+        (p) => p.map<Page>(Page.fromJson) as Iterable<Page>,
+      );
 }
 
 extension SearchInPlans on Iterable<Iterable<Page>> {
   Iterable<Iterable<Page>> search(bool Function(untis.Substitution) pred) =>
-      map((p) => p.map((p) => Page(p.day, p.subs.where(pred).toList(), p.date,
-          p.url, p.previewUrl, p.preview)));
+      map(
+        (p) => p.map(
+          (p) => Page(
+            p.day,
+            p.subs.where(pred).toList(),
+            p.date,
+            p.url,
+            p.previewUrl,
+            p.preview,
+          ),
+        ),
+      );
 }
 
 class DownloadingPage {
@@ -59,8 +76,9 @@ class DownloadingPage {
 
   DownloadingPage(this.htmlUrl, this.previewUrl, this.html, this.preview);
 
-  Future<Page?> parse(
-      [untis.ParserBuilder parser = untis.Substitution.fromUntis]) async {
+  Future<Page?> parse([
+    untis.ParserBuilder parser = untis.Substitution.fromUntis,
+  ]) async {
     final up = untis.Page.parse(await html, parser);
     return up != null
         ? Page.from(up, htmlUrl, previewUrl, await preview)
@@ -72,27 +90,38 @@ extension Downloading on dsb.Session {
   Iterable<Iterable<DownloadingPage>> downloadPlans(
     Iterable<dsb.Item> timetables, {
     bool downloadPreviews = false,
-  }) =>
-      timetables.map((p) => p.childs).map<Iterable<DownloadingPage>>((p) => p
-          .where((x) => x.conType == 6)
-          .map((p) => DownloadingPage(
-              p.detail,
-              p.preview,
-              http.get(p.detail,
-                  ttl: Duration(days: 4), defaultCharset: String.fromCharCodes),
-              downloadPreviews
-                  ? http.getBin('$previewEndpoint/${p.preview}')
-                  : null)));
+  }) => timetables
+      .map((p) => p.childs)
+      .map<Iterable<DownloadingPage>>(
+        (p) => p
+            .where((x) => x.conType == 6)
+            .map(
+              (p) => DownloadingPage(
+                p.detail,
+                p.preview,
+                http.get(
+                  p.detail,
+                  ttl: Duration(days: 4),
+                  defaultCharset: String.fromCharCodes,
+                ),
+                downloadPreviews
+                    ? http.getBin('$previewEndpoint/${p.preview}')
+                    : null,
+              ),
+            ),
+      );
 
   Future<Iterable<Iterable<Page>>> downloadAndParsePlans(
     Iterable<dsb.Item> timetables, {
     bool downloadPreviews = false,
     untis.ParserBuilder parser = untis.Substitution.fromUntis,
-  }) =>
-      Future.wait(downloadPlans(timetables, downloadPreviews: downloadPreviews)
-              .map((e) => Future.wait(e.map((p) => p.parse(parser)))
-                  .then((x) => x.whereNotNull())))
-          .then((x) => x.where((p) => p.isNotEmpty));
+  }) => Future.wait(
+    downloadPlans(timetables, downloadPreviews: downloadPreviews).map(
+      (e) => Future.wait(
+        e.map((p) => p.parse(parser)),
+      ).then((x) => x.whereNotNull()),
+    ),
+  ).then((x) => x.where((p) => p.isNotEmpty));
 }
 
 // TODO: put this into its own package, then deprecate, then remove
@@ -117,20 +146,32 @@ Future<List<List<Page>>> getAllSubs(
   bool downloadPreviews = false,
   untis.ParserBuilder parser = untis.Substitution.fromUntis,
 }) =>
-    dsb.Session.login(username, password,
-            endpoint: endpoint, previewEndpoint: previewEndpoint, http: http)
-        .then((s) => s.getTimetables().then(
-              (t) => s
-                  .downloadAndParsePlans(t,
-                      downloadPreviews: downloadPreviews, parser: parser)
-                  .then((x) => x.toNestedList()),
-            ));
+    dsb.Session.login(
+      username,
+      password,
+      endpoint: endpoint,
+      previewEndpoint: previewEndpoint,
+      http: http,
+    ).then(
+      (s) => s.getTimetables().then(
+        (t) => s
+            .downloadAndParsePlans(
+              t,
+              downloadPreviews: downloadPreviews,
+              parser: parser,
+            )
+            .then((x) => x.toNestedList()),
+      ),
+    );
 
 extension MergePlan on Iterable<Page> {
   /// Merges a plan consisting of multiple [Page]s into one that contains all
   /// `subs`, and `day` and `date` of the first one.
   untis.Page merge() => untis.Page(
-      first.day, map((p) => p.subs).reduce((a, b) => [...a, ...b]), first.date);
+    first.day,
+    map((p) => p.subs).reduce((a, b) => [...a, ...b]),
+    first.date,
+  );
 }
 
 extension MergePlans on Iterable<Iterable<Page>> {

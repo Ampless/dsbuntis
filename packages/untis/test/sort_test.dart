@@ -3,14 +3,13 @@ import 'package:untis/untis.dart';
 import 'package:test/test.dart';
 
 TestCase sortTestCase(List<List> input, List<int> expected) => () async {
-      if (input.length != expected.length) throw 'Invalid test.';
-      final s = input.map((e) => Substitution(e[0], e[1], '', '')).toList()
-        ..sort();
-      for (var i = 0; i < s.length; i++) {
-        expect(s[i].affectedClass, input[expected[i]][0]);
-        expect(s[i].lesson, input[expected[i]][1]);
-      }
-    };
+  if (input.length != expected.length) throw 'Invalid test.';
+  final s = input.map((e) => Substitution(e[0], e[1], '', '')).toList()..sort();
+  for (var i = 0; i < s.length; i++) {
+    expect(s[i].affectedClass, input[expected[i]][0]);
+    expect(s[i].lesson, input[expected[i]][1]);
+  }
+};
 
 void main() {
   tests([

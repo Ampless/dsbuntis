@@ -11,18 +11,15 @@ const untisTest1 = [
 ];
 
 final List<Page> untisTest1Expct = [
-  Page(
-    Day.tuesday,
-    [
-      Substitution('11q', 7, '---', '1sk1', orgTeacher: 'Aschi'),
-      Substitution('11q', 8, '---', '1sk1', orgTeacher: 'Aschi'),
-    ],
-    '23.6.2020 Dienstag',
-  ),
-  Page(Day.wednesday, [], '24.6.2020 Mittwoch'),
+  Page(.tuesday, [
+    Substitution('11q', 7, '---', '1sk1', orgTeacher: 'Aschi'),
+    Substitution('11q', 8, '---', '1sk1', orgTeacher: 'Aschi'),
+  ], '23.6.2020 Dienstag'),
+  Page(.wednesday, [], '24.6.2020 Mittwoch'),
 ];
 
-const untisTest1Json = '[{"day":1,"date":"23.6.2020 Dienstag","subs":[{"class":"11q","lesson":7,"sub_teacher":"---","subject":"1sk1","notes":"","org_teacher":"Aschi"},{"class":"11q","lesson":8,"sub_teacher":"---","subject":"1sk1","notes":"","org_teacher":"Aschi"}]},{"day":2,"date":"24.6.2020 Mittwoch","subs":[]}]';
+const untisTest1Json =
+    '[{"day":1,"date":"23.6.2020 Dienstag","subs":[{"class":"11q","lesson":7,"sub_teacher":"---","subject":"1sk1","notes":"","org_teacher":"Aschi"},{"class":"11q","lesson":8,"sub_teacher":"---","subject":"1sk1","notes":"","org_teacher":"Aschi"}]},{"day":2,"date":"24.6.2020 Mittwoch","subs":[]}]';
 
 const untisTest2 = [
   '<table class="mon_head"> <tr> <td></td> <td></td> <td> null 2019/2020 Stand: 23.06.2020 08:55 </td> </tr></table><div class="mon_title">23.6.2020 Dienstag</div><table class="info" ><tr></tr><tr><td>Betroffene Klassen </td><td>11Q</td></tr></table><table class="mon_list" ><tr></tr></table>Untis Stundenplan Software',
@@ -30,11 +27,12 @@ const untisTest2 = [
 ];
 
 final List<Page> untisTest2Expct = [
-  Page(Day.tuesday, [], '23.6.2020 Dienstag'),
-  Page(Day.wednesday, [], '24.6.2020 Mittwoch'),
+  Page(.tuesday, [], '23.6.2020 Dienstag'),
+  Page(.wednesday, [], '24.6.2020 Mittwoch'),
 ];
 
-const untisTest2Json = '[{"day":1,"date":"23.6.2020 Dienstag","subs":[]},{"day":2,"date":"24.6.2020 Mittwoch","subs":[]}]';
+const untisTest2Json =
+    '[{"day":1,"date":"23.6.2020 Dienstag","subs":[]},{"day":2,"date":"24.6.2020 Mittwoch","subs":[]}]';
 
 void assertPageListsEqual(List<Page> l1, List<Page> l2) {
   expect(l1.length, l2.length);
@@ -58,30 +56,36 @@ TestCase untisTestCase(
   List<Page> expectedPages,
   String stage,
   String char,
-) =>
-    () async {
-      final plans = htmls
-          .map(Page.parse)
-          .whereNotNull()
-          .search((sub) =>
-              sub.affectedClass.contains(stage) &&
-              sub.affectedClass.contains(char))
-          .toList();
-      for (final plan in plans) {
-        plan.subs.sort();
-      }
-      assertPageListsEqual(plans, expectedPages);
-    };
+) => () async {
+  final plans = htmls
+      .map(Page.parse)
+      .whereNotNull()
+      .search(
+        (sub) =>
+            sub.affectedClass.contains(stage) &&
+            sub.affectedClass.contains(char),
+      )
+      .toList();
+  for (final plan in plans) {
+    plan.subs.sort();
+  }
+  assertPageListsEqual(plans, expectedPages);
+};
 
 TestCase jsonTestCase(List<Page> plans) => () async {
-      assertPageListsEqual(
-        jsonDecode(jsonEncode(plans)).map<Page>(Page.fromJson).toList(),
-        plans,
-      );
-    };
+  assertPageListsEqual(
+    jsonDecode(jsonEncode(plans)).map<Page>(Page.fromJson).toList(),
+    plans,
+  );
+};
 
-TestCase toJsonTestCase(List<Page> p, String j) => expectTestCase(() => jsonEncode(p), j);
-TestCase fromJsonTestCase(String j, List<Page> p) => () => assertPageListsEqual(jsonDecode(j).map<Page>(Page.fromJson).toList(), p);
+TestCase toJsonTestCase(List<Page> p, String j) =>
+    expectTestCase(() => jsonEncode(p), j);
+TestCase fromJsonTestCase(String j, List<Page> p) =>
+    () => assertPageListsEqual(
+      jsonDecode(j).map<Page>(Page.fromJson).toList(),
+      p,
+    );
 
 void main() {
   tests([
@@ -90,17 +94,20 @@ void main() {
     untisTestCase(untisTest2, untisTest2Expct, '', 'q'),
     untisTestCase(untisTest2, untisTest2Expct, '', ''),
   ], 'untis');
+  tests([jsonTestCase(untisTest1Expct), jsonTestCase(untisTest2Expct)], 'json');
   tests([
-    jsonTestCase(untisTest1Expct),
-    jsonTestCase(untisTest2Expct),
-  ], 'json');
-  tests([
-    toJsonTestCase([Page(Day.monday, [], "Flex"), Page(null, [], "A")], '[{"day":0,"date":"Flex","subs":[]},{"date":"A","subs":[]}]'),
+    toJsonTestCase([
+      Page(Day.monday, [], "Flex"),
+      Page(null, [], "A"),
+    ], '[{"day":0,"date":"Flex","subs":[]},{"date":"A","subs":[]}]'),
     toJsonTestCase(untisTest1Expct, untisTest1Json),
     toJsonTestCase(untisTest2Expct, untisTest2Json),
   ], 'to json');
   tests([
-    fromJsonTestCase('[{"day":1,"date":"Date","subs":[]},{"date":"mhm","subs":[]}]', [Page(Day.tuesday, [], "Date"), Page(null, [], "mhm")]),
+    fromJsonTestCase(
+      '[{"day":1,"date":"Date","subs":[]},{"date":"mhm","subs":[]}]',
+      [Page(Day.tuesday, [], "Date"), Page(null, [], "mhm")],
+    ),
     fromJsonTestCase(untisTest1Json, untisTest1Expct),
     fromJsonTestCase(untisTest2Json, untisTest2Expct),
   ], 'from json');

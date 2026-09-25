@@ -9,7 +9,8 @@ import 'package:untis/untis.dart' as untis;
 final Map<String, String> dsbTest1Cache = {
   '/authid': 'randomauthid',
   // TODO: make these correct
-  '/dsbtimetables': '['
+  '/dsbtimetables':
+      '['
       '{"Childs":[{"Detail":"44a7def4-aaa3-4177-959d-e2921176cde9.htm","Preview":"asdf.png"}]},'
       '{"Childs":[{"Detail":"58424b67-1ebf-4152-8c37-17814ef93775.htm","Preview":"qwerty.jpg"}]}'
       ']',
@@ -47,7 +48,8 @@ final List<List<Page>> dsbTest1Expct = [
 
 final Map<String, String> dsbTest2Cache = {
   '/authid': 'randomauthid',
-  '/dsbtimetables': '['
+  '/dsbtimetables':
+      '['
       '{"Childs":[{"Detail":"44a7def4-aaa3-4177-959d-e2921176cde9.htm","Preview":"lol.gif"}]},'
       '{"Childs":[{"Detail":"58424b67-1ebf-4152-8c37-17814ef93775.htm","Preview":"lel.bmp"}]}'
       ']',
@@ -108,33 +110,39 @@ TestCase dsbTestCase(
   List<List<Page>> expectedPlans,
   String stage,
   String char,
-) =>
-    () async {
-      final plans = await getAllSubs(
+) => () async {
+  final plans =
+      await getAllSubs(
         username,
         password,
         http: SCacheClient(
-          getCache: (u, _) => htmlCache[
-              htmlCache.keys.firstWhere((k) => u.toString().contains(k))],
+          getCache: (u, _) =>
+              htmlCache[htmlCache.keys.firstWhere(
+                (k) => u.toString().contains(k),
+              )],
         ),
         downloadPreviews: true,
-      ).then((x) => x.search((sub) =>
-          sub.affectedClass.contains(stage) &&
-          sub.affectedClass.contains(char)));
-      for (final plan in plans) {
-        for (final page in plan) {
-          page.subs.sort();
-        }
-      }
-      assertPlanListsEqual(plans.toNestedList(), expectedPlans);
-    };
+      ).then(
+        (x) => x.search(
+          (sub) =>
+              sub.affectedClass.contains(stage) &&
+              sub.affectedClass.contains(char),
+        ),
+      );
+  for (final plan in plans) {
+    for (final page in plan) {
+      page.subs.sort();
+    }
+  }
+  assertPlanListsEqual(plans.toNestedList(), expectedPlans);
+};
 
 TestCase jsonTestCase(List<List<Page>> plans) => () async {
-      assertPlanListsEqual(
-        Page.plansFromJsonString(jsonEncode(plans)).toNestedList(),
-        plans,
-      );
-    };
+  assertPlanListsEqual(
+    Page.plansFromJsonString(jsonEncode(plans)).toNestedList(),
+    plans,
+  );
+};
 
 TestCase publicTestCase(
   String username,
@@ -152,14 +160,14 @@ void main() {
   //   dsbTestCase('null', 'null', dsbTest2Cache, dsbTest2Expct, '', 'q'),
   //   dsbTestCase('invalid', 'none', dsbTest2Cache, dsbTest2Expct, '', ''),
   // ], 'dsb');
-  tests([
-    jsonTestCase(dsbTest1Expct),
-    jsonTestCase(dsbTest2Expct),
-  ], 'json');
+  tests([jsonTestCase(dsbTest1Expct), jsonTestCase(dsbTest2Expct)], 'json');
   tests([
     publicTestCase('187801', 'public', untis.Substitution.fromUntis2019),
     // TODO: make this a better test
     publicTestCase(
-        '152321', 'krsmrz21', untis.Substitution.fromUntis), //THANKS @3liFi!
+      '152321',
+      'krsmrz21',
+      untis.Substitution.fromUntis,
+    ), //THANKS @3liFi!
   ], 'public');
 }

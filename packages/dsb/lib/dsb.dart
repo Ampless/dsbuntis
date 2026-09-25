@@ -15,8 +15,9 @@ class DsbException implements Exception {
 ///
 /// Usually this means that the username or password is invalid.
 class AuthenticationException extends DsbException {
-  AuthenticationException(
-      [super._message = 'An authentication error has occurred.']);
+  AuthenticationException([
+    super._message = 'An authentication error has occurred.',
+  ]);
 }
 
 /// A single `Item` from the DSBMobile API.
@@ -47,29 +48,29 @@ class Item {
   });
 
   Item.fromJson(dynamic json)
-      : id = json['Id'],
-        date = json['Date'],
-        title = json['Title'],
-        detail = json['Detail'],
-        tags = json['Tags'],
-        conType = json['ConType'],
-        prio = json['Prio'],
-        index = json['Index'],
-        childs = List<Item>.from(json['Childs'].map(Item.fromJson)),
-        preview = json['Preview'];
+    : id = json['Id'],
+      date = json['Date'],
+      title = json['Title'],
+      detail = json['Detail'],
+      tags = json['Tags'],
+      conType = json['ConType'],
+      prio = json['Prio'],
+      index = json['Index'],
+      childs = List<Item>.from(json['Childs'].map(Item.fromJson)),
+      preview = json['Preview'];
 
   dynamic toJson() => {
-        'Id': id,
-        'Date': date,
-        'Title': title,
-        'Detail': detail,
-        'Tags': tags,
-        'ConType': conType,
-        'Prio': prio,
-        'Index': index,
-        'Childs': childs,
-        'Preview': preview,
-      };
+    'Id': id,
+    'Date': date,
+    'Title': title,
+    'Detail': detail,
+    'Tags': tags,
+    'ConType': conType,
+    'Prio': prio,
+    'Index': index,
+    'Childs': childs,
+    'Preview': preview,
+  };
 }
 
 class Session {
@@ -86,11 +87,12 @@ class Session {
   String endpoint;
   String previewEndpoint;
 
-  Session(this.token,
-      {this.endpoint = defaultEndpoint,
-      http,
-      this.previewEndpoint = defaultPreviewEndpoint})
-      : http = http ?? ScHttpClient();
+  Session(
+    this.token, {
+    this.endpoint = defaultEndpoint,
+    http,
+    this.previewEndpoint = defaultPreviewEndpoint,
+  }) : http = http ?? ScHttpClient();
 
   /// Tries using the given [username] and [password] to log in.
   ///
@@ -112,26 +114,31 @@ class Session {
     http ??= ScHttpClient();
     final tkn = await http
         .get(
-            // TODO: consider using package:uri here and otherwhere
-            '$endpoint/authid'
-            '?bundleid=${Uri.encodeComponent(bundleId)}'
-            '&appversion=${Uri.encodeComponent(appVersion)}'
-            '&osversion=${Uri.encodeComponent(osVersion)}'
-            '&pushid'
-            '&user=${Uri.encodeComponent(username)}'
-            '&password=${Uri.encodeComponent(password)}',
-            ttl: Duration(days: 30))
+          // TODO: consider using package:uri here and otherwhere
+          '$endpoint/authid'
+          '?bundleid=${Uri.encodeComponent(bundleId)}'
+          '&appversion=${Uri.encodeComponent(appVersion)}'
+          '&osversion=${Uri.encodeComponent(osVersion)}'
+          '&pushid'
+          '&user=${Uri.encodeComponent(username)}'
+          '&password=${Uri.encodeComponent(password)}',
+          ttl: Duration(days: 30),
+        )
         .then((tkn) {
-      final json = jsonDecode(tkn);
-      if (json is Map && json.containsKey('Message')) {
-        throw DsbException(json['Message']);
-      } else if (json == '') {
-        throw AuthenticationException();
-      }
-      return json;
-    });
-    return Session(tkn,
-        endpoint: endpoint, http: http, previewEndpoint: previewEndpoint);
+          final json = jsonDecode(tkn);
+          if (json is Map && json.containsKey('Message')) {
+            throw DsbException(json['Message']);
+          } else if (json == '') {
+            throw AuthenticationException();
+          }
+          return json;
+        });
+    return Session(
+      tkn,
+      endpoint: endpoint,
+      http: http,
+      previewEndpoint: previewEndpoint,
+    );
   }
 
   /// Checks whether the supplied [username] and [password] are valid without
@@ -153,19 +160,20 @@ class Session {
   }) async {
     http ??= ScHttpClient();
     final res = await http.get(
-        '$endpoint/authcheck'
-        '?user=${Uri.encodeComponent(username)}'
-        '&password=${Uri.encodeComponent(password)}',
-        ttl: Duration(days: 30));
+      '$endpoint/authcheck'
+      '?user=${Uri.encodeComponent(username)}'
+      '&password=${Uri.encodeComponent(password)}',
+      ttl: Duration(days: 30),
+    );
     return bool.tryParse(res) ?? false;
   }
 
   Future<String> getJsonString(String name) => http.get(
-        '$endpoint/${Uri.encodeComponent(name)}?authid=$token',
-        // TODO: consider adding a ttl parameter, or removing it from here
-        ttl: Duration(minutes: 15),
-        defaultCharset: String.fromCharCodes,
-      );
+    '$endpoint/${Uri.encodeComponent(name)}?authid=$token',
+    // TODO: consider adding a ttl parameter, or removing it from here
+    ttl: Duration(minutes: 15),
+    defaultCharset: String.fromCharCodes,
+  );
 
   Future<dynamic> getJson(String name) async {
     final j = await getJsonString(name).then(jsonDecode);

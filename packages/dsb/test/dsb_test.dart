@@ -6,16 +6,20 @@ import 'package:tested/tested.dart';
 
 final http = ScHttpClient();
 
-Iterable<TestCase> publicTestCases(
-  String username,
-  String password,
-) =>
-    [
-      assertTestCase(() => Session.authcheck(username, password, http: http)),
-      () => Session.login(username, password, http: http).then((x) => x.getTimetables()),
-      () => Session.login(username, password, http: http).then((x) => x.getDocuments()),
-      () => Session.login(username, password, http: http).then((x) => x.getNews()),
-    ];
+Iterable<TestCase> publicTestCases(String username, String password) => [
+  assertTestCase(() => Session.authcheck(username, password, http: http)),
+  () => Session.login(
+    username,
+    password,
+    http: http,
+  ).then((x) => x.getTimetables()),
+  () => Session.login(
+    username,
+    password,
+    http: http,
+  ).then((x) => x.getDocuments()),
+  () => Session.login(username, password, http: http).then((x) => x.getNews()),
+];
 
 void main() {
   tests([

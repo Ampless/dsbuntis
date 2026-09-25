@@ -4,7 +4,7 @@ version: 0.2.0-alpha.5
 homepage: https://github.com/Ampless/dsbuntis
 
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.10.0
 
 dependencies:
   html: ^0.15.5
@@ -13,7 +13,7 @@ dependencies:
   where_not_null: ^1.0.0
 
 dev_dependencies:
-  lints: ^5.0.0
+  lints: ^6.0.0
   # for `sortTestCase` and `assertPageListsEqual`
   test: ^1.25.0
   tested: ^1.0.0

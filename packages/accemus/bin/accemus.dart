@@ -26,8 +26,9 @@ String skrcli(Result r) {
     }
 
     if (node.value != null) {
-      str +=
-          color != null ? (AnsiPen()..xterm(color))(node.value!) : node.value!;
+      str += color != null
+          ? (AnsiPen()..xterm(color))(node.value!)
+          : node.value!;
     } else if (node.children != null) {
       for (var c in node.children!) {
         traverse(c, color);
@@ -46,54 +47,68 @@ String jsonEncode(Object o) => jsonEncoder.convert(o);
 
 class LogHttpClient extends ScHttpClient {
   @override
-  Future<Uint8List> getBinUri(Uri url,
-      {Map<String, String> headers = const {},
-      bool readCache = true,
-      bool writeCache = true,
-      Duration? ttl}) async {
-    final res = await super.getBinUri(url,
-        headers: headers,
-        readCache: readCache,
-        writeCache: writeCache,
-        ttl: ttl);
+  Future<Uint8List> getBinUri(
+    Uri url, {
+    Map<String, String> headers = const {},
+    bool readCache = true,
+    bool writeCache = true,
+    Duration? ttl,
+  }) async {
+    final res = await super.getBinUri(
+      url,
+      headers: headers,
+      readCache: readCache,
+      writeCache: writeCache,
+      ttl: ttl,
+    );
     print('${green('GET_BIN')} ${yellow(url)} → ${HEX.encode(res)}');
     return res;
   }
 
   @override
-  Future<String> getUri(Uri url,
-      {bool readCache = true,
-      bool writeCache = true,
-      Duration? ttl,
-      Map<String, String> headers = const {},
-      String Function(List<int>)? defaultCharset,
-      String Function(List<int>)? forcedCharset}) async {
-    final res = await super.getUri(url,
-        readCache: readCache,
-        writeCache: writeCache,
-        ttl: ttl,
-        headers: headers,
-        defaultCharset: defaultCharset,
-        forcedCharset: forcedCharset);
+  Future<String> getUri(
+    Uri url, {
+    bool readCache = true,
+    bool writeCache = true,
+    Duration? ttl,
+    Map<String, String> headers = const {},
+    String Function(List<int>)? defaultCharset,
+    String Function(List<int>)? forcedCharset,
+  }) async {
+    final res = await super.getUri(
+      url,
+      readCache: readCache,
+      writeCache: writeCache,
+      ttl: ttl,
+      headers: headers,
+      defaultCharset: defaultCharset,
+      forcedCharset: forcedCharset,
+    );
     print('${green('GET')} ${yellow(url)} → $res');
     return res;
   }
 
   @override
-  Future<String> postUri(Uri url, Object body,
-      {Map<String, String> headers = const {},
-      bool readCache = true,
-      bool writeCache = true,
-      Duration? ttl,
-      String Function(List<int>)? defaultCharset,
-      String Function(List<int>)? forcedCharset}) async {
-    final res = await super.postUri(url, body,
-        readCache: readCache,
-        writeCache: writeCache,
-        ttl: ttl,
-        headers: headers,
-        defaultCharset: defaultCharset,
-        forcedCharset: forcedCharset);
+  Future<String> postUri(
+    Uri url,
+    Object body, {
+    Map<String, String> headers = const {},
+    bool readCache = true,
+    bool writeCache = true,
+    Duration? ttl,
+    String Function(List<int>)? defaultCharset,
+    String Function(List<int>)? forcedCharset,
+  }) async {
+    final res = await super.postUri(
+      url,
+      body,
+      readCache: readCache,
+      writeCache: writeCache,
+      ttl: ttl,
+      headers: headers,
+      defaultCharset: defaultCharset,
+      forcedCharset: forcedCharset,
+    );
     print('${green('POST')} ${yellow(body)} → ${magenta(url)} → $res');
     return res;
   }
@@ -101,54 +116,96 @@ class LogHttpClient extends ScHttpClient {
 
 void main(List<String> argv) async {
   final parser = ArgParser()
-    ..addOption('session',
-        abbr: 's',
-        help: 'The session to be used instead of logging in',
-        valueHelp: 'token')
-    ..addOption('endpoint',
-        abbr: 'e',
-        help: 'The endpoint to use',
-        valueHelp: 'backend',
-        defaultsTo: Session.defaultEndpoint)
-    ..addOption('preview-endpoint',
-        abbr: 'p',
-        help: 'The endpoint to use for previews',
-        valueHelp: 'backend',
-        defaultsTo: Session.defaultPreviewEndpoint)
-    ..addOption('app-version',
-        abbr: 'a',
-        help: 'The DSBMobile version to report to the server',
-        valueHelp: 'value',
-        defaultsTo: Session.defaultAppVersion)
-    ..addOption('os-version',
-        abbr: 'o',
-        help: 'The OS version to report to the server',
-        valueHelp: 'value',
-        defaultsTo: Session.defaultOsVersion)
-    ..addOption('bundle-id',
-        abbr: 'b',
-        help: 'The bundle id to report to the server',
-        valueHelp: 'value',
-        defaultsTo: Session.defaultBundleId)
-    ..addFlag('login-only',
-        abbr: 'l', help: 'Only log in and print the session', negatable: false)
-    ..addFlag('help',
-        abbr: 'h', help: 'Display available options', negatable: false)
-    ..addFlag('stack-traces',
-        abbr: 't',
-        help: 'Print full stack traces when an error occurs',
-        negatable: false)
+    ..addOption(
+      'session',
+      abbr: 's',
+      help: 'The session to be used instead of logging in',
+      valueHelp: 'token',
+    )
+    ..addOption(
+      'endpoint',
+      abbr: 'e',
+      help: 'The endpoint to use',
+      valueHelp: 'backend',
+      defaultsTo: Session.defaultEndpoint,
+    )
+    ..addOption(
+      'preview-endpoint',
+      abbr: 'p',
+      help: 'The endpoint to use for previews',
+      valueHelp: 'backend',
+      defaultsTo: Session.defaultPreviewEndpoint,
+    )
+    ..addOption(
+      'app-version',
+      abbr: 'a',
+      help: 'The DSBMobile version to report to the server',
+      valueHelp: 'value',
+      defaultsTo: Session.defaultAppVersion,
+    )
+    ..addOption(
+      'os-version',
+      abbr: 'o',
+      help: 'The OS version to report to the server',
+      valueHelp: 'value',
+      defaultsTo: Session.defaultOsVersion,
+    )
+    ..addOption(
+      'bundle-id',
+      abbr: 'b',
+      help: 'The bundle id to report to the server',
+      valueHelp: 'value',
+      defaultsTo: Session.defaultBundleId,
+    )
+    ..addFlag(
+      'login-only',
+      abbr: 'l',
+      help: 'Only log in and print the session',
+      negatable: false,
+    )
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      help: 'Display available options',
+      negatable: false,
+    )
+    ..addFlag(
+      'stack-traces',
+      abbr: 't',
+      help: 'Print full stack traces when an error occurs',
+      negatable: false,
+    )
     ..addOption('json', abbr: 'j', help: 'Get a JSON by name')
-    ..addFlag('timetables',
-        abbr: 'T', help: 'Equivalent to --json dsbtimetables', negatable: false)
-    ..addFlag('documents',
-        abbr: 'D', help: 'Equivalent to --json dsbdocuments', negatable: false)
-    ..addFlag('news',
-        abbr: 'N', help: 'Equivalent to --json newstab', negatable: false)
-    ..addFlag('merge',
-        abbr: 'm', help: 'Merge all pages from each plan', negatable: false)
-    ..addFlag('log-requests',
-        abbr: 'r', help: 'Log all HTTP requests', negatable: false);
+    ..addFlag(
+      'timetables',
+      abbr: 'T',
+      help: 'Equivalent to --json dsbtimetables',
+      negatable: false,
+    )
+    ..addFlag(
+      'documents',
+      abbr: 'D',
+      help: 'Equivalent to --json dsbdocuments',
+      negatable: false,
+    )
+    ..addFlag(
+      'news',
+      abbr: 'N',
+      help: 'Equivalent to --json newstab',
+      negatable: false,
+    )
+    ..addFlag(
+      'merge',
+      abbr: 'm',
+      help: 'Merge all pages from each plan',
+      negatable: false,
+    )
+    ..addFlag(
+      'log-requests',
+      abbr: 'r',
+      help: 'Log all HTTP requests',
+      negatable: false,
+    );
 
   var traces = false;
   try {
@@ -170,54 +227,73 @@ void main(List<String> argv) async {
       if (args.rest.length < 2) {
         throw 'No password provided.';
       }
-      final session = await Session.login(args.rest[0], args.rest[1],
-          http: http,
-          endpoint: args['endpoint'],
-          appVersion: args['app-version'],
-          bundleId: args['bundle-id'],
-          osVersion: args['os-version'],
-          previewEndpoint: args['preview-endpoint']);
+      final session = await Session.login(
+        args.rest[0],
+        args.rest[1],
+        http: http,
+        endpoint: args['endpoint'],
+        appVersion: args['app-version'],
+        bundleId: args['bundle-id'],
+        osVersion: args['os-version'],
+        previewEndpoint: args['preview-endpoint'],
+      );
       print(session.token);
     } else {
       if (!args.wasParsed('session') && args.rest.length != 2) {
         throw 'No credentials or session provided.';
       }
       final session = args.wasParsed('session')
-          ? Session(args['session'],
+          ? Session(
+              args['session'],
               http: http,
               endpoint: args['endpoint'],
-              previewEndpoint: args['preview-endpoint'])
-          : await Session.login(args.rest[0], args.rest[1],
+              previewEndpoint: args['preview-endpoint'],
+            )
+          : await Session.login(
+              args.rest[0],
+              args.rest[1],
               http: http,
               endpoint: args['endpoint'],
               previewEndpoint: args['preview-endpoint'],
               appVersion: args['app-version'],
               osVersion: args['os-version'],
-              bundleId: args['bundle-id']);
+              bundleId: args['bundle-id'],
+            );
       if (args['timetables'] ||
           args['documents'] ||
           args['news'] ||
           args.wasParsed('json')) {
-        var json = await session.getJsonString(args['timetables']
-            ? 'dsbtimetables'
-            : args['documents']
-                ? 'dsbdocuments'
-                : args['news']
-                    ? 'newstab'
-                    : args['json']);
+        var json = await session.getJsonString(
+          args['timetables']
+              ? 'dsbtimetables'
+              : args['documents']
+              ? 'dsbdocuments'
+              : args['news']
+              ? 'newstab'
+              : args['json'],
+        );
         try {
           json = jsonEncode(jsonDecode(json));
         } catch (e) {
-          stderr.writeln(red(
-              'Timetable JSON is not actually valid JSON: ${traces && e is Error ? '$e\n\n${e.stackTrace}' : '$e'}'));
+          stderr.writeln(
+            red(
+              'Timetable JSON is not actually valid JSON: ${traces && e is Error ? '$e\n\n${e.stackTrace}' : '$e'}',
+            ),
+          );
         }
         print(skrcli(highlight.parse(json, language: 'json')));
       } else {
-        final p =
-            await session.getTimetables().then(session.downloadAndParsePlans);
-        print(skrcli(highlight.parse(
-            jsonEncode(args['merge'] ? p.merge().toList() : p.toNestedList()),
-            language: 'json')));
+        final p = await session.getTimetables().then(
+          session.downloadAndParsePlans,
+        );
+        print(
+          skrcli(
+            highlight.parse(
+              jsonEncode(args['merge'] ? p.merge().toList() : p.toNestedList()),
+              language: 'json',
+            ),
+          ),
+        );
       }
     }
     exit(0);
